@@ -35,13 +35,13 @@ Printable version on A4 page: [cheatsheet-docker-A4.pdf](cheatsheet-docker-A4.pd
 
 - Compose
 
-| Name                     | Summary   |
-| :----------------------- | --------- |
-| `docker-compose up`      |           |
-| `docker-compose up -d`   |           |
-| `docker-compose logs`    |           |
-| `docker-compose down`    |           |
-| `docker-compose down -v` |           |
+| Name                     | Summary                               |
+| :----------------------- | ----------------------------------    |
+| `docker-compose up`      | Start a compose env from yaml file    |
+| `docker-compose up -d`   | Start a compose env in detached mode  |
+| `docker-compose logs`    | Check logs                            |
+| `docker-compose down`    | Stop current compose env              |
+| `docker-compose down -v` | Stop compose env, and destroy volumes |
 
 - Docker Machine
 
