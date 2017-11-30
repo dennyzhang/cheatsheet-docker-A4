@@ -60,29 +60,39 @@ See more CheatSheets from Denny: [here](https://github.com/topics/denny-cheatshe
 
 - Clean up Disk
 
-```
-# Remove All Useless Resources.
+Remove All Useless Resources.
 
+```
 docker ps --filter status=exited -aq \
  | xargs -r docker rm -v
+```
 
-# Remove unused docker images
+Remove unused docker images
+```
 docker rmi $(docker images | grep "<none>"\
  | awk -F' ' '{print $3}')
+```
 
-# Remove orphaned docker volumes
+Remove orphaned docker volumes
+```
 docker volume rm \
  $(docker volume ls -qf dangling=true)
+```
 
-# Remove dead containers
+Remove dead containers
+```
 docker ps --filter status=dead -aq \
  | xargs -r docker rm -v
+```
 
-# Remove intermediate containers generated during docker build
+Remove intermediate containers generated during docker build
+```
 docker ps -a | grep "/bin/sh -c" | \
   awk -F' ' '{print $1}' | xargs docker rm
+```
 
-# Remove Image with <none> string
+Remove Image with <none> string
+```
 echo "Remove docker images with <none> string"
 if docker images | grep none | tee; then
    docker rmi $(docker images | grep "<none>"  | awk -F' ' '{print $3}') | tee
