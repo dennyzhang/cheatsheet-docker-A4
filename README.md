@@ -79,7 +79,6 @@ docker ps --filter status=dead -aq \
  | xargs -r docker rm -v
 
 # Remove intermediate containers generated during docker build
-#+BEGIN_SRC sh
 docker ps -a | grep "/bin/sh -c" | \
   awk -F' ' '{print $1}' | xargs docker rm
 
