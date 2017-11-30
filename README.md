@@ -44,6 +44,7 @@ Printable version on A4 page: [cheatsheet-docker-A4.pdf](cheatsheet-docker-A4.pd
 | `docker-compose down -v` |           |
 
 - Docker Machine
+
 | Name                                                | Summary              |
 | :-------------------------------------------------  | -------------------  |
 | `docker-machine env vm1`                            | Get node env         |
