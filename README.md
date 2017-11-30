@@ -11,6 +11,8 @@ Printable version on A4 page: [cheatsheet-docker-A4.pdf](cheatsheet-docker-A4.pd
 
 <a href="https://www.dennyzhang.com"><img align="right" width="185" height="37" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/dns_small.png"></a>
 
+See more CheatSheets from Denny: [here](https://github.com/topics/denny-cheatsheets)
+
 - Container
 
 | Name                                        | Summary                                 |
@@ -58,7 +60,35 @@ Printable version on A4 page: [cheatsheet-docker-A4.pdf](cheatsheet-docker-A4.pd
 
 - Clean up Disk
 
-See more CheatSheets from Denny: [here](https://github.com/topics/denny-cheatsheets)
+``
+# Remove All Useless Resources.
+
+docker ps --filter status=exited -aq \
+ | xargs -r docker rm -v
+
+# Remove unused docker images
+docker rmi $(docker images | grep "<none>"\
+ | awk -F' ' '{print $3}')
+
+# Remove orphaned docker volumes
+docker volume rm \
+ $(docker volume ls -qf dangling=true)
+
+# Remove dead containers
+docker ps --filter status=dead -aq \
+ | xargs -r docker rm -v
+
+# Remove intermediate containers generated during docker build
+#+BEGIN_SRC sh
+docker ps -a | grep "/bin/sh -c" | \
+  awk -F' ' '{print $1}' | xargs docker rm
+
+# Remove Image with <none> string
+echo "Remove docker images with <none> string"
+if docker images | grep none | tee; then
+   docker rmi $(docker images | grep "<none>"  | awk -F' ' '{print $3}') | tee
+fi
+```
 
 <a href="https://www.dennyzhang.com"><img align="right" width="201" height="268" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/denny_201706.png"></a>
 
