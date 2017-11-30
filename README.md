@@ -50,7 +50,7 @@ See more CheatSheets from Denny: [here](https://github.com/topics/denny-cheatshe
 | Name                                                | Summary              |
 | :-------------------------------------------------  | -------------------  |
 | `docker-machine env vm1`                            | Get node env         |
-| `docker-machine scp docker-compose.yml vm1:~`       | Copy files           |
+| `docker-machine scp docker-compose.yml vm1:/tmp/`   | Copy files           |
 | `docker-machine ssh vm1`                            | ssh to vm            |
 | `docker-machine ssh vm1 "docker node inspect <ID>"` | Inspect a node       |
 | `docker-machine ssh vm1 "docker node ls"`           | List the nodes       |
