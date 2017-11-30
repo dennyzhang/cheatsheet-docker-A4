@@ -60,7 +60,7 @@ See more CheatSheets from Denny: [here](https://github.com/topics/denny-cheatshe
 
 - Clean up Disk
 
-``
+```
 # Remove All Useless Resources.
 
 docker ps --filter status=exited -aq \
