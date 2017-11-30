@@ -28,18 +28,17 @@ Printable version on A4 page: [cheatsheet-docker-A4.pdf](cheatsheet-docker-A4.pd
 
 - Compose
 
-| Name                 | Summary   |
-| :------------------- | --------- |
-| `docker-compose up`  |           |
+| Name                     | Summary   |
+| :----------------------- | --------- |
+| `docker-compose up`      |           |
+| `docker-compose up -d`   |           |
+| `docker-compose logs`    |           |
+| `docker-compose down`    |           |
+| `docker-compose down -v` |           |
 
-- Upgrade  
+- Docker Machine
 
-| Name                                                  | Summary                |
-| :---------------------------------------------------- | ---------------------- |
-| `kubectl rolling-update app-v1 app-v2 --image=img:v2` | online rolling upgrade |
-| `kubectl rolling-update app-v1 app-v2 --rollback`     |                        |
-| `kubectl rollout status deployment/nginx-app`         |                        |
-| `kubectl rollout history deployment/nginx-app`        |                        |
+See more CheatSheets from Denny: [here](https://github.com/topics/denny-cheatsheets)
 
 <a href="https://www.dennyzhang.com"><img align="right" width="201" height="268" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/denny_201706.png"></a>
 
