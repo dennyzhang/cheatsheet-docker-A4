@@ -5960,42 +5960,42 @@ docker: Error response from daemon: driver failed programming external connectiv
  (exit status 1).
 
 #+BEGIN_EXAMPLE
-Bruno Volpato [12:33 PM] 
+Bruno Volpato [12:33 PM]
 np
 
 
 Denny Zhang
-[12:33 PM] 
+[12:33 PM]
 I remember I have run into this before.
 
 Let me check and reply afterwards
 
 
-Bruno Volpato [12:34 PM] 
+Bruno Volpato [12:34 PM]
 I played a few things on it, might be even good to restore original image from Linode too, if you don't want to investigate.. but maybe it's worthy to try to understand what's happening
 
 
 Denny Zhang
-[12:51 PM] 
+[12:51 PM]
 Checking now
 
 
-Bruno Volpato [12:51 PM] 
+Bruno Volpato [12:51 PM]
 that on 45.33.48.226
 
 
 Denny Zhang
-[12:51 PM] 
+[12:51 PM]
 ok
 
 
-[12:55] 
+[12:55]
 Bruno
 
 If I reboot docker daemon, it’s fine
 
 
-[12:59] 
+[12:59]
 Looks like when we have deleted all the containers, the iptable chain of DOCKER has been deleted automatically docker daemon.
 
 When we try to start mdm-jenkins, it need to update iptable for port forwarding. But it has failed to find DOCKER chain.
@@ -6547,7 +6547,6 @@ volumes:
   volume_workspace:
   volume_code:
   volume_http_repo:
-
 ** DONE docker keep container longrun in docker-compose.yml
    CLOSED: [2017-06-29 Thu 18:45]
      volumes:
@@ -6680,6 +6679,41 @@ RUN echo "Host github.com" >> /root/.ssh/config
 RUN echo "  StrictHostKeyChecking no" >> /root/.ssh/config
 RUN echo "  IdentityFile /root/.ssh/mdmdevops_id_rsa" >> /root/.ssh/config
 RUN echo "  User git" >> /root/.ssh/config
+** ubuntu install docker-compose
+https://docs.docker.com/compose/install/
+https://docs.docker.com/install/linux/docker-ee/ubuntu/
+
+sudo apt-get install \
+    linux-image-extra-$(uname -r) \
+    linux-image-extra-virtual
+
+wget -qO- https://get.docker.com/ | sh
+
+sudo curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+
+sudo chmod +x /usr/local/bin/docker-compose
+** DONE docker-compose.yml mem_limit
+  CLOSED: [2018-03-08 Thu 20:14]
+https://docs.docker.com/config/containers/resource_constraints/
+
+1000,000,000
+
+#+BEGIN_EXAMPLE
+  jenkins:
+    container_name: mdm-jenkins
+    hostname: mdm-jenkins
+    # Base Docker image: https://github.com/DennyZhang/devops_docker_image/blob/tag_v7/jenkins/Dockerfile_1_0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "18080:8080/tcp"
+    # 2.5 GB
+    mem_limit: 2500000000
+    environment:
+      JENKINS_TIMEZONE: "America/Los_Angeles"
+      JAVA_OPTS: -Djenkins.install.runSetupWizard=false
+#+END_EXAMPLE
 * [#A] docker sawm                                                :IMPORTANT:
 https://docs.docker.com/engine/swarm/swarm-tutorial/
 https://github.com/docker/labs/tree/master/swarm-mode
@@ -6932,57 +6966,6 @@ I am guessing this is because my user is not allowed to create an NAT on that VM
 
 Özgür
 #+END_EXAMPLE
-* docker-compose
-** ubuntu install docker-compose
-https://docs.docker.com/compose/install/
-https://docs.docker.com/install/linux/docker-ee/ubuntu/
-
-sudo apt-get install \
-    linux-image-extra-$(uname -r) \
-    linux-image-extra-virtual
-
-wget -qO- https://get.docker.com/ | sh
-
-sudo curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-
-sudo chmod +x /usr/local/bin/docker-compose
-** docker-compose: service restart
-#+BEGIN_EXAMPLE
-    volumes:
-      - volume_jobs:/var/jenkins_home/jobs
-      - volume_workspace:/var/jenkins_home/workspace
-      - volume_code:/var/jenkins_home/code
-      - volume_backup:/var/jenkins_home/backup
-      - $PWD/FULL-2017-06-14_19-06:/var/jenkins_home/backup/FULL-2017-06-14_19-06
-    restart: always
-#+END_EXAMPLE
-** DONE keep container in foreground: tail: while true; do sleep 1000; done
-  CLOSED: [2017-03-13 Mon 22:03]
-entrypoint: ["tail", "-f", "/dev/null"]
-http://stackoverflow.com/questions/28212380/why-docker-container-exits-immediately
-
-** DONE docker-compose.yml mem_limit
-  CLOSED: [2018-03-08 Thu 20:14]
-https://docs.docker.com/config/containers/resource_constraints/
-
-1000,000,000
-
-#+BEGIN_EXAMPLE
-  jenkins:
-    container_name: mdm-jenkins
-    hostname: mdm-jenkins
-    # Base Docker image: https://github.com/DennyZhang/devops_docker_image/blob/tag_v7/jenkins/Dockerfile_1_0
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "18080:8080/tcp"
-    # 2.5 GB
-    mem_limit: 2500000000
-    environment:
-      JENKINS_TIMEZONE: "America/Los_Angeles"
-      JAVA_OPTS: -Djenkins.install.runSetupWizard=false
-#+END_EXAMPLE
 * [#B] docker machine
 | Name                                        | Summary                                           |
 |---------------------------------------------+---------------------------------------------------|
@@ -7038,7 +7021,6 @@ Kubernetes 还提供完善的管理工具，涵盖开发、部署测试、运维
 每个API对象都有3大类属性：元数据metadata、规范spec和状态status
 
 - Concepts: Pod, Service, Labels和单Pod单IP
-
 ** Installing and Setting Up kubectl
 https://kubernetes.io/docs/tasks/tools/install-kubectl/
 
@@ -7176,7 +7158,6 @@ kubectl get deployments
 
 # Create service
 kubectl expose deployment hello-node --type=LoadBalancer
-
 ** TODO [#A] Install minikube in headless Ubuntu server           :IMPORTANT:
 | Name            | Summary |
 |-----------------+---------|
@@ -7203,18 +7184,16 @@ Kubectl is now configured to use the cluster.
 WARNING: IT IS RECOMMENDED NOT TO RUN THE NONE DRIVER ON PERSONAL WORKSTATIONS
         The 'none' driver will run an insecure kubernetes apiserver as root that may leave the host vulnerable to CSRF attacks
 #+END_EXAMPLE
-
 *** useful link
 https://www.youtube.com/watch?v=PH-2FfFD2PU
 Kubernetes in 5 mins
-https://www.youtube.com/watch?v=DC7NECq3Ghs   
+https://www.youtube.com/watch?v=DC7NECq3Ghs
 Setting up and using a single node Kubernetes cluster.
 https://www.youtube.com/watch?v=BDrcUjOczsE
 Kubernetes - Local Testing
 
 https://www.youtube.com/watch?v=R-3dfURb2hA
 The Illustrated Children's Guide to Kubernetes
-
 * Dockerize Serivces
 ** DONE Use Docker to start Jenkins env
    CLOSED: [2017-07-11 Tue 11:38]
@@ -7251,7 +7230,6 @@ volumes:
   volume_backup:
   volume_workspace:
 #+END_EXAMPLE
-
 ** DONE run wordpress by docker
   CLOSED: [2016-10-24 Mon 22:47]
 https://www.sitepoint.com/how-to-use-the-official-docker-wordpress-image/
@@ -7286,7 +7264,6 @@ mysql:
      - MYSQL_DATABASE=wordpress
 
 docker run --name some-wordpress --link some-mysql:mysql -d wordpress
-
 ** DONE Use Docker to setup a ftp server: support people to transfer big files
    CLOSED: [2017-03-21 Tue 13:53]
 *** DONE Use docker to setup the server
@@ -7357,43 +7334,7 @@ Password:
 ftp> ls
 *** TODO Common mointor: disk usage, download link, dns setting
 curl -u ftp_totvslabs:TOTVSLabs123ChangeMe ftp://ftp.carol.ai:21/hosts
-
 * #  --8<-------------------------- separator ------------------------>8--
-* TODO docker healthcheck: ok, warning and failed
-* TODO Docker base image can't take variable
-root@totvsjenkins:/home/denny/soteria_code/brozton-soterianetworks# docker-compose build
-launch uses an image, skipping
-shib uses an image, skipping
-cache uses an image, skipping
-db uses an image, skipping
-eureka uses an image, skipping
-mail uses an image, skipping
-dbseed uses an image, skipping
-Building totp
-Step 1/3 : FROM soterianetworks/brozton:base_${IMG_TAG_POSTFIX}
-ERROR: Service 'totp' failed to build: Error parsing reference: "soterianetworks/brozton:base_${IMG_TAG_POSTFIX}" is not a valid repository/tag: invalid reference format
-root@totvsjenkins:/home/denny/soteria_code/brozton-soterianetworks# git status
-On branch denny-next-ci
-Your branch is up-to-date with 'origin/denny-next-ci'.
-
-nothing to commit, working directory clean
-* TODO [#A] Docker logging driver: aggreate logs from different containers into a centralized location
-https://docs.docker.com/engine/admin/logging/overview/
-** DONE Default logging is json-file. /var/lib/docker/containers/$container_id/*-json.log
-   CLOSED: [2017-03-25 Sat 14:16]
-docker info |grep 'Logging Driver'
-docker inspect -f '{{.HostConfig.LogConfig.Type}}' <CONTAINER>
-** TODO Logging to 2 drivers: Can I log to both json and rsyslog?
-** TODO [#A] Use gelf to collect log into elasticsearch eventually
-https://docs.docker.com/engine/admin/logging/overview/#gelf
-** TODO Use ELK to collect logs
-https://www.linux.com/learn/how-manage-logs-docker-environment-compose-and-elk
-** TODO docker start logstash container
-https://www.elastic.co/guide/en/logstash/current/docker.html
-** #  --8<-------------------------- separator ------------------------>8--
-** TODO When syslog is down, I just lose my log messages: make sure we keep logging to local files
-** TODO udp server has to be a fixed ip: Use a dedicated network with fixed ip
-** TODO We will have 2 containers: logstash and elasticsearch
 * DONE [#A] Setup apache with docker                        :IMPORTANT:
   CLOSED: [2017-04-04 Tue 23:55]
 ** DONE basic setup
@@ -7561,21 +7502,6 @@ Certainly, some background here: Right now we have our images in docker hub buil
 dennyzhang [10:12 AM]
 Nice, ozgur. got it. Will update asap.
 #+END_EXAMPLE
-* TODO docker hub trigger autobuild by commit message pattern
-* #  --8<-------------------------- separator ------------------------>8--
-* TODO [#A] docker container change port mapping and bring it up and running
-https://stackoverflow.com/questions/19335444/how-do-i-assign-a-port-mapping-to-an-existing-docker-container
-
-1. Change hostconfig.json directly for port mapping at /var/lib/docker/containers/[hash_of_the_container]/hostconfig.json
-
-2. docker commit
-
-#+BEGIN_EXAMPLE
-root@totvsjenkins:/home/denny/devops_docker_image/codecheck# docker start docker-jenkins
-Error response from daemon: driver failed programming external connectivity on endpoint docker-jenkins (49319c2c320acafdd8930ab99f3410c2b3cd9ccb2635f76abd4a5e2261df6196): Bind for 0.0.0.0:48080 failed: port is already allocated
-Error: failed to start containers: docker-jenkins
-#+END_EXAMPLE
-
 * DONE Ubuntu 16.04 configure DOCKER_OPTS: /lib/systemd/system/
   CLOSED: [2017-07-10 Mon 10:14]
 https://github.com/moby/moby/issues/9889
@@ -7590,18 +7516,9 @@ check /lib/systemd/system/docker.service
 EnvironmentFile=/etc/default/docker
 ExecStart=/usr/bin/docker -d $DOCKER_OPTS -H fd://
 #+END_EXAMPLE
-* #  --8<-------------------------- separator ------------------------>8--
 * DONE Pod is grouping of one or more containers.
   CLOSED: [2017-07-13 Thu 13:31]
 Pod share the same ip address, the same localhost, IPC
-* TODO Networking with Kubernetes
-https://www.youtube.com/watch?v=WwQ62OyCNz4
-
-- Flat
-- Overlay
-* TODO Add ability to mount volume as user other than root
-https://stackoverflow.com/questions/33681396/how-do-i-write-to-a-volume-container-as-non-root-in-docker
-https://github.com/moby/moby/issues/2259#issuecomment-111659961
 * DONE docker start container with pid configured
   CLOSED: [2017-07-30 Sun 09:06]
 https://medium.com/@rothgar/how-to-debug-a-running-docker-container-from-a-separate-container-983f11740dc6
@@ -7612,47 +7529,6 @@ docker run -t --pid=container:container1 \
   --cap-add sys_ptrace \
   strace
 #+END_EXAMPLE
-* TODO [#A] fail to start docker: [graphdriver] prior storage driver \"devicemapper\" failed: devmapper
-https://www.projectatomic.io/blog/2015/06/notes-on-fedora-centos-and-docker-storage-drivers/
-https://docs.docker.com/engine/userguide/storagedriver/device-mapper-driver/
-http://jira.jinganiam.com/browse/ID-47
-start-stop-daemon --start --exec /usr/bin/docker --pidfile /var/run/docker-ssd.pid --make-pidfile -- daemon -p /var/run/docker.pid
-#+BEGIN_EXAMPLE
-root@8cc3b37f44eb:/# start-stop-daemon --start --exec /usr/bin/docker --pidfile /var/run/docker-ssd.pid --make-pidfile -- daemon -p /var/run/docker.pid
-INFO[0000] API listen on /var/run/docker.sock
-WARN[0000] Udev sync is not supported. This will lead to unexpected behavior, data loss and errors. For more information, see https://docs.docker.com/reference/commandline/daemon/#daemon-storage-driver-option
-ERRO[0000] [graphdriver] prior storage driver "devicemapper" failed: devmapper: Device docker-0:60-50903-pool is not a thin pool
-FATA[0000] Error starting daemon: error initializing graphdriver: devmapper: Device docker-0:60-50903-pool is not a thin pool
-#+END_EXAMPLE
-* #  --8<-------------------------- separator ------------------------>8--
-* DONE docker labels: filter containers by labels: docker ps --filter "label=org.label-schema.group"
-  CLOSED: [2017-08-08 Tue 11:16]
-
-docker ps --filter "label=org.label-schema.group"
-docker ps --filter "label=org.label-schema.group=monitoring"
-
-https://docs.docker.com/engine/reference/commandline/ps/#filtering
-https://docs.docker.com/engine/userguide/labels-custom-metadata/#value-guidelines
-
-#+BEGIN_EXAMPLE
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
-    volumes:
-      - grafana_data:/var/lib/grafana
-    env_file:
-      - user.config
-    restart: unless-stopped
-    expose:
-      - 3000
-    ports:
-      - 3000:3000
-    networks:
-      - monitor-net
-    labels:
-      org.label-schema.group: "monitoring"
-#+END_EXAMPLE
-
 * [#B] cAdvisor: basic docker monitoring
 https://github.com/google/cadvisor
 ** hello world
@@ -7671,11 +7547,6 @@ http://localhost:8080
    CLOSED: [2017-08-08 Tue 22:59]
 ** TODO Get more history timeline
 ** TODO Get monitoring and alerts: Get alerts, healthcheck failed or memory is over 500MB
-* #  --8<-------------------------- separator ------------------------>8--
-* DONE get container healthcheck status
-   CLOSED: [2017-08-20 Sun 16:20]
-➜  ~ docker inspect --format '{{.State.Health}}' nginx
-{healthy 0 [0xc42047e0f0 0xc42047e140 0xc42047e190 0xc42047e1e0 0xc42047e230]}
 * DONE container get docker host from sock file /var/run/docker.sock
   CLOSED: [2017-08-20 Sun 16:38]
 https://medium.com/lucjuggery/about-var-run-docker-sock-3bfd276e12fd
@@ -7705,13 +7576,11 @@ curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/3c8b1
 # list containers
 curl -XGET --unix-socket /var/run/docker.sock http://localhost/containers/json | jq
 ** useful link
-http://dockone.io/article/109  
+http://dockone.io/article/109
 
 http://dockone.io/article/109
 http://blog.trifork.com/2013/12/24/docker-from-a-distance-the-remote-api/
 https://stackoverflow.com/questions/37178824/how-to-find-docker-rest-api-url
-* DONE docker container: auto restart: --restart=always
-  CLOSED: [2017-08-29 Tue 21:42]
 * DONE docker share volumes across containers: volumes_from
   CLOSED: [2017-08-30 Wed 16:22]
 https://stackoverflow.com/questions/44284484/docker-compose-share-named-volume-between-multiple-containers
@@ -7747,7 +7616,51 @@ volumes:
   cache_home:
   launch_home:
 #+END_EXAMPLE
-* #  --8<-------------------------- separator ------------------------>8--
+* DONE docker can't ping google iptables: remove: --iptables=false
+  CLOSED: [2018-04-03 Tue 10:14]
+https://github.com/moby/moby/issues/28241
+* DONE dockerfile configure PATH: ENV PATH="/opt/gtk/bin:${PATH}"
+  CLOSED: [2018-04-10 Tue 16:25]
+https://stackoverflow.com/questions/27093612/in-a-dockerfile-how-to-update-path-environment-variable
+* DONE debian8 install RStudio: conda install -c r r-essentials
+  CLOSED: [2018-04-10 Tue 17:23]
+https://www.rstudio.com/products/rstudio/download/
+* DONE [#A] mac docker volume folder: Where is /var/lib/docker on Mac/OS X
+  CLOSED: [2018-04-05 Thu 14:55]
+https://forums.docker.com/t/host-path-of-volume/12277/10
+https://stackoverflow.com/questions/38532483/where-is-var-lib-docker-on-mac-os-x
+screen ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/tty
+Then you can run ls /var/lib/docker/volumes
+* DONE docker run with different parameters
+  CLOSED: [2018-07-02 Mon 22:41]
+    docker run -t -d -h "$container_name" --name "$container_name" \
+           -v "${PWD}/cmd:/go/cmd" -v "${PWD}/pkg:/go/pkg" \
+           -v "${PWD}/tests:/go/tests" \
+           golang:1.10.3 bash -c "cd /go && tests/build_code.sh build_code"
+* DONE docker run issue: The path is not shared from OS X and is not known to Docker.
+  CLOSED: [2018-07-03 Tue 14:12]
+https://github.com/localstack/localstack/issues/480
+
+#+BEGIN_EXAMPLE
+bash-3.2$ docker run -it --volume /usr/local/Cellar/go/packages:/go --volume /tmp/302271400:/output --entrypoint=/bin/sh golang:latest
+docker: Error response from daemon: Mounts denied:
+The path /usr/local/Cellar/go/packages
+is not shared from OS X and is not known to Docker.
+You can configure shared paths from Docker -> Preferences... -> File Sharing.
+See https://docs.docker.com/docker-for-mac/osxfs/#namespaces for more info.
+#+END_EXAMPLE
+* DONE docker auto build: https://docs.docker.com/docker-hub/builds/#build-statuses-explained
+  CLOSED: [2018-07-10 Tue 10:18]
+* DONE [#A] docker multi-stage builds: https://docs.docker.com/develop/develop-images/multistage-build/#before-multi-stage-builds
+  CLOSED: [2018-07-11 Wed 23:15]
+* #  --8<-------------------------- separator ------------------------>8-- :noexport:
+* HALF docker images command error in Ubuntu OS
+#+BEGIN_EXAMPLE
+root@carol-official-repo:/opt/mdmdevops/env_setup/repo.carol.ai/jenkins.carol.ai# docker images
+Error response from daemon: layer does not exist
+#+END_EXAMPLE
+https://github.com/moby/moby/issues/21215
+https://github.com/coreos/bugs/issues/1808
 * TODO docker cp: no such directory
 https://docs.docker.com/engine/reference/commandline/cp/#extended-description
 
@@ -7777,71 +7690,71 @@ drwxr-xr-x    2 1000     1000        4.0K Aug  7 21:31 1.72
 drwxr-xr-x    2 1000     1000        4.0K Jul 26 01:29 1.70
 drwxr-xr-x    2 1000     1000        4.0K Jul 25 01:55 1.71
 #+END_EXAMPLE
+* TODO docker hub trigger autobuild by commit message pattern
+* TODO [#A] docker container change port mapping and bring it up and running
+https://stackoverflow.com/questions/19335444/how-do-i-assign-a-port-mapping-to-an-existing-docker-container
 
-* DONE docker-compose.yml autostart: restart: always
-  CLOSED: [2018-02-22 Thu 15:59]
-https://docs.docker.com/compose/compose-file/compose-file-v2/#restart
-restart: always
+1. Change hostconfig.json directly for port mapping at /var/lib/docker/containers/[hash_of_the_container]/hostconfig.json
 
-  - restart: no
-  - restart: always
-  - restart: on-failure
-* DONE docker can't ping google iptables: remove: --iptables=false
-  CLOSED: [2018-04-03 Tue 10:14]
-https://github.com/moby/moby/issues/28241
-* HALF docker images command error in Ubuntu OS
-#+BEGIN_EXAMPLE
-root@carol-official-repo:/opt/mdmdevops/env_setup/repo.carol.ai/jenkins.carol.ai# docker images
-Error response from daemon: layer does not exist
-#+END_EXAMPLE
-https://github.com/moby/moby/issues/21215
-https://github.com/coreos/bugs/issues/1808
-* DONE docker-compose.yml tail /dev/null: entrypoint: ["tail", "-f", "/dev/null"]
-  CLOSED: [2018-04-10 Tue 15:59]
-version: '2'
-services:
-  ci:
-    container_name: ci
-    hostname: ci
-    # Base Docker image: https://github.com/TOTVS/pbc-educational/blob/master/Dockerfile
-    build:
-      context: .
-      dockerfile: Dockerfile
-    entrypoint: ["tail", "-f", "/dev/null"]
-    restart: always
-* #  --8<-------------------------- separator ------------------------>8-- :noexport:
-* DONE dockerfile configure PATH: ENV PATH="/opt/gtk/bin:${PATH}"
-  CLOSED: [2018-04-10 Tue 16:25]
-https://stackoverflow.com/questions/27093612/in-a-dockerfile-how-to-update-path-environment-variable
-* DONE debian8 install RStudio: conda install -c r r-essentials
-  CLOSED: [2018-04-10 Tue 17:23]
-https://www.rstudio.com/products/rstudio/download/
-* DONE [#A] mac docker volume folder: Where is /var/lib/docker on Mac/OS X
-  CLOSED: [2018-04-05 Thu 14:55]
-https://forums.docker.com/t/host-path-of-volume/12277/10
-https://stackoverflow.com/questions/38532483/where-is-var-lib-docker-on-mac-os-x
-screen ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/tty
-Then you can run ls /var/lib/docker/volumes
-* DONE docker run with different parameters
-  CLOSED: [2018-07-02 Mon 22:41]
-    docker run -t -d -h "$container_name" --name "$container_name" \
-           -v "${PWD}/cmd:/go/cmd" -v "${PWD}/pkg:/go/pkg" \
-           -v "${PWD}/tests:/go/tests" \
-           golang:1.10.3 bash -c "cd /go && tests/build_code.sh build_code"
-
-
-* DONE docker get tail of the logs: docker logs --tail 5 syslog-server
-  CLOSED: [2018-07-03 Tue 12:26]
-https://hackernoon.com/to-boldly-log-debug-docker-apps-effectively-using-logs-options-tail-and-grep-53d2e655abcb
-* DONE docker run issue: The path is not shared from OS X and is not known to Docker.
-  CLOSED: [2018-07-03 Tue 14:12]
-https://github.com/localstack/localstack/issues/480
+2. docker commit
 
 #+BEGIN_EXAMPLE
-bash-3.2$ docker run -it --volume /usr/local/Cellar/go/packages:/go --volume /tmp/302271400:/output --entrypoint=/bin/sh golang:latest
-docker: Error response from daemon: Mounts denied: 
-The path /usr/local/Cellar/go/packages
-is not shared from OS X and is not known to Docker.
-You can configure shared paths from Docker -> Preferences... -> File Sharing.
-See https://docs.docker.com/docker-for-mac/osxfs/#namespaces for more info.
+root@totvsjenkins:/home/denny/devops_docker_image/codecheck# docker start docker-jenkins
+Error response from daemon: driver failed programming external connectivity on endpoint docker-jenkins (49319c2c320acafdd8930ab99f3410c2b3cd9ccb2635f76abd4a5e2261df6196): Bind for 0.0.0.0:48080 failed: port is already allocated
+Error: failed to start containers: docker-jenkins
 #+END_EXAMPLE
+* TODO Networking with Kubernetes
+https://www.youtube.com/watch?v=WwQ62OyCNz4
+
+- Flat
+- Overlay
+* TODO Add ability to mount volume as user other than root
+https://stackoverflow.com/questions/33681396/how-do-i-write-to-a-volume-container-as-non-root-in-docker
+https://github.com/moby/moby/issues/2259#issuecomment-111659961
+* TODO [#A] fail to start docker: [graphdriver] prior storage driver \"devicemapper\" failed: devmapper
+https://www.projectatomic.io/blog/2015/06/notes-on-fedora-centos-and-docker-storage-drivers/
+https://docs.docker.com/engine/userguide/storagedriver/device-mapper-driver/
+http://jira.jinganiam.com/browse/ID-47
+start-stop-daemon --start --exec /usr/bin/docker --pidfile /var/run/docker-ssd.pid --make-pidfile -- daemon -p /var/run/docker.pid
+#+BEGIN_EXAMPLE
+root@8cc3b37f44eb:/# start-stop-daemon --start --exec /usr/bin/docker --pidfile /var/run/docker-ssd.pid --make-pidfile -- daemon -p /var/run/docker.pid
+INFO[0000] API listen on /var/run/docker.sock
+WARN[0000] Udev sync is not supported. This will lead to unexpected behavior, data loss and errors. For more information, see https://docs.docker.com/reference/commandline/daemon/#daemon-storage-driver-option
+ERRO[0000] [graphdriver] prior storage driver "devicemapper" failed: devmapper: Device docker-0:60-50903-pool is not a thin pool
+FATA[0000] Error starting daemon: error initializing graphdriver: devmapper: Device docker-0:60-50903-pool is not a thin pool
+#+END_EXAMPLE
+* TODO docker healthcheck: ok, warning and failed
+* TODO Docker base image can't take variable
+root@totvsjenkins:/home/denny/soteria_code/brozton-soterianetworks# docker-compose build
+launch uses an image, skipping
+shib uses an image, skipping
+cache uses an image, skipping
+db uses an image, skipping
+eureka uses an image, skipping
+mail uses an image, skipping
+dbseed uses an image, skipping
+Building totp
+Step 1/3 : FROM soterianetworks/brozton:base_${IMG_TAG_POSTFIX}
+ERROR: Service 'totp' failed to build: Error parsing reference: "soterianetworks/brozton:base_${IMG_TAG_POSTFIX}" is not a valid repository/tag: invalid reference format
+root@totvsjenkins:/home/denny/soteria_code/brozton-soterianetworks# git status
+On branch denny-next-ci
+Your branch is up-to-date with 'origin/denny-next-ci'.
+
+nothing to commit, working directory clean
+* TODO [#A] Docker logging driver: aggreate logs from different containers into a centralized location
+https://docs.docker.com/engine/admin/logging/overview/
+** DONE Default logging is json-file. /var/lib/docker/containers/$container_id/*-json.log
+   CLOSED: [2017-03-25 Sat 14:16]
+docker info |grep 'Logging Driver'
+docker inspect -f '{{.HostConfig.LogConfig.Type}}' <CONTAINER>
+** TODO Logging to 2 drivers: Can I log to both json and rsyslog?
+** TODO [#A] Use gelf to collect log into elasticsearch eventually
+https://docs.docker.com/engine/admin/logging/overview/#gelf
+** TODO Use ELK to collect logs
+https://www.linux.com/learn/how-manage-logs-docker-environment-compose-and-elk
+** TODO docker start logstash container
+https://www.elastic.co/guide/en/logstash/current/docker.html
+** #  --8<-------------------------- separator ------------------------>8--
+** TODO When syslog is down, I just lose my log messages: make sure we keep logging to local files
+** TODO udp server has to be a fixed ip: Use a dedicated network with fixed ip
+** TODO We will have 2 containers: logstash and elasticsearch
