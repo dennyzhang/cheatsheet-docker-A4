@@ -11,8 +11,6 @@ File me [tickets](https://github.com/DennyZhang/cheatsheet-docker-A4/issues) or 
 
 Printable version on A4 page: [cheatsheet-docker-A4.pdf](cheatsheet-docker-A4.pdf)
 
-<a href="https://www.dennyzhang.com"><img align="right" width="185" height="37" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/dns_small.png"></a>
-
 See more CheatSheets from Denny: [here](https://github.com/topics/denny-cheatsheets)
 
 Table of Contents
@@ -28,14 +26,14 @@ Table of Contents
 
 # Docker Compose
 
-| Name                                | Summary                                                                                            |
-| :---------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Change entrypoint to run nothing    | `entrypoint: ["tail", "-f", "/dev/null"]`                                                          |
-| Change restart policy               | `restart: always` [link](https://docs.docker.com/compose/compose-file/compose-file-v2/#restart)  |
-| Mount file                          |                                                                                                    |
-| Start compose env                   | `docker-compose up` `docker-compose up -d`                                                         |
-| Stop compose env                    | `docker-compose down` `docker-compose down -v`                                                     |
-| Check logs                          | `docker-compose logs`                                                                              |
+| Name                                | Summary                                                                                                        |
+| :---------------------------------- | --------------------------------------------------------------------------------------------------             |
+| Change entrypoint to run nothing    | `entrypoint: ["tail", "-f", "/dev/null"]`                                                                      |
+| Change restart policy               | `restart: always` [link](https://docs.docker.com/compose/compose-file/compose-file-v2/#restart)                |
+| Mount file as volume                | `$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro` [samples/mount_file.yml](samples/mount_file.yml) |
+| Start compose env                   | `docker-compose up` `docker-compose up -d`                                                                     |
+| Stop compose env                    | `docker-compose down` `docker-compose down -v`                                                                 |
+| Check logs                          | `docker-compose logs`                                                                                          |
 
 # Check Containers
 
