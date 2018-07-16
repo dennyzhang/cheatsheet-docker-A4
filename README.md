@@ -26,14 +26,14 @@ Table of Contents
 
 # Docker Compose
 
-| Name                                | Summary                                                                                                        |
-| :---------------------------------- | --------------------------------------------------------------------------------------------------             |
-| Change entrypoint to run nothing    | `entrypoint: ["tail", "-f", "/dev/null"]`                                                                      |
-| Change restart policy               | `restart: always` [link](https://docs.docker.com/compose/compose-file/compose-file-v2/#restart)                |
-| Mount file as volume                | `$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro` [samples/mount_file.yml](samples/mount_file.yml) |
-| Start compose env                   | `docker-compose up` `docker-compose up -d`                                                                     |
-| Stop compose env                    | `docker-compose down` `docker-compose down -v`                                                                 |
-| Check logs                          | `docker-compose logs`                                                                                          |
+| Name                                | Summary                                                                                                         |
+| :---------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Change entrypoint to run nothing    | `entrypoint: ["tail", "-f", "/dev/null"]`                                                                       |
+| Change restart policy               | `restart: always` [link](https://docs.docker.com/compose/compose-file/compose-file-v2/#restart)                 |
+| Mount file as volume                | `$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro` [samples/mount_file.yml](samples/mount_file.yml)  |
+| Start compose env                   | `docker-compose up`, `docker-compose up -d`                                                                     |
+| Stop compose env                    | `docker-compose down`, `docker-compose down -v`                                                                 |
+| Check logs                          | `docker-compose logs`                                                                                           |
 
 # Check Containers
 
