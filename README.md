@@ -62,8 +62,18 @@ Table of Contents
 | Tag <image>                             | `docker tag <image> username/repo:tag`              |
 | Docker push a tagged image to repo      | `docker push username/repo:tag`                     |
 | Run image from a given tag              | `docker run username/repo:tag`                      |
+
+# Cleanup
+| Name                                    | Summary                                             |
+| :----------------------------------     | -----------------------------------------------     |
 | Remove the specified image              | `docker rmi <imagename>`                            |
 | Remove all docker images                | `docker rmi $(docker images -q)`                    |
+
+- Delete all containers
+
+```
+curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/delete_all_containers.sh | bash
+```
 
 # Docker Machine
 
