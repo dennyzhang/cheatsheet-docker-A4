@@ -86,11 +86,14 @@ Table of Contents
 # Scripts
 - Delete all containers
 
+[delete_all_containers.sh](delete_all_containers.sh)
 ```
 curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/delete_all_containers.sh | bash
 ```
 
 - Install test kit
+
+[container_install_devkit.sh](container_install_devkit.sh)
 ```
 apt-get -y update
 apt-get install -y curl netcat

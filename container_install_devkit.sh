@@ -8,7 +8,7 @@
 ## Description :
 ## --
 ## Created : <2018-07-10>
-## Updated: Time-stamp: <2018-07-17 19:04:53>
+## Updated: Time-stamp: <2018-07-17 19:08:21>
 ##-------------------------------------------------------------------
 set -ex
 
@@ -36,6 +36,10 @@ function os_release() {
 
     if grep Debian /etc/issue 1>/dev/null 2>/dev/null; then
         os_type="debian"
+    fi
+
+    if grep Ubuntu /etc/issue 1>/dev/null 2>/dev/null; then
+        os_type="ubuntu"
     fi
 
     if uname -a | grep '^Darwin' 1>/dev/null 2>/dev/null; then
