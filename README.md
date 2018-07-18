@@ -18,6 +18,7 @@ Table of Contents
    * [Docker Compose](#docker-compose)
    * [Check Containers](#check-containers)
    * [Container Basic](#container-basic)
+   * [Cleanup](#cleanup)
    * [Docker Machine](#docker-machine)
    * [Scripts](#scripts)
    * [License](#license)
@@ -69,12 +70,6 @@ Table of Contents
 | Remove the specified image              | `docker rmi <imagename>`                            |
 | Remove all docker images                | `docker rmi $(docker images -q)`                    |
 
-- Delete all containers
-
-```
-curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/delete_all_containers.sh | bash
-```
-
 # Docker Machine
 
 | Name                    | Summary                                             |
@@ -89,6 +84,20 @@ curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master
 | Delete all VMs          | `docker-machine rm $(docker-machine ls -q)`         |
 
 # Scripts
+- Delete all containers
+
+```
+curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/delete_all_containers.sh | bash
+```
+
+- Install test kit
+```
+apt-get -y update
+apt-get install -y curl netcat
+
+curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/container_install_devkit.sh | bash
+```
+
 - Clean up Disk
 
 Remove All Useless Resources.
