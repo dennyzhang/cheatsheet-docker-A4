@@ -65,23 +65,12 @@ Table of Contents
 | Run image from a given tag              | `docker run username/repo:tag`                      |
 
 # Cleanup
-| Name                                    | Summary                                             |
-| :----------------------------------     | -----------------------------------------------     |
-| Remove the specified image              | `docker rmi <imagename>`                            |
-| Remove all docker images                | `docker rmi $(docker images -q)`                    |
-
-# Docker Machine
-
-| Name                    | Summary                                             |
-| :---------------------- | --------------------------------------------------- |
-| Get node env            | `docker-machine env vm1`                            |
-| Copy files              | `docker-machine scp docker-compose.yml vm1:/tmp/`   |
-| ssh to vm               | `docker-machine ssh vm1`                            |
-| Inspect a node          | `docker-machine ssh vm1 "docker node inspect <ID>"` |
-| List the nodes          | `docker-machine ssh vm1 "docker node ls"`           |
-| Start a VM              | `docker-machine start vm1`                          |
-| Stop all running VMs    | `docker-machine stop $(docker-machine ls -q)`       |
-| Delete all VMs          | `docker-machine rm $(docker-machine ls -q)`         |
+| Name                                | Summary                                                  |
+| :---------------------------------- | -----------------------------------------------------    |
+| Remove the specified image          | `docker rmi <imagename>`                                 |
+| Remove all docker images            | `docker rmi $(docker images -q)`                         |
+| Remove orphaned docker volumes      | `docker volume rm $(docker volume ls -qf dangling=true)` |
+| Remove dead containers              | `docker rm $(docker ps --filter status=dead -qa)`        |
 
 # Scripts
 - Delete all containers
@@ -106,32 +95,17 @@ curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master
 Remove All Useless Resources.
 
 ```
-docker ps --filter status=exited -aq \
- | xargs -r docker rm -v
+docker ps --filter status=exited -aq | xargs -r docker rm -v
 ```
 
 Remove unused docker images
 ```
-docker rmi $(docker images | grep "<none>"\
- | awk -F' ' '{print $3}')
-```
-
-Remove orphaned docker volumes
-```
-docker volume rm \
- $(docker volume ls -qf dangling=true)
-```
-
-Remove dead containers
-```
-docker ps --filter status=dead -aq \
- | xargs -r docker rm -v
+docker rmi $(docker images | grep "<none>"  | awk -F' ' '{print $3}')
 ```
 
 Remove intermediate containers generated during docker build
 ```
-docker ps -a | grep "/bin/sh -c" | \
-  awk -F' ' '{print $1}' | xargs docker rm
+docker ps -a | grep "/bin/sh -c" |  awk -F' ' '{print $1}' | xargs docker rm
 ```
 
 Remove Image with <none> string
