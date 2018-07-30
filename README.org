@@ -1,14 +1,131 @@
--*- mode:org; fill-column:70; coding:utf-8; -*-
-* org-mode configuration
+* org-mode configuration                                           :noexport:
 #+STARTUP: overview customtime noalign logdone hidestars
-#+TAGS: ARCHIVE(a) WORK(w) LIFE(l) EMACS(e) IMPORTANT(i) Debug(d) Communication(c) RECOMMENDATE(r) Tool(t) Habit(h) noexport(n) Share (s) BLOG(b) Problem(p)
-#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
-#+DRAWERS: HIDDEN CODE CONF EMAIL WEBPAGE SNIP
+#+TITLE:  Docker CheatSheet
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
 #+PRIORITIES: A D C
-#+ARCHIVE: %s_done::** Finished Tasks
-#+AUTHOR: dennyzhang.com (denny@dennyzhang.com)
-#+OPTIONS: toc:2 \n:t ^:nil creator:nil d:nil
-* [#A] docker                                                     :IMPORTANT:
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
+* CheatSheet
+#+BEGIN_HTML
+<a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a>
+<a href="https://github.com/DennyZhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a>
+<a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="http://slack.dennyzhang.com/badge.svg" alt="slack"/></a>
+<a href="https://github.com/DennyZhang"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<br/><br/>
+
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+File me [[https://dockerhub.com/DennyZhang/cheatsheet-docker-A4/issues][Issues]] or star [[https://dockerhub.com/DennyZhang/cheatsheet-docker-A4][this repo]].
+** Docker Compose
+
+| Name                                | Summary                                                                                                         |
+| :---------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Change entrypoint to run nothing    | #entrypoint: ["tail", "-f", "/dev/null"]#                                                                       |
+| Change restart policy               | #restart: always# [link](https://docs.docker.com/compose/compose-file/compose-file-v2/#restart)                 |
+| Mount file as volume                | #$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro# [samples/mount_file.yml](samples/mount_file.yml)  |
+| Start compose env                   | #docker-compose up#, #docker-compose up -d#                                                                     |
+| Stop compose env                    | #docker-compose down#, #docker-compose down -v#                                                                 |
+| Check logs                          | #docker-compose logs#                                                                                           |
+
+** Check Containers
+
+| Name                                | Summary                                                       |
+| :---------------------------------- | -----------------------------------------------               |
+| Tail container logs                 | #docker logs --tail 5 $container_name#                        |
+| Check container healthcheck status  | #docker inspect --format '{{.State.Health}}' $container_name# |
+
+** Container Basic
+
+| Name                                    | Summary                                             |
+| :----------------------------------     | -----------------------------------------------     |
+| Create docker image                     | #docker build -t imgname .#                         |
+| Start docker container                  | #docker run -p 4000:80 imgname#                     |
+| Start docker container in detached mode | #docker run -d -p 4000:80 imgname#                  |
+| Enter a running container               | #docker exec -it [container-id] sh#                 |
+| List containers                         | #docker ps#                                         |
+| List all containers                     | #docker ps -a#                                      |
+| List containers by labels               | #docker ps --filter "label=org.label-schema.group"# |
+| Stop container                          | #docker stop <hash>#                                |
+| Remove container                        | #docker rm <hash>#                                  |
+| Remove all containers                   | #docker rm $(docker ps -a -q)#                      |
+| Force shutdown of one given container   | #docker kill <hash>#                                |
+| List all images                         | #docker images -a#                                  |
+| Login to docker hub                     | #docker login#                                      |
+| Tag <image>                             | #docker tag <image> username/repo:tag#              |
+| Docker push a tagged image to repo      | #docker push username/repo:tag#                     |
+| Run image from a given tag              | #docker run username/repo:tag#                      |
+
+** Cleanup
+| Name                                | Summary                                                  |
+| :---------------------------------- | -----------------------------------------------------    |
+| Remove the specified image          | #docker rmi <imagename>#                                 |
+| Remove all docker images            | #docker rmi $(docker images -q)#                         |
+| Remove orphaned docker volumes      | #docker volume rm $(docker volume ls -qf dangling=true)# |
+| Remove dead containers              | #docker rm $(docker ps --filter status=dead -qa)#        |
+
+** Scripts
+- Delete all containers
+
+[[delete_all_containers.sh][delete_all_containers.sh]]
+#+BEGIN_EXAMPLE
+curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/delete_all_containers.sh | bash
+#+END_EXAMPLE
+
+- Install test kit
+
+[[container_install_devkit.sh][container_install_devkit.sh]]
+#+BEGIN_EXAMPLE
+apt-get -y update
+apt-get install -y curl netcat
+
+curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/container_install_devkit.sh | bash
+#+END_EXAMPLE
+
+- Clean up Disk
+
+Remove All Useless Resources.
+
+#+BEGIN_EXAMPLE
+docker ps --filter status=exited -aq | xargs -r docker rm -v
+#+END_EXAMPLE
+
+Remove unused docker images
+#+BEGIN_EXAMPLE
+docker rmi $(docker images | grep "<none>"  | awk -F' ' '{print $3}')
+#+END_EXAMPLE
+
+Remove intermediate containers generated during docker build
+#+BEGIN_EXAMPLE
+docker ps -a | grep "/bin/sh -c" |  awk -F' ' '{print $1}' | xargs docker rm
+#+END_EXAMPLE
+
+Remove Image with <none> string
+#+BEGIN_EXAMPLE
+echo "Remove docker images with <none> string"
+if docker images | grep none | tee; then
+   docker rmi $(docker images | grep "<none>"  | awk -F' ' '{print $3}') | tee
+fi
+#+END_EXAMPLE
+* More Resources
+
+License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_license.txt][MIT License]].
+#+BEGIN_HTML
+<a href="https://www.dennyzhang.com"><img align="right" width="201" height="268" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/denny_201706.png"></a>
+
+<a href="https://www.dennyzhang.com"><img align="right" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/dns_small.png"></a>
+#+END_HTML
+
+* [#A] docker                                            :noexport:IMPORTANT:
 https://docs.docker.com/
 http://jpetazzo.github.io
 
@@ -6502,7 +6619,425 @@ https://docs.docker.com/compose/startup-order/
 Compose always starts containers in dependency order, but it will not wait for it's up and ready.
 ** DONE [#A] switch to root and run some command: docker exec -u root -it $container_name sh :IMPORTANT:
    CLOSED: [2017-07-17 Mon 15:30]
-* Dockerfile
+** DONE [#A] Setup apache with docker                             :IMPORTANT:
+   CLOSED: [2017-04-04 Tue 23:55]
+*** DONE basic setup
+    CLOSED: [2017-03-21 Tue 18:03]
+ adduser upload
+
+ # Inject ssh key to /home/upload/.ssh/
+
+ http_repo_dir=/data/httpd/repo
+ mkdir -p ${http_repo_dir}/upload
+ chown upload:upload "$http_repo_dir"
+
+ chmod 777
+ docker stop http-repo; docker rm http-repo
+ docker run -dit -h http-repo --name http-repo -p 80:80 -v $http_repo_dir:/usr/local/apache2/htdocs/ denny/httpd:v1
+
+ http://138.68.21.243:80
+
+ apt-get update -y
+ apt-get install -y --no-install-recommends lsof
+*** HALF enable SSL
+ cd /data
+ git clone git@bitbucket.org:lrpdevops/mdmdevops-totvslabs.git
+
+ # prepare ssl
+ http_repo_dir=/data/httpd/repo
+ mkdir -p "$http_repo_dir"
+ chown upload:upload "$http_repo_dir"
+
+ working_dir="/data/mdmdevops-totvslabs/misc/repo.carol.ai"
+ conf_directory="$working_dir/conf/"
+ mkdir -p $conf_directory
+
+ vim $conf_directory/upload_ai.conf
+
+ ssl_directory="/data/httpd/ssl"
+ mkdir -p $ssl_directory
+
+ vim $ssl_directory/server.crt
+ vim $ssl_directory/server.key
+ vim $ssl_directory/server.ca-bundle
+
+ docker stop http-repo; docker rm http-repo
+ http_repo_dir=/data/httpd/repo
+ working_dir="/data/mdmdevops-totvslabs/misc/repo.carol.ai"
+ ssl_directory="/data/httpd/ssl"
+ docker run -dit -h http-repo --name http-repo -p 443:443 -p 80:80 \
+        -v $conf_directory/upload_ai.conf:/usr/local/apache2/conf/upload_ai.conf \
+        -v $ssl_directory/:/usr/local/apache2/ssl \
+        -v $http_repo_dir:/usr/local/apache2/htdocs/ denny/httpd:v1 /bin/bash
+
+ docker cp $working_dir/httpd.conf http-repo:/usr/local/apache2/conf/httpd.conf
+ docker cp $working_dir/httpd-ssl.conf http-repo:/usr/local/apache2/conf/httpd-ssl.conf
+
+ docker exec -it http-repo bash
+
+ httpd-foreground
+
+ > /usr/local/apache2/conf/httpd.conf && vim /usr/local/apache2/conf/httpd.conf
+
+ exit
+
+ docker stop http-repo; docker start http-repo
+
+ docker logs http-repo
+
+ ls -lth /usr/local/apache2/ssl
+ ls -lth /usr/local/apache2/conf/
+ ls -lth /usr/local/apache2/logs
+ curl http://localhost:80
+ curl https://localhost:443
+
+ curl https://repo.carol.ai:443
+
+ lsof -i tcp:443
+*** TODO enable multiple vhosts
+*** TODO enable password protection
+*** TODO enable php
+ https://github.com/docker-library/php/blob/e573f8f7fda5d7378bae9c6a936a298b850c4076/5.6/apache/Dockerfile
+** DONE mac use docker
+   CLOSED: [2017-04-24 Mon 09:43]
+ https://docs.docker.com/docker-for-mac/install/#download-docker-for-mac
+** DONE mac use docker locally
+   CLOSED: [2017-02-14 Tue 10:12]
+ https://docs.docker.com/docker-for-mac/
+** DONE Configure automated builds on Docker Hub
+   CLOSED: [2017-01-29 Sun 10:05]
+ https://docs.docker.com/docker-hub/builds/
+
+ - Your repository is kept up-to-date with code changes automatically.
+*** basic use
+ https://docs.docker.com/docker-hub/builds/
+
+ https://forums.docker.com/t/automated-build-doesnt-find-dockerfile/1383/4
+
+ Usually the sequence is something like this (let us know where the unexpected delay happened and how long it was):
+
+ 1. You create a Github repo
+ 2. You edit your code and push to Github.
+ 3. You connect your Github account to your Docker Hub account
+ 4. You configure your Docker Hub account to make an Automated Build from your Github repo
+ 5. When you save, Docker Hub puts your build into a queue ("Pending")
+ 6. Docker Hub pulls your code and looks for a Dockerfile (and grabs your Readme.md too)
+ 7. Docker Hub builds your code ("Building")
+ 8. Docker Hub pushes your image to your Docker Hub repo ("Pushing"), along with build logs and your Readme.md
+ 9. Docker Hub updates your list of tags
+ 10. Docker Hub updates your Readme/Information tab
+ 11. Docker hub marks the pushed completed ("Finished").
+*** there will be uncertainly of image build delay
+ https://forums.docker.com/t/automated-build-doesnt-find-dockerfile/1383/8
+** DONE [#A] integrate bitbucket/github with docker process
+   CLOSED: [2017-01-22 Sun 13:58]
+ Demo: https://blog.bitbucket.org/2016/05/24/introducing-bitbucket-pipelines-beta-continuous-delivery-built-within-bitbucket/
+
+ https://confluence.atlassian.com/bitbucket/get-started-with-bitbucket-cloud-675385635.html
+
+ https://ig.nore.me/2016/05/bitbucket-pipelines-a-first-look/
+
+ - automate the process: bitbucket-pipelines.yml
+ - reduce effort by reusing existing modules
+ - save cost: subscription fee VS extra server
+
+ Automate process by scripts -> move scripts to Jenkins -> move scripts to bitbucket pipeline
+*** Configure bitbucket-pipelines.yml
+ https://confluence.atlassian.com/bitbucket/configure-bitbucket-pipelines-yml-792298910.html
+*** TODO how much bitbucket cloud cost
+ https://bitbucket.org/product/pricing?tab=host-in-the-cloud
+ - Free for 5 servers
+ - 10 users: $10 per month
+*** requirement
+ #+BEGIN_EXAMPLE
+ ozgur.v.amac [8:17 AM]
+ @dennyzhang What is your opinion about Bitbucket pipelines? Do you think we can use it to make images available to docker hub somehow? I am asking because I have not had a chance to figure out.
+
+ dennyzhang [8:53 AM]
+ Morning, ozgur. What do you mean by Bitbucket pipelines? Do you mean git hook?
+
+ [8:55]
+ Usually I use Jenkins to wrap up the automation. It might give us more control and more powerful. I can give you a demo, if you like. Surely, I'm open-minded to new ideas
+
+ ozgur.v.amac [9:40 AM]
+ Yes, Jenkins is a very good option. I was just wondering since we are on bitbucket and already utilizing the pipelines feature, it might be good learn about it. They do claim docker hub deployment compabilitity, but I just don't know how yet. Just a thought to explore.
+
+ dennyzhang [10:00 AM]
+ That’s would be nice!
+
+ Yeah, then let’s try bitbucket pieplines.
+
+ I know for sure that it would be capable and integrate well with docker practice.
+
+ [10:01]
+ @ozgur.v.amac How about I do some POC first, then get back to you early next week?
+
+ ozgur.v.amac [10:03 AM]
+ @dennyzhang That would be awesome. Thank you for your help :+1:
+
+ dennyzhang [10:04 AM]
+ Good to learn it together, ozgur!
+
+ Could you post me your thought and expectation in advance?
+
+ ozgur.v.amac [10:10 AM]
+ Certainly, some background here: Right now we have our images in docker hub built directly from bitbucket repository integration. Problem is the artifacts are mixed with source code. Classic devops problem as you might have guessed. I was hoping to utilize a build system to store artifacts and push and/or pull to/from docker hub to build images. I am open to other suggestions on how to solve this problem as well. Please feel free to explore and let me know if you want me to elaborate the expectation further.
+
+ dennyzhang [10:12 AM]
+ Nice, ozgur. got it. Will update asap.
+ #+END_EXAMPLE
+** DONE Ubuntu 16.04 configure DOCKER_OPTS: /lib/systemd/system/
+   CLOSED: [2017-07-10 Mon 10:14]
+ https://github.com/moby/moby/issues/9889
+ https://github.com/moby/moby/issues/25357
+ https://docs.docker.com/engine/admin/systemd/#httphttps-proxy
+
+ The /etc/default/docker file is only used on systems using "upstart" and "SysVInit", not on systems using systemd.
+
+ check /lib/systemd/system/docker.service
+ #+BEGIN_EXAMPLE
+ [Service]
+ EnvironmentFile=/etc/default/docker
+ ExecStart=/usr/bin/docker -d $DOCKER_OPTS -H fd://
+ #+END_EXAMPLE
+** DONE Pod is grouping of one or more containers.
+   CLOSED: [2017-07-13 Thu 13:31]
+ Pod share the same ip address, the same localhost, IPC
+** DONE docker start container with pid configured
+   CLOSED: [2017-07-30 Sun 09:06]
+ https://medium.com/@rothgar/how-to-debug-a-running-docker-container-from-a-separate-container-983f11740dc6
+ #+BEGIN_EXAMPLE
+ docker run -t --pid=container:container1 \
+   --net=container:container1 \
+   --cap-add sys_admin \
+   --cap-add sys_ptrace \
+   strace
+ #+END_EXAMPLE
+** DONE container get docker host from sock file /var/run/docker.sock
+   CLOSED: [2017-08-20 Sun 16:38]
+ https://medium.com/lucjuggery/about-var-run-docker-sock-3bfd276e12fd
+ /var/run/docker.sock
+
+ unix:///var/run/docker.sock
+
+ # create container
+ curl -XPOST --unix-socket /var/run/docker.sock -d '{"Image":"nginx:alpine"}' -H 'Content-Type: application/json' http://localhost/containers/create
+
+ docker ps -a
+
+ # start container
+ curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/3c8b12b5b84b/start
+
+ # check status
+ docker ps
+
+ # Listen events from the Docker daemon
+ docker run -v /var/run/docker.sock:/var/run/docker.sock -ti alpine sh
+ apk add --update curl
+ curl --unix-socket /var/run/docker.sock http://localhost/events
+
+ # stop container
+ curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/3c8b12b5b84b/stop
+
+ # list containers
+ curl -XGET --unix-socket /var/run/docker.sock http://localhost/containers/json | jq
+*** useful link
+ http://dockone.io/article/109
+
+ http://dockone.io/article/109
+ http://blog.trifork.com/2013/12/24/docker-from-a-distance-the-remote-api/
+ https://stackoverflow.com/questions/37178824/how-to-find-docker-rest-api-url
+** DONE docker share volumes across containers: volumes_from
+   CLOSED: [2017-08-30 Wed 16:22]
+ https://stackoverflow.com/questions/44284484/docker-compose-share-named-volume-between-multiple-containers
+ #+BEGIN_EXAMPLE
+   ui:
+     container_name: ui
+     image: soterianetworks/kumku-u:base_${IMG_TAG_POSTFIX}
+     networks:
+       - network_application
+     volumes:
+       - launch_home:/usr/share/nginx/html
+
+   proxy:
+     container_name: proxy
+     image: soterianetworks/devops:proxy_${IMG_TAG_POSTFIX}
+     networks:
+       - network_application
+     depends_on:
+       - ui
+       - idp
+       - oauth2
+       - gateway
+     ports:
+       - "${HTTP_PORT}:80"
+     volumes_from:
+       - ui:ro
+     environment:
+       HOST_NAME: ${HOST_NAME}
+
+ volumes:
+   idp_home:
+   db_home:
+   cache_home:
+   launch_home:
+ #+END_EXAMPLE
+** DONE docker can't ping google iptables: remove: --iptables=false
+   CLOSED: [2018-04-03 Tue 10:14]
+ https://github.com/moby/moby/issues/28241
+** DONE dockerfile configure PATH: ENV PATH="/opt/gtk/bin:${PATH}"
+   CLOSED: [2018-04-10 Tue 16:25]
+ https://stackoverflow.com/questions/27093612/in-a-dockerfile-how-to-update-path-environment-variable
+** DONE debian8 install RStudio: conda install -c r r-essentials
+   CLOSED: [2018-04-10 Tue 17:23]
+ https://www.rstudio.com/products/rstudio/download/
+** DONE docker run with different parameters
+   CLOSED: [2018-07-02 Mon 22:41]
+     docker run -t -d -h "$container_name" --name "$container_name" \
+            -v "${PWD}/cmd:/go/cmd" -v "${PWD}/pkg:/go/pkg" \
+            -v "${PWD}/tests:/go/tests" \
+            golang:1.10.3 bash -c "cd /go && tests/build_code.sh build_code"
+** DONE docker run issue: The path is not shared from OS X and is not known to Docker.
+   CLOSED: [2018-07-03 Tue 14:12]
+ https://github.com/localstack/localstack/issues/480
+
+ #+BEGIN_EXAMPLE
+ bash-3.2$ docker run -it --volume /usr/local/Cellar/go/packages:/go --volume /tmp/302271400:/output --entrypoint=/bin/sh golang:latest
+ docker: Error response from daemon: Mounts denied:
+ The path /usr/local/Cellar/go/packages
+ is not shared from OS X and is not known to Docker.
+ You can configure shared paths from Docker -> Preferences... -> File Sharing.
+ See https://docs.docker.com/docker-for-mac/osxfs/#namespaces for more info.
+ #+END_EXAMPLE
+** DONE [#A] mac docker volume folder: Where is /var/lib/docker on Mac/OS X
+   CLOSED: [2018-04-05 Thu 14:55]
+ https://forums.docker.com/t/host-path-of-volume/12277/10
+ https://stackoverflow.com/questions/38532483/where-is-var-lib-docker-on-mac-os-x
+ screen ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/tty
+ Then you can run ls /var/lib/docker/volumes
+** HALF docker images command error in Ubuntu OS
+ #+BEGIN_EXAMPLE
+ root@carol-official-repo:/opt/mdmdevops/env_setup/repo.carol.ai/jenkins.carol.ai# docker images
+ Error response from daemon: layer does not exist
+ #+END_EXAMPLE
+ https://github.com/moby/moby/issues/21215
+ https://github.com/coreos/bugs/issues/1808
+** TODO docker cp: no such directory
+ https://docs.docker.com/engine/reference/commandline/cp/#extended-description
+
+ cd /tmp
+ docker cp ./fix-mappings-reindex-2.0.jar ci_repo:/var/www/repo/
+ docker cp ./fix-mappings-reindex-2.0.jar ci_repo:/
+
+ #+BEGIN_EXAMPLE
+ root@injenkins:/tmp# ls -lth ./fix-mappings-reindex-2.0.jar
+ -rw-r--r-- 1 root root 36M Aug 31 13:39 ./fix-mappings-reindex-2.0.jar
+ root@injenkins:/tmp# docker cp ./fix-mappings-reindex-2.0.jar  ci_repo:/
+ no such directory
+ #+END_EXAMPLE
+
+ #+BEGIN_EXAMPLE
+ root@injenkins:/home/denny/mdmdevops/scripts/gui_login/scripts# docker cp /tmp/fix-mappings-reindex-2.0.jar ci_repo:/var/www/repo/
+ no such directory
+ root@injenkins:/home/denny/mdmdevops/scripts/gui_login/scripts# ls -lth /tmp/fix-mappings-reindex-2.0.jar
+ -rw-r--r-- 1 root root 36M Aug 31 13:39 /tmp/fix-mappings-reindex-2.0.jar
+ root@injenkins:/home/denny/mdmdevops/scripts/gui_login/scripts# docker exec ci_repo ls -lth /var/www/repo/
+ total 41580
+ -rw-r--r--    1 root     root       40.6M Aug 29 16:51 fix-mappings-reindex-2.0.jar
+ drwxr-xr-x    2 1000     1000        4.0K Aug 23 20:16 master
+ drwxr-xr-x    2 1000     1000        4.0K Aug 22 22:21 1.73
+ drwxr-xr-x    2 1000     1000        4.0K Aug 14 21:14 nexus-port-8080
+ drwxr-xr-x    2 1000     1000        4.0K Aug  7 21:31 1.72
+ drwxr-xr-x    2 1000     1000        4.0K Jul 26 01:29 1.70
+ drwxr-xr-x    2 1000     1000        4.0K Jul 25 01:55 1.71
+ #+END_EXAMPLE
+** TODO docker hub trigger autobuild by commit message pattern
+** TODO [#A] docker container change port mapping and bring it up and running
+ https://stackoverflow.com/questions/19335444/how-do-i-assign-a-port-mapping-to-an-existing-docker-container
+
+ 1. Change hostconfig.json directly for port mapping at /var/lib/docker/containers/[hash_of_the_container]/hostconfig.json
+
+ 2. docker commit
+
+ #+BEGIN_EXAMPLE
+ root@totvsjenkins:/home/denny/devops_docker_image/codecheck# docker start docker-jenkins
+ Error response from daemon: driver failed programming external connectivity on endpoint docker-jenkins (49319c2c320acafdd8930ab99f3410c2b3cd9ccb2635f76abd4a5e2261df6196): Bind for 0.0.0.0:48080 failed: port is already allocated
+ Error: failed to start containers: docker-jenkins
+ #+END_EXAMPLE
+** TODO Networking with Kubernetes
+ https://www.youtube.com/watch?v=WwQ62OyCNz4
+
+ - Flat
+ - Overlay
+** TODO Add ability to mount volume as user other than root
+ https://stackoverflow.com/questions/33681396/how-do-i-write-to-a-volume-container-as-non-root-in-docker
+ https://github.com/moby/moby/issues/2259#issuecomment-111659961
+** TODO [#A] fail to start docker: [graphdriver] prior storage driver \"devicemapper\" failed: devmapper
+ https://www.projectatomic.io/blog/2015/06/notes-on-fedora-centos-and-docker-storage-drivers/
+ https://docs.docker.com/engine/userguide/storagedriver/device-mapper-driver/
+ http://jira.jinganiam.com/browse/ID-47
+ start-stop-daemon --start --exec /usr/bin/docker --pidfile /var/run/docker-ssd.pid --make-pidfile -- daemon -p /var/run/docker.pid
+ #+BEGIN_EXAMPLE
+ root@8cc3b37f44eb:/# start-stop-daemon --start --exec /usr/bin/docker --pidfile /var/run/docker-ssd.pid --make-pidfile -- daemon -p /var/run/docker.pid
+ INFO[0000] API listen on /var/run/docker.sock
+ WARN[0000] Udev sync is not supported. This will lead to unexpected behavior, data loss and errors. For more information, see https://docs.docker.com/reference/commandline/daemon/#daemon-storage-driver-option
+ ERRO[0000] [graphdriver] prior storage driver "devicemapper" failed: devmapper: Device docker-0:60-50903-pool is not a thin pool
+ FATA[0000] Error starting daemon: error initializing graphdriver: devmapper: Device docker-0:60-50903-pool is not a thin pool
+ #+END_EXAMPLE
+** TODO docker healthcheck: ok, warning and failed
+** TODO Docker base image can't take variable
+ root@totvsjenkins:/home/denny/soteria_code/brozton-soterianetworks# docker-compose build
+ launch uses an image, skipping
+ shib uses an image, skipping
+ cache uses an image, skipping
+ db uses an image, skipping
+ eureka uses an image, skipping
+ mail uses an image, skipping
+ dbseed uses an image, skipping
+ Building totp
+ Step 1/3 : FROM soterianetworks/brozton:base_${IMG_TAG_POSTFIX}
+ ERROR: Service 'totp' failed to build: Error parsing reference: "soterianetworks/brozton:base_${IMG_TAG_POSTFIX}" is not a valid repository/tag: invalid reference format
+ root@totvsjenkins:/home/denny/soteria_code/brozton-soterianetworks# git status
+ On branch denny-next-ci
+ Your branch is up-to-date with 'origin/denny-next-ci'.
+
+ nothing to commit, working directory clean
+** TODO [#A] Docker logging driver: aggreate logs from different containers into a centralized location
+ https://docs.docker.com/engine/admin/logging/overview/
+*** DONE Default logging is json-file. /var/lib/docker/containers/$container_id/*-json.log
+    CLOSED: [2017-03-25 Sat 14:16]
+ docker info |grep 'Logging Driver'
+ docker inspect -f '{{.HostConfig.LogConfig.Type}}' <CONTAINER>
+*** TODO Logging to 2 drivers: Can I log to both json and rsyslog?
+*** TODO [#A] Use gelf to collect log into elasticsearch eventually
+ https://docs.docker.com/engine/admin/logging/overview/#gelf
+*** TODO Use ELK to collect logs
+ https://www.linux.com/learn/how-manage-logs-docker-environment-compose-and-elk
+*** TODO docker start logstash container
+ https://www.elastic.co/guide/en/logstash/current/docker.html
+*** #  --8<-------------------------- separator ------------------------>8--
+*** TODO When syslog is down, I just lose my log messages: make sure we keep logging to local files
+*** TODO udp server has to be a fixed ip: Use a dedicated network with fixed ip
+*** TODO We will have 2 containers: logstash and elasticsearch
+* [#B] cAdvisor: basic docker monitoring                           :noexport:
+https://github.com/google/cadvisor
+** hello world
+sudo docker run \
+  --volume=/:/rootfs:ro \
+  --volume=/var/run:/var/run:rw \
+  --volume=/sys:/sys:ro \
+  --volume=/var/lib/docker/:/var/lib/docker:ro \
+  --publish=8080:8080 \
+  --detach=true \
+  --name=cadvisor \
+  google/cadvisor:latest
+
+http://localhost:8080
+** DONE docker stats
+   CLOSED: [2017-08-08 Tue 22:59]
+** TODO Get more history timeline
+** TODO Get monitoring and alerts: Get alerts, healthcheck failed or memory is over 500MB
+* Dockerfile                                                       :noexport:
 ** DONE dockerfile define multiple line command
   CLOSED: [2015-03-09 Mon 00:38]
 https://github.com/docker/docker/issues/1799
@@ -6655,13 +7190,13 @@ https://docs.docker.com/config/containers/resource_constraints/
       JENKINS_TIMEZONE: "America/Los_Angeles"
       JAVA_OPTS: -Djenkins.install.runSetupWizard=false
 #+END_EXAMPLE
-* [#A] docker sawm                                                :IMPORTANT:
+* [#A] docker sawm                                       :noexport:IMPORTANT:
 https://docs.docker.com/engine/swarm/swarm-tutorial/
 https://github.com/docker/labs/tree/master/swarm-mode
 https://github.com/docker/labs/tree/master/12factor
 ** TODO [#A] docker swam VS docker link                           :IMPORTANT:
 https://technologyconversations.com/2017/01/23/using-docker-stack-and-compose-yaml-files-to-deploy-swarm-services/
-* [#A] docker network
+* [#A] docker network                                              :noexport:
 | Name                | Command                           |
 |---------------------+-----------------------------------|
 | list network bridge | brctl show                        |
@@ -6907,7 +7442,7 @@ I am guessing this is because my user is not allowed to create an NAT on that VM
 
 Özgür
 #+END_EXAMPLE
-* [#B] docker machine
+* [#B] docker machine                                              :noexport:
 | Name                                        | Summary                                           |
 |---------------------------------------------+---------------------------------------------------|
 | list available machines                     | docker-machine ls                                 |
@@ -6946,7 +7481,7 @@ make
 make install
 
 docker-machine create -d linode --linode-api-key="rVwhQwj28Z1LozLQeiVPDg70q192YlDdvwKYEo2JUWEVwagzQErUi93TkUGSU9LT" --linode-root-pass "DevOpsChangeMeDenny1"
-* [#A] Google Kubernetes                                     :IMPORTANT:
+* [#A] Google Kubernetes                                 :noexport:IMPORTANT:
 No.2 Kubernetes
 
 Kubernetes是一个编排（orchestration）工具，类似运行于Apache Mesos之上的Marathon，但是它是专门为Docker容器而创建的。
@@ -7135,7 +7670,7 @@ Kubernetes - Local Testing
 
 https://www.youtube.com/watch?v=R-3dfURb2hA
 The Illustrated Children's Guide to Kubernetes
-* Dockerize Serivces
+* Dockerize Serivces                                               :noexport:
 ** DONE Use Docker to start Jenkins env
    CLOSED: [2017-07-11 Tue 11:38]
 *** start jenkins via docker
@@ -7276,426 +7811,7 @@ ftp> ls
 *** TODO Common mointor: disk usage, download link, dns setting
 curl -u ftp_totvslabs:TOTVSLabs123ChangeMe ftp://ftp.carol.ai:21/hosts
 * #  --8<-------------------------- separator ------------------------>8--
-* DONE [#A] Setup apache with docker                        :IMPORTANT:
-  CLOSED: [2017-04-04 Tue 23:55]
-** DONE basic setup
-   CLOSED: [2017-03-21 Tue 18:03]
-adduser upload
-
-# Inject ssh key to /home/upload/.ssh/
-
-http_repo_dir=/data/httpd/repo
-mkdir -p ${http_repo_dir}/upload
-chown upload:upload "$http_repo_dir"
-
-chmod 777
-docker stop http-repo; docker rm http-repo
-docker run -dit -h http-repo --name http-repo -p 80:80 -v $http_repo_dir:/usr/local/apache2/htdocs/ denny/httpd:v1
-
-http://138.68.21.243:80
-
-apt-get update -y
-apt-get install -y --no-install-recommends lsof
-** HALF enable SSL
-cd /data
-git clone git@bitbucket.org:lrpdevops/mdmdevops-totvslabs.git
-
-# prepare ssl
-http_repo_dir=/data/httpd/repo
-mkdir -p "$http_repo_dir"
-chown upload:upload "$http_repo_dir"
-
-working_dir="/data/mdmdevops-totvslabs/misc/repo.carol.ai"
-conf_directory="$working_dir/conf/"
-mkdir -p $conf_directory
-
-vim $conf_directory/upload_ai.conf
-
-ssl_directory="/data/httpd/ssl"
-mkdir -p $ssl_directory
-
-vim $ssl_directory/server.crt
-vim $ssl_directory/server.key
-vim $ssl_directory/server.ca-bundle
-
-docker stop http-repo; docker rm http-repo
-http_repo_dir=/data/httpd/repo
-working_dir="/data/mdmdevops-totvslabs/misc/repo.carol.ai"
-ssl_directory="/data/httpd/ssl"
-docker run -dit -h http-repo --name http-repo -p 443:443 -p 80:80 \
-       -v $conf_directory/upload_ai.conf:/usr/local/apache2/conf/upload_ai.conf \
-       -v $ssl_directory/:/usr/local/apache2/ssl \
-       -v $http_repo_dir:/usr/local/apache2/htdocs/ denny/httpd:v1 /bin/bash
-
-docker cp $working_dir/httpd.conf http-repo:/usr/local/apache2/conf/httpd.conf
-docker cp $working_dir/httpd-ssl.conf http-repo:/usr/local/apache2/conf/httpd-ssl.conf
-
-docker exec -it http-repo bash
-
-httpd-foreground
-
-> /usr/local/apache2/conf/httpd.conf && vim /usr/local/apache2/conf/httpd.conf
-
-exit
-
-docker stop http-repo; docker start http-repo
-
-docker logs http-repo
-
-ls -lth /usr/local/apache2/ssl
-ls -lth /usr/local/apache2/conf/
-ls -lth /usr/local/apache2/logs
-curl http://localhost:80
-curl https://localhost:443
-
-curl https://repo.carol.ai:443
-
-lsof -i tcp:443
-** TODO enable multiple vhosts
-** TODO enable password protection
-** TODO enable php
-https://github.com/docker-library/php/blob/e573f8f7fda5d7378bae9c6a936a298b850c4076/5.6/apache/Dockerfile
-* DONE mac use docker
-  CLOSED: [2017-04-24 Mon 09:43]
-https://docs.docker.com/docker-for-mac/install/#download-docker-for-mac
-* DONE mac use docker locally
-  CLOSED: [2017-02-14 Tue 10:12]
-https://docs.docker.com/docker-for-mac/
-* DONE Configure automated builds on Docker Hub
-  CLOSED: [2017-01-29 Sun 10:05]
-https://docs.docker.com/docker-hub/builds/
-
-- Your repository is kept up-to-date with code changes automatically.
-** basic use
-https://docs.docker.com/docker-hub/builds/
-
-https://forums.docker.com/t/automated-build-doesnt-find-dockerfile/1383/4
-
-Usually the sequence is something like this (let us know where the unexpected delay happened and how long it was):
-
-1. You create a Github repo
-2. You edit your code and push to Github.
-3. You connect your Github account to your Docker Hub account
-4. You configure your Docker Hub account to make an Automated Build from your Github repo
-5. When you save, Docker Hub puts your build into a queue ("Pending")
-6. Docker Hub pulls your code and looks for a Dockerfile (and grabs your Readme.md too)
-7. Docker Hub builds your code ("Building")
-8. Docker Hub pushes your image to your Docker Hub repo ("Pushing"), along with build logs and your Readme.md
-9. Docker Hub updates your list of tags
-10. Docker Hub updates your Readme/Information tab
-11. Docker hub marks the pushed completed ("Finished").
-** there will be uncertainly of image build delay
-https://forums.docker.com/t/automated-build-doesnt-find-dockerfile/1383/8
-* DONE [#A] integrate bitbucket/github with docker process
-  CLOSED: [2017-01-22 Sun 13:58]
-Demo: https://blog.bitbucket.org/2016/05/24/introducing-bitbucket-pipelines-beta-continuous-delivery-built-within-bitbucket/
-
-https://confluence.atlassian.com/bitbucket/get-started-with-bitbucket-cloud-675385635.html
-
-https://ig.nore.me/2016/05/bitbucket-pipelines-a-first-look/
-
-- automate the process: bitbucket-pipelines.yml
-- reduce effort by reusing existing modules
-- save cost: subscription fee VS extra server
-
-Automate process by scripts -> move scripts to Jenkins -> move scripts to bitbucket pipeline
-** Configure bitbucket-pipelines.yml
-https://confluence.atlassian.com/bitbucket/configure-bitbucket-pipelines-yml-792298910.html
-** TODO how much bitbucket cloud cost
-https://bitbucket.org/product/pricing?tab=host-in-the-cloud
-- Free for 5 servers
-- 10 users: $10 per month
-** requirement
-#+BEGIN_EXAMPLE
-ozgur.v.amac [8:17 AM]
-@dennyzhang What is your opinion about Bitbucket pipelines? Do you think we can use it to make images available to docker hub somehow? I am asking because I have not had a chance to figure out.
-
-dennyzhang [8:53 AM]
-Morning, ozgur. What do you mean by Bitbucket pipelines? Do you mean git hook?
-
-[8:55]
-Usually I use Jenkins to wrap up the automation. It might give us more control and more powerful. I can give you a demo, if you like. Surely, I'm open-minded to new ideas
-
-ozgur.v.amac [9:40 AM]
-Yes, Jenkins is a very good option. I was just wondering since we are on bitbucket and already utilizing the pipelines feature, it might be good learn about it. They do claim docker hub deployment compabilitity, but I just don't know how yet. Just a thought to explore.
-
-dennyzhang [10:00 AM]
-That’s would be nice!
-
-Yeah, then let’s try bitbucket pieplines.
-
-I know for sure that it would be capable and integrate well with docker practice.
-
-[10:01]
-@ozgur.v.amac How about I do some POC first, then get back to you early next week?
-
-ozgur.v.amac [10:03 AM]
-@dennyzhang That would be awesome. Thank you for your help :+1:
-
-dennyzhang [10:04 AM]
-Good to learn it together, ozgur!
-
-Could you post me your thought and expectation in advance?
-
-ozgur.v.amac [10:10 AM]
-Certainly, some background here: Right now we have our images in docker hub built directly from bitbucket repository integration. Problem is the artifacts are mixed with source code. Classic devops problem as you might have guessed. I was hoping to utilize a build system to store artifacts and push and/or pull to/from docker hub to build images. I am open to other suggestions on how to solve this problem as well. Please feel free to explore and let me know if you want me to elaborate the expectation further.
-
-dennyzhang [10:12 AM]
-Nice, ozgur. got it. Will update asap.
-#+END_EXAMPLE
-* DONE Ubuntu 16.04 configure DOCKER_OPTS: /lib/systemd/system/
-  CLOSED: [2017-07-10 Mon 10:14]
-https://github.com/moby/moby/issues/9889
-https://github.com/moby/moby/issues/25357
-https://docs.docker.com/engine/admin/systemd/#httphttps-proxy
-
-The /etc/default/docker file is only used on systems using "upstart" and "SysVInit", not on systems using systemd.
-
-check /lib/systemd/system/docker.service
-#+BEGIN_EXAMPLE
-[Service]
-EnvironmentFile=/etc/default/docker
-ExecStart=/usr/bin/docker -d $DOCKER_OPTS -H fd://
-#+END_EXAMPLE
-* DONE Pod is grouping of one or more containers.
-  CLOSED: [2017-07-13 Thu 13:31]
-Pod share the same ip address, the same localhost, IPC
-* DONE docker start container with pid configured
-  CLOSED: [2017-07-30 Sun 09:06]
-https://medium.com/@rothgar/how-to-debug-a-running-docker-container-from-a-separate-container-983f11740dc6
-#+BEGIN_EXAMPLE
-docker run -t --pid=container:container1 \
-  --net=container:container1 \
-  --cap-add sys_admin \
-  --cap-add sys_ptrace \
-  strace
-#+END_EXAMPLE
-* [#B] cAdvisor: basic docker monitoring
-https://github.com/google/cadvisor
-** hello world
-sudo docker run \
-  --volume=/:/rootfs:ro \
-  --volume=/var/run:/var/run:rw \
-  --volume=/sys:/sys:ro \
-  --volume=/var/lib/docker/:/var/lib/docker:ro \
-  --publish=8080:8080 \
-  --detach=true \
-  --name=cadvisor \
-  google/cadvisor:latest
-
-http://localhost:8080
-** DONE docker stats
-   CLOSED: [2017-08-08 Tue 22:59]
-** TODO Get more history timeline
-** TODO Get monitoring and alerts: Get alerts, healthcheck failed or memory is over 500MB
-* DONE container get docker host from sock file /var/run/docker.sock
-  CLOSED: [2017-08-20 Sun 16:38]
-https://medium.com/lucjuggery/about-var-run-docker-sock-3bfd276e12fd
-/var/run/docker.sock
-
-unix:///var/run/docker.sock
-
-# create container
-curl -XPOST --unix-socket /var/run/docker.sock -d '{"Image":"nginx:alpine"}' -H 'Content-Type: application/json' http://localhost/containers/create
-
-docker ps -a
-
-# start container
-curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/3c8b12b5b84b/start
-
-# check status
-docker ps
-
-# Listen events from the Docker daemon
-docker run -v /var/run/docker.sock:/var/run/docker.sock -ti alpine sh
-apk add --update curl
-curl --unix-socket /var/run/docker.sock http://localhost/events
-
-# stop container
-curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/3c8b12b5b84b/stop
-
-# list containers
-curl -XGET --unix-socket /var/run/docker.sock http://localhost/containers/json | jq
-** useful link
-http://dockone.io/article/109
-
-http://dockone.io/article/109
-http://blog.trifork.com/2013/12/24/docker-from-a-distance-the-remote-api/
-https://stackoverflow.com/questions/37178824/how-to-find-docker-rest-api-url
-* DONE docker share volumes across containers: volumes_from
-  CLOSED: [2017-08-30 Wed 16:22]
-https://stackoverflow.com/questions/44284484/docker-compose-share-named-volume-between-multiple-containers
-#+BEGIN_EXAMPLE
-  ui:
-    container_name: ui
-    image: soterianetworks/kumku-u:base_${IMG_TAG_POSTFIX}
-    networks:
-      - network_application
-    volumes:
-      - launch_home:/usr/share/nginx/html
-
-  proxy:
-    container_name: proxy
-    image: soterianetworks/devops:proxy_${IMG_TAG_POSTFIX}
-    networks:
-      - network_application
-    depends_on:
-      - ui
-      - idp
-      - oauth2
-      - gateway
-    ports:
-      - "${HTTP_PORT}:80"
-    volumes_from:
-      - ui:ro
-    environment:
-      HOST_NAME: ${HOST_NAME}
-
-volumes:
-  idp_home:
-  db_home:
-  cache_home:
-  launch_home:
-#+END_EXAMPLE
-* DONE docker can't ping google iptables: remove: --iptables=false
-  CLOSED: [2018-04-03 Tue 10:14]
-https://github.com/moby/moby/issues/28241
-* DONE dockerfile configure PATH: ENV PATH="/opt/gtk/bin:${PATH}"
-  CLOSED: [2018-04-10 Tue 16:25]
-https://stackoverflow.com/questions/27093612/in-a-dockerfile-how-to-update-path-environment-variable
-* DONE debian8 install RStudio: conda install -c r r-essentials
-  CLOSED: [2018-04-10 Tue 17:23]
-https://www.rstudio.com/products/rstudio/download/
-* DONE [#A] mac docker volume folder: Where is /var/lib/docker on Mac/OS X
-  CLOSED: [2018-04-05 Thu 14:55]
-https://forums.docker.com/t/host-path-of-volume/12277/10
-https://stackoverflow.com/questions/38532483/where-is-var-lib-docker-on-mac-os-x
-screen ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/tty
-Then you can run ls /var/lib/docker/volumes
-* DONE docker run with different parameters
-  CLOSED: [2018-07-02 Mon 22:41]
-    docker run -t -d -h "$container_name" --name "$container_name" \
-           -v "${PWD}/cmd:/go/cmd" -v "${PWD}/pkg:/go/pkg" \
-           -v "${PWD}/tests:/go/tests" \
-           golang:1.10.3 bash -c "cd /go && tests/build_code.sh build_code"
-* DONE docker run issue: The path is not shared from OS X and is not known to Docker.
-  CLOSED: [2018-07-03 Tue 14:12]
-https://github.com/localstack/localstack/issues/480
-
-#+BEGIN_EXAMPLE
-bash-3.2$ docker run -it --volume /usr/local/Cellar/go/packages:/go --volume /tmp/302271400:/output --entrypoint=/bin/sh golang:latest
-docker: Error response from daemon: Mounts denied:
-The path /usr/local/Cellar/go/packages
-is not shared from OS X and is not known to Docker.
-You can configure shared paths from Docker -> Preferences... -> File Sharing.
-See https://docs.docker.com/docker-for-mac/osxfs/#namespaces for more info.
-#+END_EXAMPLE
-* DONE docker auto build: https://docs.docker.com/docker-hub/builds/#build-statuses-explained
+* DONE docker auto build: https://docs.docker.com/docker-hub/builds/#build-statuses-explained :noexport:
   CLOSED: [2018-07-10 Tue 10:18]
-* DONE [#A] docker multi-stage builds: https://docs.docker.com/develop/develop-images/multistage-build/#before-multi-stage-builds
+* DONE [#A] docker multi-stage builds: https://docs.docker.com/develop/develop-images/multistage-build/#before-multi-stage-builds :noexport:
   CLOSED: [2018-07-11 Wed 23:15]
-* #  --8<-------------------------- separator ------------------------>8-- :noexport:
-* HALF docker images command error in Ubuntu OS
-#+BEGIN_EXAMPLE
-root@carol-official-repo:/opt/mdmdevops/env_setup/repo.carol.ai/jenkins.carol.ai# docker images
-Error response from daemon: layer does not exist
-#+END_EXAMPLE
-https://github.com/moby/moby/issues/21215
-https://github.com/coreos/bugs/issues/1808
-* TODO docker cp: no such directory
-https://docs.docker.com/engine/reference/commandline/cp/#extended-description
-
-cd /tmp
-docker cp ./fix-mappings-reindex-2.0.jar ci_repo:/var/www/repo/
-docker cp ./fix-mappings-reindex-2.0.jar ci_repo:/
-
-#+BEGIN_EXAMPLE
-root@injenkins:/tmp# ls -lth ./fix-mappings-reindex-2.0.jar
--rw-r--r-- 1 root root 36M Aug 31 13:39 ./fix-mappings-reindex-2.0.jar
-root@injenkins:/tmp# docker cp ./fix-mappings-reindex-2.0.jar  ci_repo:/
-no such directory
-#+END_EXAMPLE
-
-#+BEGIN_EXAMPLE
-root@injenkins:/home/denny/mdmdevops/scripts/gui_login/scripts# docker cp /tmp/fix-mappings-reindex-2.0.jar ci_repo:/var/www/repo/
-no such directory
-root@injenkins:/home/denny/mdmdevops/scripts/gui_login/scripts# ls -lth /tmp/fix-mappings-reindex-2.0.jar
--rw-r--r-- 1 root root 36M Aug 31 13:39 /tmp/fix-mappings-reindex-2.0.jar
-root@injenkins:/home/denny/mdmdevops/scripts/gui_login/scripts# docker exec ci_repo ls -lth /var/www/repo/
-total 41580
--rw-r--r--    1 root     root       40.6M Aug 29 16:51 fix-mappings-reindex-2.0.jar
-drwxr-xr-x    2 1000     1000        4.0K Aug 23 20:16 master
-drwxr-xr-x    2 1000     1000        4.0K Aug 22 22:21 1.73
-drwxr-xr-x    2 1000     1000        4.0K Aug 14 21:14 nexus-port-8080
-drwxr-xr-x    2 1000     1000        4.0K Aug  7 21:31 1.72
-drwxr-xr-x    2 1000     1000        4.0K Jul 26 01:29 1.70
-drwxr-xr-x    2 1000     1000        4.0K Jul 25 01:55 1.71
-#+END_EXAMPLE
-* TODO docker hub trigger autobuild by commit message pattern
-* TODO [#A] docker container change port mapping and bring it up and running
-https://stackoverflow.com/questions/19335444/how-do-i-assign-a-port-mapping-to-an-existing-docker-container
-
-1. Change hostconfig.json directly for port mapping at /var/lib/docker/containers/[hash_of_the_container]/hostconfig.json
-
-2. docker commit
-
-#+BEGIN_EXAMPLE
-root@totvsjenkins:/home/denny/devops_docker_image/codecheck# docker start docker-jenkins
-Error response from daemon: driver failed programming external connectivity on endpoint docker-jenkins (49319c2c320acafdd8930ab99f3410c2b3cd9ccb2635f76abd4a5e2261df6196): Bind for 0.0.0.0:48080 failed: port is already allocated
-Error: failed to start containers: docker-jenkins
-#+END_EXAMPLE
-* TODO Networking with Kubernetes
-https://www.youtube.com/watch?v=WwQ62OyCNz4
-
-- Flat
-- Overlay
-* TODO Add ability to mount volume as user other than root
-https://stackoverflow.com/questions/33681396/how-do-i-write-to-a-volume-container-as-non-root-in-docker
-https://github.com/moby/moby/issues/2259#issuecomment-111659961
-* TODO [#A] fail to start docker: [graphdriver] prior storage driver \"devicemapper\" failed: devmapper
-https://www.projectatomic.io/blog/2015/06/notes-on-fedora-centos-and-docker-storage-drivers/
-https://docs.docker.com/engine/userguide/storagedriver/device-mapper-driver/
-http://jira.jinganiam.com/browse/ID-47
-start-stop-daemon --start --exec /usr/bin/docker --pidfile /var/run/docker-ssd.pid --make-pidfile -- daemon -p /var/run/docker.pid
-#+BEGIN_EXAMPLE
-root@8cc3b37f44eb:/# start-stop-daemon --start --exec /usr/bin/docker --pidfile /var/run/docker-ssd.pid --make-pidfile -- daemon -p /var/run/docker.pid
-INFO[0000] API listen on /var/run/docker.sock
-WARN[0000] Udev sync is not supported. This will lead to unexpected behavior, data loss and errors. For more information, see https://docs.docker.com/reference/commandline/daemon/#daemon-storage-driver-option
-ERRO[0000] [graphdriver] prior storage driver "devicemapper" failed: devmapper: Device docker-0:60-50903-pool is not a thin pool
-FATA[0000] Error starting daemon: error initializing graphdriver: devmapper: Device docker-0:60-50903-pool is not a thin pool
-#+END_EXAMPLE
-* TODO docker healthcheck: ok, warning and failed
-* TODO Docker base image can't take variable
-root@totvsjenkins:/home/denny/soteria_code/brozton-soterianetworks# docker-compose build
-launch uses an image, skipping
-shib uses an image, skipping
-cache uses an image, skipping
-db uses an image, skipping
-eureka uses an image, skipping
-mail uses an image, skipping
-dbseed uses an image, skipping
-Building totp
-Step 1/3 : FROM soterianetworks/brozton:base_${IMG_TAG_POSTFIX}
-ERROR: Service 'totp' failed to build: Error parsing reference: "soterianetworks/brozton:base_${IMG_TAG_POSTFIX}" is not a valid repository/tag: invalid reference format
-root@totvsjenkins:/home/denny/soteria_code/brozton-soterianetworks# git status
-On branch denny-next-ci
-Your branch is up-to-date with 'origin/denny-next-ci'.
-
-nothing to commit, working directory clean
-* TODO [#A] Docker logging driver: aggreate logs from different containers into a centralized location
-https://docs.docker.com/engine/admin/logging/overview/
-** DONE Default logging is json-file. /var/lib/docker/containers/$container_id/*-json.log
-   CLOSED: [2017-03-25 Sat 14:16]
-docker info |grep 'Logging Driver'
-docker inspect -f '{{.HostConfig.LogConfig.Type}}' <CONTAINER>
-** TODO Logging to 2 drivers: Can I log to both json and rsyslog?
-** TODO [#A] Use gelf to collect log into elasticsearch eventually
-https://docs.docker.com/engine/admin/logging/overview/#gelf
-** TODO Use ELK to collect logs
-https://www.linux.com/learn/how-manage-logs-docker-environment-compose-and-elk
-** TODO docker start logstash container
-https://www.elastic.co/guide/en/logstash/current/docker.html
-** #  --8<-------------------------- separator ------------------------>8--
-** TODO When syslog is down, I just lose my log messages: make sure we keep logging to local files
-** TODO udp server has to be a fixed ip: Use a dedicated network with fixed ip
-** TODO We will have 2 containers: logstash and elasticsearch
