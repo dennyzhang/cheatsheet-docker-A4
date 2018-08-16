@@ -1,24 +1,15 @@
-* org-mode configuration                                           :noexport:
-#+STARTUP: overview customtime noalign logdone showall
-#+TITLE:  Docker CheatSheet
-#+DESCRIPTION: 
-#+KEYWORDS: 
-#+AUTHOR: Denny Zhang
-#+EMAIL:  denny@dennyzhang.com
-#+TAGS: noexport(n)
-#+PRIORITIES: A D C
-#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
-#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
-#+EXPORT_EXCLUDE_TAGS: exclude noexport
-#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
-#+LINK_UP:   
-#+LINK_HOME: 
-* CheatSheet
+* Docker CheatSheet                                                     :Kubernetes:
+:PROPERTIES:
+:type:     kubernetes
+:END:
+
+Blog URL: https://cheatsheet.dennyzhang.com/cheatsheet-docker, Category: [[https://cheatsheet.dennyzhang.com/category/tools/][tools]]
+
 #+BEGIN_HTML
 <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a>
 <a href="https://github.com/DennyZhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a>
 <a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a>
-<a href="https://github.com/DennyZhang"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+<a href="https://github.com/DennyZhang/cheatsheet-docker-A4"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
 
 <br/><br/>
 
@@ -34,7 +25,7 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 |----------------------------------+--------------------------------------------------------------------------------------|
 | Change entrypoint to run nothing | =entrypoint: ["tail", "-f", "/dev/null"]=                                            |
 | Change restart policy            | =restart: always= [[https://docs.docker.com/compose/compose-file/compose-file-v2/=restart][link]]                                                               |
-| Mount file as volume             | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[samples/mount_file.yml][samples/mount_file.yml]] |
+| Mount file as volume             | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/samples/mount_file.yml][samples/mount_file.yml]] |
 | Start compose env                | =docker-compose up=, =docker-compose up -d=                                          |
 | Stop compose env                 | =docker-compose down=, =docker-compose down -v=                                      |
 | Check logs                       | =docker-compose logs=                                                                |
@@ -85,14 +76,14 @@ gcloud docker -- push gcr.io/<MY_REPO>/<MY_IMAGE>:<MY_TAG>
 ** Scripts
 - Delete all containers
 
-[[delete_all_containers.sh][delete_all_containers.sh]]
+[[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete_all_containers.sh][delete_all_containers.sh]]
 #+BEGIN_EXAMPLE
 curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/delete_all_containers.sh | bash
 #+END_EXAMPLE
 
 - Install test kit
 
-[[container_install_devkit.sh][container_install_devkit.sh]]
+[[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/container_install_devkit.sh][container_install_devkit.sh]]
 #+BEGIN_EXAMPLE
 apt-get -y update
 apt-get install -y curl netcat
@@ -125,7 +116,7 @@ if docker images | grep none | tee; then
    docker rmi $(docker images | grep "<none>"  | awk -F' ' '{print $3}') | tee
 fi
 #+END_EXAMPLE
-* More Resources
+** More Resources
 
 License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_license.txt][MIT License]].
 #+BEGIN_HTML
@@ -136,6 +127,21 @@ License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_lice
 <a href="https://github.com/DennyZhang"><img align="bottom"src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a>
 <a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img align="bottom" src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a>
 #+END_HTML
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+TITLE:  Docker CheatSheet
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
 
 * [#A] docker                                            :noexport:IMPORTANT:
 https://docs.docker.com/
@@ -7827,3 +7833,28 @@ curl -u ftp_totvslabs:TOTVSLabs123ChangeMe ftp://ftp.carol.ai:21/hosts
   CLOSED: [2018-07-10 Tue 10:18]
 * DONE [#A] docker multi-stage builds: https://docs.docker.com/develop/develop-images/multistage-build/#before-multi-stage-builds :noexport:
   CLOSED: [2018-07-11 Wed 23:15]
+* DONE How docker --squash works?                                  :noexport:
+  CLOSED: [2018-08-09 Thu 15:55]
+https://stackoverflow.com/questions/41764336/how-does-the-new-docker-squash-work
+
+#+BEGIN_EXAMPLE
+If I add a secret file in my first layer, then use the secret file in my second layer, and the finally remove my secret file in the third layer, and then build with the --squash flag.
+
+Will there be any way now to get the secret file?
+
+Answer: Your image won't have the secret file.
+
+How --squash works:
+
+Once the build is complete, Docker creates a new image loading the diffs from each layer into a single new layer and references all the parent's layers.
+
+In other words: when squashing, Docker will take all the filesystem layers produced by a build and collapse them into a single new layer.
+
+This can simplify the process of creating minimal container images, but may result in slightly higher overhead when images are moved around (because squashed layers can no longer be shared between images). Docker still caches individual layers to make subsequent builds fast.
+
+Please note this feature squashes all the newly built layers into a single layer, it is not squashing to scratch.
+#+END_EXAMPLE
+* TODO simplify docker add
+RUN wget -qO- https://github.com/cloudfoundry-incubator/credhub-cli/releases/download/1.5.3/credhub-linux-1.5.3.tgz | tar xvz && \
+    mv credhub /usr/bin
+
