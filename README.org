@@ -219,7 +219,7 @@ service ssh restart
 - After 0.7.0, default storage driver is devicemapper
 - AUFS is not in the upstream Linux kernel. Why is AUFS chosen as the default storage backend (for example in Ubuntu's Docker)?
 
-https://github.com/docker/docker/tree/master/daemon/graphdriver/devmapper
+https://github.com/docker/docker/tree/master/cheatsheet-docker-A4][challenges-leetcode-interesting]]
 http://muehe.org/posts/switching-docker-from-aufs-to-devicemapper/
 http://stackoverflow.com/questions/24764908/why-use-aufs-as-the-default-docker-storage-backend-instead-of-devicemapper
 
@@ -7210,8 +7210,8 @@ https://docs.docker.com/config/containers/resource_constraints/
 #+END_EXAMPLE
 * [#A] docker sawm                                       :noexport:IMPORTANT:
 https://docs.docker.com/engine/swarm/swarm-tutorial/
-https://github.com/docker/labs/tree/master/swarm-mode
-https://github.com/docker/labs/tree/master/12factor
+https://github.com/docker/labs/tree/master/cheatsheet-docker-A4][challenges-leetcode-interesting]]
+https://github.com/docker/labs/tree/master/cheatsheet-docker-A4][challenges-leetcode-interesting]]
 ** TODO [#A] docker swam VS docker link                           :IMPORTANT:
 https://technologyconversations.com/2017/01/23/using-docker-stack-and-compose-yaml-files-to-deploy-swarm-services/
 * [#A] docker network                                              :noexport:
