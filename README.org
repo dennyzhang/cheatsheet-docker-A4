@@ -26,7 +26,7 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 |----------------------------------+--------------------------------------------------------------------------------------|
 | Change entrypoint to run nothing | =entrypoint: ["tail", "-f", "/dev/null"]=                                            |
 | Change restart policy            | =restart: always= [[https://docs.docker.com/compose/compose-file/compose-file-v2/=restart][link]]                                                               |
-| Mount file as volume             | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/samples/mount_file.yml][samples/mount_file.yml]] |
+| Mount file as volume             | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/samples/mount-file.yml][samples/mount-file.yml]] |
 | Start compose env                | =docker-compose up=, =docker-compose up -d=                                          |
 | Stop compose env                 | =docker-compose down=, =docker-compose down -v=                                      |
 | Check logs                       | =docker-compose logs=                                                                |
@@ -77,19 +77,19 @@ gcloud docker -- push gcr.io/<MY_REPO>/<MY_IMAGE>:<MY_TAG>
 ** Scripts
 - Delete all containers
 
-[[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete_all_containers.sh][delete_all_containers.sh]]
+[[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-all-containers.sh][delete-all-containers.sh]]
 #+BEGIN_EXAMPLE
-curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/delete_all_containers.sh | bash
+curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/delete-all-containers.sh | bash
 #+END_EXAMPLE
 
 - Install test kit
 
-[[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/container_install_devkit.sh][container_install_devkit.sh]]
+[[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/container-install-devkit.sh][container-install-devkit.sh]]
 #+BEGIN_EXAMPLE
 apt-get -y update
 apt-get install -y curl netcat
 
-curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/container_install_devkit.sh | bash
+curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/container-install-devkit.sh | bash
 #+END_EXAMPLE
 
 - Clean up Disk
@@ -302,14 +302,14 @@ chef-server-ctl status
 http://zgu.me/blog/2014/08/20/cgconfig-service-error-when-the-docker-starts/
 
 #+BEGIN_EXAMPLE
-当启动 Docker 服务的时候，遇到如下错误：
+当启动 Docker 服务的时候,遇到如下错误:
 Starting cgconfig service: Error: cannot mount cpuset to /cgroup/cpuset: Device or resource busy
 /sbin/cgconfigparser; error loading /etc/cgconfig.conf: Cgroup mounting failed
 Failed to parse /etc/cgconfig.conf                         [FAILED]
 Starting docker:	                                   [  OK  ]
-可以使用 cgclear 命令，清理一下。
+可以使用 cgclear 命令,清理一下.
 
-之后记得先停止 Docker ，再启动。
+之后记得先停止 Docker ,再启动.
 
 1
 2
@@ -1060,11 +1060,11 @@ https://docs.docker.com/userguide/usingdocker/
 http://stackoverflow.com/questions/23840737/how-to-remount-the-proc-filesystem-in-a-docker-as-a-r-w-system
 http://tonybai.com/2014/10/14/discussion-on-the-approach-to-modify-system-variables-in-docker/
 
-Docker的base image做的很精简，甚至都没有init进程，原本在OS启动时执行生效系统变量的过程(sysctl -p)也给省略了，导致这些系统变量依旧保留着kernel默认值。以CentOs为例，在linux kernel boot后，init都会执行/etc/rc.d/rc.sysinit，后者会加载/etc/sysctl.conf中的系统变量值。下面是 CentOs5.6中的rc.sysinit代码摘录：
+Docker的base image做的很精简,甚至都没有init进程,原本在OS启动时执行生效系统变量的过程(sysctl -p)也给省略了,导致这些系统变量依旧保留着kernel默认值.以CentOs为例,在linux kernel boot后,init都会执行/etc/rc.d/rc.sysinit,后者会加载/etc/sysctl.conf中的系统变量值.下面是 CentOs5.6中的rc.sysinit代码摘录:
 
-Docker容器中的系统变量在non-priviledged模式下目前(我使用的时docker 1.2.0版本)就无法修改，这 和resolv.conf、hosts等文件映射到宿主机对应的文件有不同。
+Docker容器中的系统变量在non-priviledged模式下目前(我使用的时docker 1.2.0版本)就无法修改,这 和resolv.conf`hosts等文件映射到宿主机对应的文件有不同.
 
-You don't. sysctl values are not confined to the container — they affect the whole system, so it's not appropriate for a container to be able to change them.
+You don't. sysctl values are not confined to the container - they affect the whole system, so it's not appropriate for a container to be able to change them.
 
 If you want to set a higher value for this variable, do that from the host system.
 #+BEGIN_EXAMPLE
@@ -1208,10 +1208,10 @@ MacPro:org_data mac$
 /dev/sdb1	/data		ext4	noatime,data=writeback,barrier=0	0	0
 [5/25/15, 9:32:23 PM] denny: In that docker container, mdm service successfully start.
 [5/25/15, 9:32:29 PM] kungchaowang: so, can you use that /data/ folder in docker for couchbase database
-[5/25/15, 9:32:51 PM] denny: Got it. I will try it, when it’s up tomorrow.
-[5/25/15, 9:32:57 PM] kungchaowang: it’s up now
+[5/25/15, 9:32:51 PM] denny: Got it. I will try it, when it's up tomorrow.
+[5/25/15, 9:32:57 PM] kungchaowang: it's up now
 [5/25/15, 9:33:06 PM] kungchaowang: as I went into office to restart it
-[5/25/15, 9:33:17 PM] denny: Yes, it’s up.
+[5/25/15, 9:33:17 PM] denny: Yes, it's up.
 [5/25/15, 9:33:20 PM] kungchaowang: you can ssh into 10.165.4.67
 [5/25/15, 9:33:52 PM] kungchaowang: so, please configure couchbase to put database on that host /data folder
 [5/25/15, 9:34:02 PM] kungchaowang: see if that error would go away
@@ -1855,9 +1855,9 @@ http://schnell18.iteye.com/blog/2203452
 https://github.com/docker/docker/issues/7058
 https://github.com/docker/docker/issues/10880
 
-有人碰到过类似的问题， https://github.com/jpetazzo/dind/issues/19 。这
-个thread很长，但是大意是容器中的loop device回环设备用尽了，需要手工再
-创建一些。
+有人碰到过类似的问题, https://github.com/jpetazzo/dind/issues/19 .这
+个thread很长,但是大意是容器中的loop device回环设备用尽了,需要手工再
+创建一些.
 
 #+BEGIN_EXAMPLE
 root@5c26c93f7c1f:~# docker -d
@@ -1888,14 +1888,14 @@ time="2015-05-20T18:00:28Z" level=fatal msg="Shutting down daemon due to errors:
 http://schnell18.iteye.com/blog/2203452
 **** webcontent                                                    :noexport:
 #+begin_example
-准备做个jenkins的CI服务器，用docker包装，然后在其中嵌套运行docker容器作为构建的环境。
-在docker中嵌套运行docker碰到一下错误：
+准备做个jenkins的CI服务器,用docker包装,然后在其中嵌套运行docker容器作为构建的环境.
+在docker中嵌套运行docker碰到一下错误:
 Bash代码  收藏代码
 [root@0538345e7d9f /]# INFO[0000] +job serveapi(unix:///var/run/docker.sock)
 WARN[0000] WARNING: Udev sync is not supported. This will lead to unexpected behavior, data loss and errors
 ERRO[0000] There are no more loopback devices available.
 FATA[0000] loopback mounting failed
-有人碰到过类似的问题， https://github.com/jpetazzo/dind/issues/19  。这个thread很长，但是大意是容器中的loop device回环设备用尽了，需要手工再创建一些。示例代码如下：
+有人碰到过类似的问题, https://github.com/jpetazzo/dind/issues/19  .这个thread很长,但是大意是容器中的loop device回环设备用尽了,需要手工再创建一些.示例代码如下:
 Bash代码  收藏代码
 #!/bin/bash
 ensure_loop(){
@@ -1922,7 +1922,7 @@ LOOP_B=$(expr $LOOP_A + 1)
 ensure_loop $LOOP_A
 ensure_loop $LOOP_B
 
-在启动docker后台进程之前，加上上述代码后，又报如下错误：
+在启动docker后台进程之前,加上上述代码后,又报如下错误:
 Bash代码  收藏代码
 [root@0538345e7d9f /]# sh start_docker_daemon.sh
 Attempting to create /dev/loop4 for docker ...
@@ -1931,8 +1931,8 @@ Attempting to create /dev/loop5 for docker ...
 WARN[0000] WARNING: Udev sync is not supported. This will lead to unexpected behavior, data loss and errors
 FATA[0000] exec: "mkfs.ext4": executable file not found in $PATH
 
- 这个问题比较简单，是因为这个容器里没有装mkfs.ext4这个工具，它包含在e2fsprogs这个RPM包中。更正这个错误只要在Dockerfile中安装RPM包时多加一个e2fsprogs。
-完整Dockerfile如下：
+ 这个问题比较简单,是因为这个容器里没有装mkfs.ext4这个工具,它包含在e2fsprogs这个RPM包中.更正这个错误只要在Dockerfile中安装RPM包时多加一个e2fsprogs.
+完整Dockerfile如下:
 Dockerfile代码  收藏代码
 FROM centos:7
 MAINTAINER schnell_18@yahoo.com
@@ -2169,7 +2169,7 @@ Gathering LXC and Docker containers metrics
 
 Linux Containers rely on control groups which not only track groups of processes, but also expose a
 lot of metrics about CPU, memory, and block I/O usage. We will see how to access those metrics, and
-how to obtain network usage metrics as well. This is relevant for “pure” LXC containers, as well as
+how to obtain network usage metrics as well. This is relevant for "pure" LXC containers, as well as
 for Docker containers.
 
 Locate your control groups
@@ -2192,10 +2192,10 @@ To figure out where your control groups are mounted, you can run:
 Control groups hierarchies
 
 The fact that different control groups can be in different hierarchies mean that you can use
-completely different groups (and policies) for e.g. CPU allocation and memory allocation. Let’s
+completely different groups (and policies) for e.g. CPU allocation and memory allocation. Let's
 make up a completely imaginary example: you have a 2-CPU system running Python webapps with
 Gunicorn, a PostgreSQL database, and accepting SSH logins. You can put each webapp and each SSH
-session in their own memory control group (to make sure that a single app or user doesn’t use up
+session in their own memory control group (to make sure that a single app or user doesn't use up
 the memory of the whole system), and at the same time, stick the webapps and database on a CPU, and
 the SSH logins on another CPU.
 
@@ -2213,7 +2213,7 @@ the hierarchy they belong to, and how many groups they contain.
 
 You can also look at /proc/<pid>/cgroup to see which control groups a process belongs to. The
 control group will be shown as a path relative to the root of the hierarchy mountpoint; e.g. /
-means “this process has not been assigned into a particular group”, while /lxc/pumpkin means that
+means "this process has not been assigned into a particular group", while /lxc/pumpkin means that
 the process is likely to be a member of a container named pumpkin.
 
 Finding the cgroup for a given container
@@ -2280,34 +2280,34 @@ The first half (without the total_ prefix) contains statistics relevant to the p
 cgroup, excluding sub-cgroups. The second half (with the total_ prefix) includes sub-cgroups as
 well.
 
-Some metrics are “gauges”, i.e. values that can increase or decrease (e.g. swap, the amount of swap
-space used by the members of the cgroup). Some others are “counters”, i.e. values that can only go
+Some metrics are "gauges", i.e. values that can increase or decrease (e.g. swap, the amount of swap
+space used by the members of the cgroup). Some others are "counters", i.e. values that can only go
 up, because they represent occurrences of a specific event (e.g. pgfault, which indicates the
 number of page faults which happened since the creation of the cgroup; this number can never
 decrease).
 
-Let’s see what those metrics stand for. All memory amounts are in bytes (except for event
+Let's see what those metrics stand for. All memory amounts are in bytes (except for event
 counters).
 
   * cache is the amount of memory used by the processes of this control group that can be
     associated precisely with a block on a block device. When you read and write files from and to
-    disk, this amount will increase. This will be the case if you use “conventional” I/O (open,
+    disk, this amount will increase. This will be the case if you use "conventional" I/O (open,
     read, write syscalls) as well as mapped files (with mmap). It also accounts for the memory used
-    by tmpfs mounts. I don’t know exactly why; it might be because tmpfs filesystems work directly
+    by tmpfs mounts. I don't know exactly why; it might be because tmpfs filesystems work directly
     with the page cache.
-  * rss is the amount of memory that doesn’t correspond to anything on disk: stacks, heaps, and
+  * rss is the amount of memory that doesn't correspond to anything on disk: stacks, heaps, and
     anonymous memory maps.
   * mapped_file indicates the amount of memory mapped by the processes in the control group. In my
-    humble opinion, it doesn’t give you an information about how much memory is used; it rather
+    humble opinion, it doesn't give you an information about how much memory is used; it rather
     tells you how it is used.
   * pgpgin and pgpgout are a bit tricky. If you are used to vmstat, you might think that they
     indicate the number of times that a page had to be read and written (respectively) by a process
     of the cgroup, and that they should reflect both file I/O and swap activity. Wrong! In fact,
-    they correspond to charging events. Each time a page is “charged” (=added to the accounting) to
-    a cgroup, pgpgin increases. When a page is “uncharged” (=no longer “billed” to a cgroup),
+    they correspond to charging events. Each time a page is "charged" (=added to the accounting) to
+    a cgroup, pgpgin increases. When a page is "uncharged" (=no longer "billed" to a cgroup),
     pgpgout increases.
   * pgfault and pgmajfault indicate the number of times that a process of the cgroup triggered a
-    “page fault” and a “major fault”, respectively. A page fault happens when a process accesses a
+    "page fault" and a "major fault", respectively. A page fault happens when a process accesses a
     part of its virtual memory space which is inexistent or protected. The former can happen if the
     process is buggy and tries to access an invalid address (it will then be sent a SIGSEGV signal,
     typically killing it with the famous Segmentation fault message). The latter can happen when
@@ -2315,20 +2315,20 @@ counters).
     mapped file: in that case, the kernel will load the page from disk, and let the CPU complete
     the memory access. It can also happen when the process writes to a copy-on-write memory zone:
     likewise, the kernel will preempt the process, duplicate the memory page, and resume the write
-    operation on the process’ own copy of the page. “Major” faults happen when the kernel actually
+    operation on the process' own copy of the page. "Major" faults happen when the kernel actually
     has to read the data from disk. When it just has to duplicate an existing page, or allocate an
-    empty page, it’s a regular (or “minor”) fault.
+    empty page, it's a regular (or "minor") fault.
   * swap is (as expected) the amount of swap currently used by the processes in this cgroup.
   * active_anon and inactive_anon is the amount of anonymous memory that has been identified has
-    respectively active and inactive by the kernel. “Anonymous” memory is the memory that is not
-    linked to disk pages. In other words, that’s the equivalent of the rss counter described above.
+    respectively active and inactive by the kernel. "Anonymous" memory is the memory that is not
+    linked to disk pages. In other words, that's the equivalent of the rss counter described above.
     In fact, the very definition of the rss counter is active_anon+**inactive_anon**-**tmpfs**
     (where tmpfs is the amount of memory used up by tmpfs filesystems mounted by this control
-    group). Now, what’s the difference between “active” and “inactive”? Pages are initially
-    “active”; and at regular intervals, the kernel sweeps over the memory, and tags some pages as
-    “inactive”. Whenever they are accessed again, they are immediately retagged “active”. When the
+    group). Now, what's the difference between "active" and "inactive"? Pages are initially
+    "active"; and at regular intervals, the kernel sweeps over the memory, and tags some pages as
+    "inactive". Whenever they are accessed again, they are immediately retagged "active". When the
     kernel is almost out of memory, and time comes to swap out to disk, the kernel will swap
-    “inactive” pages.
+    "inactive" pages.
   * Likewise, the cache memory is broken down into active_file and inactive_file. The exact formula
     is cache=**active_file**+**inactive_file**+**tmpfs**. The exact rules used by the kernel to
     move memory pages between active and inactive sets are different from the ones used for
@@ -2337,7 +2337,7 @@ counters).
     can be reclaimed immediately (while anonymous pages and dirty/modified pages have to be written
     to disk first).
   * unevictable is the amount of memory that cannot be reclaimed; generally, it will account for
-    memory that has been “locked” with mlock. It is often used by crypto frameworks to make sure
+    memory that has been "locked" with mlock. It is often used by crypto frameworks to make sure
     that secret keys and other sensitive material never gets swapped out to disk.
   * Last but not least, the memory and memsw limits are not really metrics, but a reminder of the
     limits applied to this cgroup. The first one indicates the maximum amount of physical memory
@@ -2346,25 +2346,25 @@ counters).
 
 Accounting for memory in the page cache is very complex. If two processes in different control
 groups both read the same file (ultimately relying on the same blocks on disk), the corresponding
-memory charge will be split between the control groups. It’s nice, but it also means that when a
+memory charge will be split between the control groups. It's nice, but it also means that when a
 cgroup is terminated, it could increase the memory usage of another cgroup, because they are not
 splitting the cost anymore for those memory pages.
 
 CPU metrics
 
-Now that we’ve covered memory metrics, everything else will look very simple in comparison. CPU
+Now that we've covered memory metrics, everything else will look very simple in comparison. CPU
 metrics will be found in the cpuacct controller.
 
 For each container, you will find a pseudo-file cpuacct.stat, containing the CPU usage accumulated
-by the processes of the container, broken down between user and system time. If you’re not familiar
+by the processes of the container, broken down between user and system time. If you're not familiar
 with the distinction, user is the time during which the processes were in direct control of the CPU
 (i.e. executing process code), and system is the time during which the CPU was executing system
 calls on behalf of those processes.
 
-Those times are expressed in ticks of 1/100th of second. (Actually, they are expressed in “user
-jiffies”. There are USER_HZ “jiffies” per second, and on x86 systems, USER_HZ is 100. This used to
-map exactly to the number of scheduler “ticks” per second; but with the advent of higher frequency
-scheduling, as well as tickless kernels, the number of kernel ticks wasn’t relevant anymore. It
+Those times are expressed in ticks of 1/100th of second. (Actually, they are expressed in "user
+jiffies". There are USER_HZ "jiffies" per second, and on x86 systems, USER_HZ is 100. This used to
+map exactly to the number of scheduler "ticks" per second; but with the advent of higher frequency
+scheduling, as well as tickless kernels, the number of kernel ticks wasn't relevant anymore. It
 stuck around anyway, mainly for legacy and compatibility reasons.)
 
 Block I/O metrics
@@ -2381,7 +2381,7 @@ documentation, here is a short list of the most relevant ones:
   * blkio.io_serviced is similar, but instead of showing byte counters, it will show the number of
     I/O operations performed, regardless of their size. It also has 4 counters per device.
   * blkio.io_queued indicates the number of I/O operations currently queued for this cgroup. In
-    other words, if the cgroup isn’t doing any I/O, this will be zero. Note that the opposite is
+    other words, if the cgroup isn't doing any I/O, this will be zero. Note that the opposite is
     not true. In other words, if there is no I/O queued, it does not mean that the cgroup is idle
     (I/O-wise). It could be doing purely synchronous reads on an otherwise quiescent device, which
     is therefore able to handle them immediately, without queuing. Also, while it is helpful to
@@ -2392,7 +2392,7 @@ documentation, here is a short list of the most relevant ones:
 For each file, there is a _recursive variant, that aggregates the metrics of the control group and
 all its sub-cgroups.
 
-Also, it’s worth mentioning that in most cases, if the processes of a control group have not done
+Also, it's worth mentioning that in most cases, if the processes of a control group have not done
 any I/O on a given block device, the block device will not appear in the pseudo-files. In other
 words, you have to be careful each time you parse one of those files, because new entries might
 have appeared since the previous time.
@@ -2402,8 +2402,8 @@ Collecting network metrics
 Interestingly, network metrics are not exposed directly by control groups. There is a good
 explanation for that: network interfaces exist within the context of network namespaces. The kernel
 could probably accumulate metrics about packets and bytes sent and received by a group of
-processes, but those metrics wouldn’t be very useful. You want (at least!) per-interface metrics
-(because traffic happening on the local lo interface doesn’t really count). But since processes in
+processes, but those metrics wouldn't be very useful. You want (at least!) per-interface metrics
+(because traffic happening on the local lo interface doesn't really count). But since processes in
 a single cgroup can belong to multiple network namespaces, those metrics would be harder to
 interpret: multiple network namespaces means multiple lo interfaces, potentially multiple eth0
 interfaces, etc.; so this is why there is no easy way to gather network metrics with control
@@ -2456,7 +2456,7 @@ In the long run, Docker will probably take over the setup of those virtual inter
 track of their names, and make sure that it can easily associate containers with their respective
 interfaces.
 
-But for now, the best way is to check the metrics from within the containers. I’m not talking about
+But for now, the best way is to check the metrics from within the containers. I'm not talking about
 running a special agent in the container, or anything like that. We are going to run an executable
 from the host environment, but within the network namespace of a container.
 
@@ -2465,8 +2465,8 @@ ip-netns magic
 To do that, we will use the ip netns exec command. This command will let you execute any program
 (present in the host system) within any network namespace visible to the current process. This
 means that your host will be able to enter the network namespace of your containers, but your
-containers won’t be able to access the host, nor their sibling containers. Containers will be able
-to “see” and affect their sub-containers, though.
+containers won't be able to access the host, nor their sibling containers. Containers will be able
+to "see" and affect their sub-containers, though.
 
 The exact format of the command is:
 
@@ -2497,14 +2497,14 @@ In other words, to execute a command within the network namespace of a container
 Now, we need to figure out a way to find the PID of a process (any process!) running in the
 container that we want to investigate. This is actually very easy. You have to locate one of the
 control groups corresponding to the container. We explained how to locate those cgroups in the
-beginning of this post, so we won’t cover that again.
+beginning of this post, so we won't cover that again.
 
 On my machine, a control group will typically be located in /sys/fs/cgroup/devices/lxc/
 <containerid>. Within that directory, you will find a pseudo-file called tasks. It contains the
 list of the PIDs that are in the control group, i.e., in the container. We can take any of them; so
 the first one will do.
 
-Putting everything together, if the “short ID” of a container is held in the environment variable
+Putting everything together, if the "short ID" of a container is held in the environment variable
 $CID, here is a small shell snippet to put everything together:
 
 [TASKS=/sys/fs/cgroup]
@@ -2527,7 +2527,7 @@ you want to collect metrics at high resolutions, and/or over a large number of c
 Here is how to collect metrics from a single process. You will have to write your metric collector
 in C (or any language that lets you do low-level system calls). You need to use a special system
 call, setns(), which lets the current process enter any arbitrary namespace. It requires, however,
-an open file descriptor to the namespace pseudo-file (remember: that’s the pseudo-file in /proc/
+an open file descriptor to the namespace pseudo-file (remember: that's the pseudo-file in /proc/
 <pid>/ns/net).
 
 However, there is a catch: you must not keep this file descriptor open. If you do, when the last
@@ -2548,18 +2548,18 @@ relies on lxc-start, and when a container stops, lxc-start carefully cleans up b
 really want to collect the metrics anyway, here is how. For each container, start a collection
 process, and move it to the control groups that you want to monitor by writing its PID to the tasks
 file of the cgroup. The collection process should periodically re-read the tasks file to check if
-it’s the last process of the control group. (If you also want to collect network statistics as
+it's the last process of the control group. (If you also want to collect network statistics as
 explained in the previous section, you should also move the process to the appropriate network
 namespace.)
 
 When the container exits, lxc-start will try to delete the control groups. It will fail, since the
-control group is still in use; but that’s fine. You process should now detect that it is the only
+control group is still in use; but that's fine. You process should now detect that it is the only
 one remaining in the group. Now is the right time to collect all the metrics you need!
 
 Finally, your process should move itself back to the root control group, and remove the container
-control group. To remove a control group, just rmdir its directory. It’s counter-intuitive to rmdir
+control group. To remove a control group, just rmdir its directory. It's counter-intuitive to rmdir
 a directory as it still contains files; but remember that this is a pseudo-filesystem, so usual
-rules don’t apply. After the cleanup is done, the collection process can exit safely.
+rules don't apply. After the cleanup is done, the collection process can exit safely.
 
 As you can see, collecting metrics when a container exits can be tricky; for this reason, it is
 usually easier to collect metrics at regular intervals (e.g. every minute, with the collectd LXC
@@ -2577,39 +2577,39 @@ To recap, we covered:
 As we have seen, metrics collection is not insanely difficult, but still involves many complicated
 steps, with special cases like those for the network subsystem. Docker will take care of this, or
 at least expose hooks to make it more straightforward. It is one of the reasons why we repeat over
-and over “Docker is not production ready yet”: it’s fine to skip metrics for development,
-continuous testing, or staging environments, but it’s definitely not fine to run production
+and over "Docker is not production ready yet": it's fine to skip metrics for development,
+continuous testing, or staging environments, but it's definitely not fine to run production
 services without metrics!
 
 Last but not least, note that even with all that information, you will still need a storage and
 graphing system for those metrics. There are many such systems out there. If you want something
 that you can deploy on your own, you can check e.g. collectd or Graphite. There are also
-“-as-a-Service” offerings. Those services will store your metrics and let you query them in various
+"-as-a-Service" offerings. Those services will store your metrics and let you query them in various
 ways, for a given price. Some examples include Librato, AWS CloudWatch, New Relic Server Monitoring
 , and many more.
 
-About Jérôme Petazzoni
+About Jerôme Petazzoni
 
 sam
 
-Jérôme is a senior engineer at dotCloud, where he rotates between Ops, Support and Evangelist
-duties and has earned the nickname of “master Yoda”. In a previous life he built and operated large
+Jerôme is a senior engineer at dotCloud, where he rotates between Ops, Support and Evangelist
+duties and has earned the nickname of "master Yoda". In a previous life he built and operated large
 scale Xen hosting back when EC2 was just the name of a plane, supervized the deployment of fiber
 interconnects through the French subway, built a specialized GIS to visualize fiber infrastructure,
 specialized in commando deployments of large-scale computer systems in bandwidth-constrained
 environments such as conference centers, and various other feats of technical wizardry. He cares
 for the servers powering dotCloud, helps our users feel at home on the platform, and documents the
-many ways to use dotCloud in articles, tutorials and sample applications. He’s also an avid
+many ways to use dotCloud in articles, tutorials and sample applications. He's also an avid
 dotCloud power user who has deployed just about anything on dotCloud – look for one of his many
 custom services on our Github repository.
 
-Connect with Jérôme on Twitter! @jpetazzo
+Connect with Jerôme on Twitter! @jpetazzo
 
 EmailFacebookTwitter
 By Jerome Petazzoni - Posted in Demos, Tutorials - Tagged with cgroups, containers, docker, lxc,
 metrics
 
-One Response to “Gathering LXC and Docker containers metrics”
+One Response to "Gathering LXC and Docker containers metrics"
 
  1. [54a757]
 
@@ -3026,16 +3026,16 @@ http://philipzheng.gitbooks.io/docker_practice/content/install/centos.html
 #+BEGIN_EXAMPLE
 CentOS6
 
-對於 CentOS6，可以使用 EPEL 套件庫安裝 Docker，命令以下
+對於 CentOS6,可以使用 EPEL 套件庫安裝 Docker,命令以下
 
 $ sudo yum install http://mirrors.yun-idc.com/epel/6/i386/epel-release-6-8.noarch.rpm
 $ sudo yum install docker-io
 CentOS7
 
-CentOS7 系統 CentOS-Extras 庫中已內建 Docker，可以直接安裝：
+CentOS7 系統 CentOS-Extras 庫中已內建 Docker,可以直接安裝:
 
 $ sudo yum install docker
-安裝之後啟動 Docker 服務，並讓它隨系統啟動自動載入。
+安裝之後啟動 Docker 服務,並讓它隨系統啟動自動載入.
 
 $ sudo service docker start
 $ sudo chkconfig docker on
@@ -3287,9 +3287,9 @@ sudo route del -net 172.16.0.0 netmask 255.240.0.0
 cat /etc/network/interfaces
 cat /etc/network/interface
 
-因为阿里云默认把所有的私网地址段都加到导致docker找不到一个可用的IP段了。
-要解决这个问题只需要一步，修改/etc/network/interface 去掉172那段的路由，
-然后ip route del 172.段的路由。
+因为阿里云默认把所有的私网地址段都加到导致docker找不到一个可用的IP段了.
+要解决这个问题只需要一步,修改/etc/network/interface 去掉172那段的路由,
+然后ip route del 172.段的路由.
 
 #+BEGIN_EXAMPLE
 root@iZ25y7u44dnZ:~# cat /etc/network/interfaces
@@ -3526,42 +3526,42 @@ none            100M     0  100M   0% /run/user
 #+BEGIN_EXAMPLE
 [7/12/15, 11:56:33 AM] jacobzeng-曾瑞林ruiling: 求分散的image
 [7/12/15, 11:57:49 AM] denny: 什么叫作分散的image?
-[7/12/15, 12:02:39 PM] denny: 我的思路是：
+[7/12/15, 12:02:39 PM] denny: 我的思路是:
 1.  搭一个private docker hub registration server
-     分别部署在美国和中国。这样都可以就近去取这个2,3G的文件，而不是从docker官网去拿
-2. sandbox solution中会自动起一个squid反向代理，这样大文件的下载就可以快不少。
+     分别部署在美国和中国.这样都可以就近去取这个2,3G的文件,而不是从docker官网去拿
+2. sandbox solution中会自动起一个squid反向代理,这样大文件的下载就可以快不少.
 
-我初步估计，应该可以把整体测试时间缩短到之前的1/3或1/2
+我初步估计,应该可以把整体测试时间缩短到之前的1/3或1/2
 [7/12/15, 12:03:22 PM] jacobzeng-曾瑞林ruiling: 就是非all in one
 [7/12/15, 12:03:30 PM] jacobzeng-曾瑞林ruiling: 嗯
 [7/12/15, 12:03:49 PM] denny: 多个服务多个container, 是这样意思吗？
-[7/12/15, 12:06:18 PM] jacobzeng-曾瑞林ruiling: 嗯，多image,各自是各自的image,好维护，好下载，好扩展，不只是开发环境，部署也可以直接用
-[7/12/15, 12:08:10 PM] denny: 这个思路的优缺点是。
+[7/12/15, 12:06:18 PM] jacobzeng-曾瑞林ruiling: 嗯,多image,各自是各自的image,好维护,好下载,好扩展,不只是开发环境,部署也可以直接用
+[7/12/15, 12:08:10 PM] denny: 这个思路的优缺点是.
 pros:
 1. 每个service有自己的container image, 测试和部署起来简单方便
-2. 每个service被隔离开来，逻辑清楚简单。
+2. 每个service被隔离开来,逻辑清楚简单.
 
 Cons:
-1. 每个image都是2到3G左右，下载起来会比较慢
+1. 每个image都是2到3G左右,下载起来会比较慢
 2. 每个image的制作和维护需要花费不少时间
-3. 每个container之间应用层通讯，需要做端口映射。从目前技术来看，多半需要人工改iptable
-[7/12/15, 12:09:07 PM] denny: 这个问题，之前与Chenxue讨论过。
+3. 每个container之间应用层通讯,需要做端口映射.从目前技术来看,多半需要人工改iptable
+[7/12/15, 12:09:07 PM] denny: 这个问题,之前与Chenxue讨论过.
 
-基于上面的论证，我倾向，一个image + chef脚本的思路。
+基于上面的论证,我倾向,一个image + chef脚本的思路.
 [7/12/15, 12:09:16 PM] denny: 你怎么看
-[7/12/15, 12:11:09 PM] jacobzeng-曾瑞林ruiling: 1.是问题，2我觉得是我们可以花时间的事情3的话可以预先配置，也可以走container之间内部通信
-[7/12/15, 12:11:19 PM] denny: 或者，我们做个折衷：
+[7/12/15, 12:11:09 PM] jacobzeng-曾瑞林ruiling: 1.是问题,2我觉得是我们可以花时间的事情3的话可以预先配置,也可以走container之间内部通信
+[7/12/15, 12:11:19 PM] denny: 或者,我们做个折衷:
 - 线上用image + chef
 - 线下用多个image
-[7/12/15, 12:11:48 PM] denny: 1的问题，可以通过自己搭建一个docker registration来做
-[7/12/15, 12:12:01 PM] denny: 可能时间会短一些。
-[7/12/15, 12:12:22 PM] jacobzeng-曾瑞林ruiling: 只是提个思路，我是觉得可以多尝试
+[7/12/15, 12:11:48 PM] denny: 1的问题,可以通过自己搭建一个docker registration来做
+[7/12/15, 12:12:01 PM] denny: 可能时间会短一些.
+[7/12/15, 12:12:22 PM] jacobzeng-曾瑞林ruiling: 只是提个思路,我是觉得可以多尝试
 [7/12/15, 12:13:27 PM] jacobzeng-曾瑞林ruiling: 现在这样用感觉没有利用到docker轻量级的优势
 [7/12/15, 12:13:35 PM] jacobzeng-曾瑞林ruiling: 离开下
-[7/12/15, 12:13:36 PM] denny: 第2点，可以通过一些自动化脚本来做。当然会孽缘不少时间。
+[7/12/15, 12:13:36 PM] denny: 第2点,可以通过一些自动化脚本来做.当然会孽缘不少时间.
 
-我主要担心的是第3点。
-[7/12/15, 12:18:01 PM] denny: 目前对docker的使用，主要是看重它多快速复制相同的env，避免各种奇怪的环境问题。
+我主要担心的是第3点.
+[7/12/15, 12:18:01 PM] denny: 目前对docker的使用,主要是看重它多快速复制相同的env,避免各种奇怪的环境问题.
 
 可以选一个项目做下POC
 #+END_EXAMPLE
@@ -3569,9 +3569,9 @@ Cons:
 http://stackoverflow.com/questions/30984569/error-error-creating-aufs-mount-to-when-building-dockerfile
 #+BEGIN_EXAMPLE
 root@docker-server:/tmp# mv /var/lib/docker/aufs /tmp/
-mv: cannot move ‘/var/lib/docker/aufs’ to ‘/tmp/aufs’: Device or resource busy
+mv: cannot move '/var/lib/docker/aufs' to '/tmp/aufs': Device or resource busy
 root@docker-server:/tmp# rm -rf /var/lib/docker/aufs
-rm: cannot remove ‘/var/lib/docker/aufs’: Device or resource busy
+rm: cannot remove '/var/lib/docker/aufs': Device or resource busy
 #+END_EXAMPLE
 ** DONE docker rename container: docker rename OLD_NAME NEW_NAME
   CLOSED: [2015-11-10 Tue 18:42]
@@ -3717,12 +3717,12 @@ http://qicheng0211.blog.51cto.com/3958621/1582909
 #+BEGIN_EXAMPLE
 docker: relocation error: docker: symbol
 dm_task_get_info_with_deferred_remove, version Base not defined in
-file libdevmapper.so.1.02 with link time reference 报这个错误的时候，
-运行yum install device-mapper-event-libs即可。 详见:
+file libdevmapper.so.1.02 with link time reference 报这个错误的时候,
+运行yum install device-mapper-event-libs即可. 详见:
 http://stackoverflow.com/questions/27216473/docker-1-3-fails-to-start-on-rhel6-5
 #+END_EXAMPLE
 
-不升级内核会报错，我把错误摘一下：
+不升级内核会报错,我把错误摘一下:
 [info] WARNING: You are running linux kernel version 2.6.32-431.el6.x86_64, which might be unstable running docker. Please upgrade your kernel to 3.8.0.
 /usr/bin/docker: relocation error: /usr/bin/docker: symbol dm_task_get_info_with_deferred_remove, version Base not defined in file libdevmapper.so.1.02 with link time reference
 
@@ -3817,7 +3817,7 @@ https://blog.giantswarm.io/moving-docker-container-images-around/
 
 #  --8<-------------------------- separator ------------------------>8--
 
-如下命令是相匹配的：
+如下命令是相匹配的:
 docker save <--> docker load
 docker export <-->docker import
 
@@ -3886,7 +3886,7 @@ to a container (e.g. delete a file), but these changes will not affect the image
 create a new image from a running container (and all it changes) using docker commit <container-id>
 <image-name>.
 
-Let’s make an example:
+Let's make an example:
 
 [# we pull a base Doc]
 
@@ -3924,7 +3924,7 @@ Let’s make an example:
    found'
 
 Now we have two different images (busybox and busybox-1) and we have a container made from busybox
-which also contains the change (the new folder /home/test). Let’s see how we can persist our
+which also contains the change (the new folder /home/test). Let's see how we can persist our
 changes.
 
 Export
@@ -3965,7 +3965,7 @@ export).
 
 The difference
 
-Now after we created our TAR-files, let’s see what we have. First of all we clean up a little bit –
+Now after we created our TAR-files, let's see what we have. First of all we clean up a little bit –
 we remove all containers and images we have right now:
 
 [# first we see which]
@@ -4013,7 +4013,7 @@ We can do the same for the saved image:
 9 sudo docker run busybox-1 [ -d /home/test ] && echo 'Directory found' || echo 'Directory not
   found'
 
-So what’s the difference between both? Well, as we saw the exported version is slightly smaller.
+So what's the difference between both? Well, as we saw the exported version is slightly smaller.
 That is because it is flattened, which means it lost its history and meta-data. We can see this by
 the following command:
 
@@ -4068,15 +4068,15 @@ Write a Comment
 
   * Aris Setyawan
 
-    Can I “pause” a computation, and then “resume” it using EXPORT container command? Or is It
+    Can I "pause" a computation, and then "resume" it using EXPORT container command? Or is It
     possible to do, using Docker?
 
   * Pingback: Introduction to Docker()
 
   * Alex Glover
 
-    Thanks for posting this Thomas – this isn’t a topic that is well covered in the documentation.
-    I appreciate how you walked through the ‘experiment’ end to end, clearing the original images
+    Thanks for posting this Thomas – this isn't a topic that is well covered in the documentation.
+    I appreciate how you walked through the 'experiment' end to end, clearing the original images
     before loading them and showing the image tree.
 
     Great post.
@@ -4482,25 +4482,25 @@ http://blog.opskumu.com/docker.html#docker--12
 
 四种网络模式摘自 Docker 网络详解及 pipework 源码解读与实践
 
-docker run 创建 Docker 容器时，可以用 –net 选项指定容器的网络模式，Docker 有以下 4 种网络模式：
+docker run 创建 Docker 容器时,可以用 –net 选项指定容器的网络模式,Docker 有以下 4 种网络模式:
 
-host 模式，使用 –net=host 指定。
-container 模式，使用 –net=container:NAME_or_ID 指定。
-none 模式，使用 –net=none 指定。
-bridge 模式，使用 –net=bridge 指定，默认设置。
+host 模式,使用 –net=host 指定.
+container 模式,使用 –net=container:NAME_or_ID 指定.
+none 模式,使用 –net=none 指定.
+bridge 模式,使用 –net=bridge 指定,默认设置.
 host 模式
 
-如果启动容器的时候使用 host 模式，那么这个容器将不会获得一个独立的 Network Namespace，而是和宿主机共用一个 Network Namespace。容器将不会虚拟出自己的网卡，配置自己的 IP 等，而是使用宿主机的 IP 和端口。
+如果启动容器的时候使用 host 模式,那么这个容器将不会获得一个独立的 Network Namespace,而是和宿主机共用一个 Network Namespace.容器将不会虚拟出自己的网卡,配置自己的 IP 等,而是使用宿主机的 IP 和端口.
 
-例如，我们在 10.10.101.105/24 的机器上用 host 模式启动一个含有 web 应用的 Docker 容器，监听 tcp 80 端口。当我们在容器中执行任何类似 ifconfig 命令查看网络环境时，看到的都是宿主机上的信息。而外界访问容器中的应用，则直接使用 10.10.101.105:80 即可，不用任何 NAT 转换，就如直接跑在宿主机中一样。但是，容器的其他方面，如文件系统、进程列表等还是和宿主机隔离的。
+例如,我们在 10.10.101.105/24 的机器上用 host 模式启动一个含有 web 应用的 Docker 容器,监听 tcp 80 端口.当我们在容器中执行任何类似 ifconfig 命令查看网络环境时,看到的都是宿主机上的信息.而外界访问容器中的应用,则直接使用 10.10.101.105:80 即可,不用任何 NAT 转换,就如直接跑在宿主机中一样.但是,容器的其他方面,如文件系统`进程列表等还是和宿主机隔离的.
 
 container 模式
 
-这个模式指定新创建的容器和已经存在的一个容器共享一个 Network Namespace，而不是和宿主机共享。新创建的容器不会创建自己的网卡，配置自己的 IP，而是和一个指定的容器共享 IP、端口范围等。同样，两个容器除了网络方面，其他的如文件系统、进程列表等还是隔离的。两个容器的进程可以通过 lo 网卡设备通信。
+这个模式指定新创建的容器和已经存在的一个容器共享一个 Network Namespace,而不是和宿主机共享.新创建的容器不会创建自己的网卡,配置自己的 IP,而是和一个指定的容器共享 IP`端口范围等.同样,两个容器除了网络方面,其他的如文件系统`进程列表等还是隔离的.两个容器的进程可以通过 lo 网卡设备通信.
 
 none模式
 
-这个模式和前两个不同。在这种模式下，Docker 容器拥有自己的 Network Namespace，但是，并不为 Docker容器进行任何网络配置。也就是说，这个 Docker 容器没有网卡、IP、路由等信息。需要我们自己为 Docker 容器添加网卡、配置 IP 等。
+这个模式和前两个不同.在这种模式下,Docker 容器拥有自己的 Network Namespace,但是,并不为 Docker容器进行任何网络配置.也就是说,这个 Docker 容器没有网卡`IP`路由等信息.需要我们自己为 Docker 容器添加网卡`配置 IP 等.
 
 bridge模式
 
@@ -4508,7 +4508,7 @@ vethbridge
 
 图:The Container World Part 2 Networking
 
-bridge 模式是 Docker 默认的网络设置，此模式会为每一个容器分配 Network Namespace、设置 IP 等，并将一个主机上的 Docker 容器连接到一个虚拟网桥上。当 Docker server 启动时，会在主机上创建一个名为 docker0 的虚拟网桥，此主机上启动的 Docker 容器会连接到这个虚拟网桥上。虚拟网桥的工作方式和物理交换机类似，这样主机上的所有容器就通过交换机连在了一个二层网络中。接下来就要为容器分配 IP 了，Docker 会从 RFC1918 所定义的私有 IP 网段中，选择一个和宿主机不同的IP地址和子网分配给 docker0，连接到 docker0 的容器就从这个子网中选择一个未占用的 IP 使用。如一般 Docker 会使用 172.17.0.0/16 这个网段，并将 172.17.42.1/16 分配给 docker0 网桥（在主机上使用 ifconfig 命令是可以看到 docker0 的，可以认为它是网桥的管理接口，在宿主机上作为一块虚拟网卡使用）
+bridge 模式是 Docker 默认的网络设置,此模式会为每一个容器分配 Network Namespace`设置 IP 等,并将一个主机上的 Docker 容器连接到一个虚拟网桥上.当 Docker server 启动时,会在主机上创建一个名为 docker0 的虚拟网桥,此主机上启动的 Docker 容器会连接到这个虚拟网桥上.虚拟网桥的工作方式和物理交换机类似,这样主机上的所有容器就通过交换机连在了一个二层网络中.接下来就要为容器分配 IP 了,Docker 会从 RFC1918 所定义的私有 IP 网段中,选择一个和宿主机不同的IP地址和子网分配给 docker0,连接到 docker0 的容器就从这个子网中选择一个未占用的 IP 使用.如一般 Docker 会使用 172.17.0.0/16 这个网段,并将 172.17.42.1/16 分配给 docker0 网桥（在主机上使用 ifconfig 命令是可以看到 docker0 的,可以认为它是网桥的管理接口,在宿主机上作为一块虚拟网卡使用）
 #+END_EXAMPLE
 ** [#A] remove intermediate container by build docker image
 docker ps -a | grep -v CONTAINER | grep /bin/sh | awk -F' ' '{print $1}' | xargs docker rm
@@ -4597,7 +4597,7 @@ time="2015-12-17T05:42:30.949016814Z" level=error msg="[graphdriver] prior stora
 time="2015-12-17T05:42:30.949113351Z" level=fatal msg="Error starting daemon: error initializing graphdriver: Base Device UUID and Filesystem verification failed.Error running deviceCreate (ActivateDevice) dm_task_run failed"
 root@88844f59fa59:/opt# docker ps
 #+END_EXAMPLE
-** BYPASS DEVOPS-158: docker image优化：将logstash.tar.gz烧到默认的image中
+** BYPASS DEVOPS-158: docker image优化:将logstash.tar.gz烧到默认的image中
   CLOSED: [2015-11-09 Mon 01:02]
 https://authright.atlassian.net/browse/DEVOPS-158
 7022
@@ -5025,7 +5025,7 @@ In Jenkins, run DeployAllInOne job with below parameter
 Project_name: docker-hub-registry-auth
 chef_json: {"run_list": ["recipe[docker-registry2]"]}
 check_command: 留空
-Note: 第一次运行时，可能会遇到如下出错信息。重试一次，应该OK了。
+Note: 第一次运行时,可能会遇到如下出错信息.重试一次,应该OK了.
 09:12:00 [2015-10-26T09:12:00+08:00] WARN: Ohai::Config[:plugin_path] is set. Ohai::Config[:plugin_path] is deprecated and will be removed in future releases of ohai. Use ohai.plugin_path in your configuration file to configure :plugin_path for ohai.
 09:12:00 [2015-10-26T09:12:00+08:00] WARN: Ohai::Config[:plugin_path] is set. Ohai::Config[:plugin_path] is deprecated and will be removed in future releases of ohai. Use ohai.plugin_path in your configuration file to configure :plugin_path for ohai.
 09:12:00 [2015-10-26T09:12:00+08:00] ERROR: Encountered error while running plugins: #<Ohai::Exceptions::AttributeNotFound: No such attribute: 'nginx'>
@@ -5117,7 +5117,7 @@ ssh -i /home/denny/denny root@192.168.1.185
 docker run -t -d --privileged -p 5022:22 denny/sshd:latest /usr/sbin/sshd -D
 ssh -p 5022 root@127.0.0.1
 
-# Step One — Install Prerequisites
+# Step One - Install Prerequisites
 apt-get update
 apt-get -y install build-essential python-dev libevent-dev python-pip liblzma-dev
 apt-get -y install swig
@@ -5125,7 +5125,7 @@ apt-get -y install openssl
 apt-get -y install libssl-dev
 sudo apt-get -y install nginx apache2-utils
 
-# Step Two — Install and Configure Docker Registry
+# Step Two - Install and Configure Docker Registry
 sudo pip install docker-registry
 
 gunicorn --access-logfile - --debug -k gevent -b 0.0.0.0:5000 -w 1 docker_registry.wsgi:application
@@ -5284,7 +5284,7 @@ checkout.
 To continue the analogy, running a private Docker registry is like running a private Git repository
 for your Docker images.
 
-Step One — Install Prerequisites
+Step One - Install Prerequisites
 
 You should create a user with sudo access on the registry server (and on the clients when you get
 that far).
@@ -5296,7 +5296,7 @@ sudo apt-get update
 
 sudo apt-get -y install build-essential python-dev libevent-dev python-pip liblzma-dev
 
-Step Two — Install and Configure Docker Registry
+Step Two - Install and Configure Docker Registry
 
 To install the latest stable release of the Docker registry (0.7.3 at the time of writing) we'll
 use Python's package management utility pip:
@@ -5377,7 +5377,7 @@ You should see output that looks like this:
 
 Great! Now we have a Docker registry running. Go ahead and kill it with Ctrl+C.
 
-At this point the registry isn't that useful yet — it won't start unless you type in the above
+At this point the registry isn't that useful yet - it won't start unless you type in the above
 gunicorn command. Also, Docker registry doesn't come with any built-in authentication mechanism, so
 it's insecure and completely open to the public right now.
 
@@ -5426,7 +5426,7 @@ If all is well you'll see text similar to the output from our previous gunicorn 
 Now that the server's running in the background, let's move on to configuring Nginx so the registry
 is secure.
 
-Step Four — Secure Your Docker Registry with Nginx
+Step Four - Secure Your Docker Registry with Nginx
 
 The first step is to set up authentication so that not just anybody can log into our server.
 
@@ -5553,7 +5553,7 @@ If it worked correctly you should now see:
 
 "docker-registry server (dev) (v0.8.1)"
 
-Step Five — Set Up SSL
+Step Five - Set Up SSL
 
 At this point we have the registry up and running behind Nginx with HTTP basic authentication
 working. However, the setup is still not very secure since the connections are unencrypted. You
@@ -5692,7 +5692,7 @@ If not, recheck the SSL steps and your Nginx configuration file to make sure eve
 Now we have a Docker registry running behind an Nginx server which is providing authentication and
 encryption via SSL.
 
-Step Six — Access Your Docker Registry from Another Machine
+Step Six - Access Your Docker Registry from Another Machine
 
 To access your Docker registry, first add the SSL certificate you created earlier to the new client
 machine. The file you want is located at ~/certs/devdockerCA.crt. You can copy it to the new
@@ -5808,7 +5808,7 @@ message.
 At this point your Docker registry is up and running! Let's make a test image to push to the
 registry.
 
-Step Seven — Publish to Your Docker Registry
+Step Seven - Publish to Your Docker Registry
 
 On the client server, create a small empty image to push to our new registry.
 
@@ -6128,7 +6128,7 @@ ok
 [12:55]
 Bruno
 
-If I reboot docker daemon, it’s fine
+If I reboot docker daemon, it's fine
 
 
 [12:59]
@@ -6138,7 +6138,7 @@ When we try to start mdm-jenkins, it need to update iptable for port forwarding.
 
 If we restart docker daemon, the DOCKER chain will be created automatically.
 
-I’m suspecting if we upgrade to latest docker daemon, we won’t see this issue.
+I'm suspecting if we upgrade to latest docker daemon, we won't see this issue.
 #+END_EXAMPLE
 ** DONE docker add volume mount for an existing containers: so far, the only way is recreation.
   CLOSED: [2016-10-17 Mon 21:35]
@@ -6255,12 +6255,12 @@ You can get an email when a build fails. Not as API-friendly as a webhook, but i
 
 #+BEGIN_EXAMPLE
 dennyzhang [12:29 AM]
-Ozgur, when you’re available, could you help me with some docker hub setting?
+Ozgur, when you're available, could you help me with some docker hub setting?
 
 Login to https://hub.docker.com and make some change, or grant me admin access temporarily.
 
 Details:
-As we all know, we’re using auto-build feature of docker hub.
+As we all know, we're using auto-build feature of docker hub.
 
 When image build fails, we certainly want timely alerts. Right?
 
@@ -6286,7 +6286,7 @@ Add Comment
 dennyzhang [12:31 AM]
 Once enabled, the email related the account will get alerts.
 
-It’s better we bind *more email addresses* to that account.
+It's better we bind *more email addresses* to that account.
 
 Thus we can have more eyes on these failures, and remove SPOF(single point of failure). :slightly_smiling_face: (edited)
 
@@ -6507,7 +6507,7 @@ Now thirsty_darwin has your interactive changes.
 #+END_EXAMPLE
 ** DONE apk add --update curl
    CLOSED: [2017-05-14 Sun 16:18]
-** DONE Docker — An error occurred trying to connect: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.24/containers/json: read unix @->/var/run/docker.sock: read: connection reset by peer
+** DONE Docker - An error occurred trying to connect: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.24/containers/json: read unix @->/var/run/docker.sock: read: connection reset by peer
   CLOSED: [2017-05-17 Wed 22:54]
 https://medium.com/@rasheedamir/docker-an-error-occurred-trying-to-connect-get-http-2fvar-2frun-2fdocker-sock-v1-24-680c61991bc2
 ** DONE [#A] Docker, stop messing with my iptables rules: DOCKER_OPTS --iptables=false
@@ -6560,7 +6560,7 @@ ozgur.v.amac [11:56 AM]
 
 dennyzhang
 [11:57 AM]
-What’s the problem with /launch and /piper within nginx prox?
+What's the problem with /launch and /piper within nginx prox?
 
 ozgur.v.amac [11:58 AM]
 There is no /launch. / serves launch and /piper serves piper content, but we do not have the correct config to serve piper's dynamic content from a subpath like /piper. So far we have always tested it via / path so it works fine when we use /
@@ -6611,7 +6611,7 @@ To
 
 Or hack in the way how Docker interacts with iptables.
 
-Might need some time to propose a solution. But it’s a known vulnerability of Docker expose.
+Might need some time to propose a solution. But it's a known vulnerability of Docker expose.
 #+END_EXAMPLE
 ** HALF Running Docker containers as non root
 https://blog.csanchez.org/2017/01/31/running-docker-containers-as-non-root/
@@ -6782,9 +6782,9 @@ Compose always starts containers in dependency order, but it will not wait for i
  Yes, Jenkins is a very good option. I was just wondering since we are on bitbucket and already utilizing the pipelines feature, it might be good learn about it. They do claim docker hub deployment compabilitity, but I just don't know how yet. Just a thought to explore.
 
  dennyzhang [10:00 AM]
- That’s would be nice!
+ That's would be nice!
 
- Yeah, then let’s try bitbucket pieplines.
+ Yeah, then let's try bitbucket pieplines.
 
  I know for sure that it would be capable and integrate well with docker practice.
 
@@ -7503,17 +7503,17 @@ docker-machine create -d linode --linode-api-key="rVwhQwj28Z1LozLQeiVPDg70q192Yl
 * [#A] Google Kubernetes                                 :noexport:IMPORTANT:
 No.2 Kubernetes
 
-Kubernetes是一个编排（orchestration）工具，类似运行于Apache Mesos之上的Marathon，但是它是专门为Docker容器而创建的。
+Kubernetes是一个编排（orchestration）工具,类似运行于Apache Mesos之上的Marathon,但是它是专门为Docker容器而创建的.
 
 Kubernetes is an open-source platform for automating deployment, scaling, and operations of application containers across clusters of hosts, providing container-centric infrastructure
 
-Kubernetes来自Google，除了能在他们自己的Google Container Engine上工作之外，还支持VMware vSphere, Mesos, or Mesosphere DCOS，以及很多公有云，包括Amazon Web Services等。
+Kubernetes来自Google,除了能在他们自己的Google Container Engine上工作之外,还支持VMware vSphere, Mesos, or Mesosphere DCOS,以及很多公有云,包括Amazon Web Services等.
 
-Kubernetes 具备完善的集群管理能力，包括多层次的安全防护和准入机制、多租户应用支撑能力、透明的服务注册和服务发现机制、内建负载均衡器、故障发现和自我修复能力、服务滚动升级和在线扩容、可扩展的资源自动调度机制、多粒度的资源配额管理能力。
+Kubernetes 具备完善的集群管理能力,包括多层次的安全防护和准入机制`多租户应用支撑能力`透明的服务注册和服务发现机制`内建负载均衡器`故障发现和自我修复能力`服务滚动升级和在线扩容`可扩展的资源自动调度机制`多粒度的资源配额管理能力.
 
-Kubernetes 还提供完善的管理工具，涵盖开发、部署测试、运维监控等各个环节。
+Kubernetes 还提供完善的管理工具,涵盖开发`部署测试`运维监控等各个环节.
 
-每个API对象都有3大类属性：元数据metadata、规范spec和状态status
+每个API对象都有3大类属性:元数据metadata`规范spec和状态status
 
 - Concepts: Pod, Service, Labels和单Pod单IP
 ** Installing and Setting Up kubectl
@@ -7590,13 +7590,13 @@ https://github.com/kubernetes/kubernetes/issues/23092
 - Ecosystem
 ** healthcheck: LivenessProbe, ReadinessProbe
 ** 核心组件
-Kubernetes主要由以下几个核心组件组成：
-- etcd保存了整个集群的状态；
-- apiserver提供了资源操作的唯一入口，并提供认证、授权、访问控制、API注册和发现等机制；
-- controller manager负责维护集群的状态，比如故障检测、自动扩展、滚动更新等；
-- scheduler负责资源的调度，按照预定的调度策略将Pod调度到相应的机器上；
-- kubelet负责维护容器的生命周期，同时也负责Volume（CVI）和网络（CNI）的管理；
-- Container runtime负责镜像管理以及Pod和容器的真正运行（CRI）；
+Kubernetes主要由以下几个核心组件组成:
+- etcd保存了整个集群的状态;
+- apiserver提供了资源操作的唯一入口,并提供认证`授权`访问控制`API注册和发现等机制;
+- controller manager负责维护集群的状态,比如故障检测`自动扩展`滚动更新等;
+- scheduler负责资源的调度,按照预定的调度策略将Pod调度到相应的机器上;
+- kubelet负责维护容器的生命周期,同时也负责Volume（CVI）和网络（CNI）的管理;
+- Container runtime负责镜像管理以及Pod和容器的真正运行（CRI）;
 - kube-proxy负责为Service提供cluster内部的服务发现和负载均衡
 ** helloworld
 https://kubernetes.io/docs/tutorials/stateless-application/hello-minikube/
@@ -7610,7 +7610,7 @@ http://www.oschina.net/news/70140/infoworlds-2016-technology-of-the-year-award-w
 ** DONE Principle: API的操作复杂度不能超过O(N)
    CLOSED: [2017-06-10 Sat 15:24]
 https://kubernetes.feisky.xyz/architecture/concepts.html
-API操作复杂度与对象数量成正比。这一条主要是从系统性能角度考虑，要保证整个系统随着系统规模的扩大，性能不会迅速变慢到无法使用，那么最低的限定就是API的操作复杂度不能超过O(N)，N是对象的数量，否则系统就不具备水平伸缩性了。
+API操作复杂度与对象数量成正比.这一条主要是从系统性能角度考虑,要保证整个系统随着系统规模的扩大,性能不会迅速变慢到无法使用,那么最低的限定就是API的操作复杂度不能超过O(N),N是对象的数量,否则系统就不具备水平伸缩性了.
 ** Principle: API对象状态不能依赖于网络连接状态
 https://kubernetes.feisky.xyz/architecture/concepts.html
 ** #  --8<-------------------------- separator ------------------------>8--
