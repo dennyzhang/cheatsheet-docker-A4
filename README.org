@@ -25,11 +25,21 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 | Name                             | Summary                                                                              |
 |----------------------------------+--------------------------------------------------------------------------------------|
 | Change entrypoint to run nothing | =entrypoint: ["tail", "-f", "/dev/null"]=                                            |
-| Change restart policy            | =restart: always= [[https://docs.docker.com/compose/compose-file/compose-file-v2/=restart][link]]                                                               |
+| Change restart policy            | =restart: always=                                                                    |
 | Mount file as volume             | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/samples/mount-file.yml][samples/mount-file.yml]] |
 | Start compose env                | =docker-compose up=, =docker-compose up -d=                                          |
 | Stop compose env                 | =docker-compose down=, =docker-compose down -v=                                      |
 | Check logs                       | =docker-compose logs=                                                                |
+Links:
+
+https://docs.docker.com/compose/compose-file/#restart_policy
+
+** Resource Reference
+| Name            | Summary                                                 |
+|-----------------+---------------------------------------------------------|
+| Docker SDK      | https://docs.docker.com/develop/sdk/examples/           |
+| Docker REST API | https://docs.docker.com/engine/api/v1.27/#tag/Container |
+
 ** Check Containers
 
 | Name                               | Summary                                                       |
@@ -54,7 +64,7 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 | Tag <image>                             | =docker tag <image> username/repo:tag=              |
 | Docker push a tagged image to repo      | =docker push username/repo:tag=                     |
 | Run image from a given tag              | =docker run username/repo:tag=                      |
-| Create docker image                     | =docker build -t imgname .=                         |
+| Create docker image                     | =docker build -t denny/image:test .=                |
 
 - Docker build
 #+BEGIN_SRC sh
@@ -130,7 +140,6 @@ License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_lice
 #+END_HTML
 * org-mode configuration                                           :noexport:
 #+STARTUP: overview customtime noalign logdone showall
-#+TITLE:  Docker CheatSheet
 #+DESCRIPTION: 
 #+KEYWORDS: 
 #+AUTHOR: Denny Zhang
