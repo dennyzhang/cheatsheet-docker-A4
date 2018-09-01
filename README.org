@@ -72,10 +72,10 @@ cd "$working_dir" && cat "$dockerfile" | docker build -t "$docker_image" -f - .
 #+END_SRC
 
 *** Use google docker registry
-#+BEGIN_SRC sh
+#+BEGIN_EXAMPLE
 docker build -t gcr.io/<MY_REPO>/<MY_IMAGE>:<MY_TAG> .
 gcloud docker -- push gcr.io/<MY_REPO>/<MY_IMAGE>:<MY_TAG>
-#+END_SRC
+#+END_EXAMPLE
 ** Cleanup
 | Name                           | Summary                                                  |
 |--------------------------------+----------------------------------------------------------|
@@ -7839,6 +7839,7 @@ ftp> ls
 *** TODO Common mointor: disk usage, download link, dns setting
 curl -u ftp_totvslabs:TOTVSLabs123ChangeMe ftp://ftp.carol.ai:21/hosts
 * #  --8<-------------------------- separator ------------------------>8-- :noexport:
+* TODO Check https://github.com/wsargent/docker-cheat-sheet        :noexport:
 * DONE docker auto build: https://docs.docker.com/docker-hub/builds/#build-statuses-explained :noexport:
   CLOSED: [2018-07-10 Tue 10:18]
 * DONE [#A] docker multi-stage builds: https://docs.docker.com/develop/develop-images/multistage-build/#before-multi-stage-builds :noexport:
