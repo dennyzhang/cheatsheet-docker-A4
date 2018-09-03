@@ -68,7 +68,7 @@ https://docs.docker.com/compose/compose-file/#restart_policy
 
 - Docker build
 #+BEGIN_SRC sh
-cd "$working_dir" && cat "$dockerfile" | docker build -t "$docker_image" -f - .
+cd "$dir" && cat "$dockerfile" | docker build -t "$docker_image" -f - .
 #+END_SRC
 
 *** Use google docker registry
