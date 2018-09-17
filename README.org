@@ -23,62 +23,57 @@
 File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or star [[https://github.com/DennyZhang/cheatsheet-docker-A4][this repo]].
 
 See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][#denny-cheatsheets]]
+
 ** Docker Compose
 
 | Name                             | Summary                                                                              |
 |----------------------------------+--------------------------------------------------------------------------------------|
 | Change entrypoint to run nothing | =entrypoint: ["tail", "-f", "/dev/null"]=                                            |
-| Change restart policy            | =restart: always=                                                                    |
+| Change restart policy            | =restart: always=, [[https://docs.docker.com/compose/compose-file/#restart_policy][Link: Compose file version 3 reference]]                            |
 | Mount file as volume             | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/samples/mount-file.yml][samples/mount-file.yml]] |
 | Start compose env                | =docker-compose up=, =docker-compose up -d=                                          |
 | Stop compose env                 | =docker-compose down=, =docker-compose down -v=                                      |
 | Check logs                       | =docker-compose logs=                                                                |
-Links:
 
-https://docs.docker.com/compose/compose-file/#restart_policy
-
-** Resource Reference
-| Name            | Summary                                                 |
-|-----------------+---------------------------------------------------------|
-| Docker SDK      | https://docs.docker.com/develop/sdk/examples/           |
-| Docker REST API | https://docs.docker.com/engine/api/v1.27/#tag/Container |
-
-** Check Containers
+** Check Status
 
 | Name                               | Summary                                                       |
 |------------------------------------+---------------------------------------------------------------|
 | Tail container logs                | =docker logs --tail 5 $container_name=                        |
 | Check container healthcheck status | =docker inspect --format '{{.State.Health}}' $container_name= |
+| List containers                    | =docker ps=                                                   |
+| List all containers                | =docker ps -a=                                                |
+| List containers by labels          | =docker ps --filter "label=org.label-schema.group"=           |
+| List all images                         | =docker images -a=                                  |
+
 ** Container Basic
 | Name                                    | Summary                                             |
 |-----------------------------------------+-----------------------------------------------------|
 | Start docker container                  | =docker run -p 4000:80 imgname=                     |
 | Start docker container in detached mode | =docker run -d -p 4000:80 imgname=                  |
 | Enter a running container               | =docker exec -it [container-id] sh=                 |
-| List containers                         | =docker ps=                                         |
-| List all containers                     | =docker ps -a=                                      |
-| List containers by labels               | =docker ps --filter "label=org.label-schema.group"= |
 | Stop container                          | =docker stop <hash>=                                |
 | Remove container                        | =docker rm <hash>=                                  |
 | Remove all containers                   | =docker rm $(docker ps -a -q)=                      |
 | Force shutdown of one given container   | =docker kill <hash>=                                |
-| List all images                         | =docker images -a=                                  |
 | Login to docker hub                     | =docker login=                                      |
 | Tag <image>                             | =docker tag <image> username/repo:tag=              |
 | Docker push a tagged image to repo      | =docker push username/repo:tag=                     |
 | Run image from a given tag              | =docker run username/repo:tag=                      |
 | Create docker image                     | =docker build -t denny/image:test .=                |
 
-- Docker build
-#+BEGIN_SRC sh
-cd "$dir" && cat "$dockerfile" | docker build -t "$docker_image" -f - .
-#+END_SRC
+** Docker Socket file
+| Name                               | Summary                                                                                                                                               |
+|------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Links                              | [[https://docs.docker.com/develop/sdk/][Link: Develop with Docker Engine SDKs and API]]                                                                                                         |
+| Run container mounting socket file | =docker run -v /var/run/docker.sock:/var/run/docker.sock -ti alpine sh=                                                                               |
+| A different docker socket file     | =export DOCKER_HOST=unix:///my/docker.sock=                                                                                                           |
+| List containers                    | =curl -XGET --unix-socket /myrun/docker.sock http://localhost/containers/json=                                                                        |
+| Stop container                     | =curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/<container_id>/stop=                                                      |
+| Start container                    | =curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/<container_id>/start=                                                     |
+| List events                        | =curl --unix-socket /var/run/docker.sock http://localhost/events=                                                                                     |
+| Create container                   | =curl -XPOST --unix-socket /var/run/docker.sock -d '{"Image":"nginx:alpine"}' -H 'Content-Type: application/json' http://localhost/containers/create= |
 
-*** Use google docker registry
-#+BEGIN_EXAMPLE
-docker build -t gcr.io/<MY_REPO>/<MY_IMAGE>:<MY_TAG> .
-gcloud docker -- push gcr.io/<MY_REPO>/<MY_IMAGE>:<MY_TAG>
-#+END_EXAMPLE
 ** Cleanup
 | Name                           | Summary                                                  |
 |--------------------------------+----------------------------------------------------------|
@@ -87,7 +82,24 @@ gcloud docker -- push gcr.io/<MY_REPO>/<MY_IMAGE>:<MY_TAG>
 | Remove orphaned docker volumes | =docker volume rm $(docker volume ls -qf dangling=true)= |
 | Remove dead containers         | =docker rm $(docker ps --filter status=dead -qa)=        |
 
+** Resource Reference
+| Name            | Summary                                                 |
+|-----------------+---------------------------------------------------------|
+| Docker SDK      | https://docs.docker.com/develop/sdk/examples/           |
+| Docker REST API | https://docs.docker.com/engine/api/v1.27/#tag/Container |
+
 ** Scripts
+- Docker build
+#+BEGIN_SRC sh
+cd "$dir" && cat "$dockerfile" | docker build -t "$docker_image" -f - .
+#+END_SRC
+
+- Use google docker registry
+#+BEGIN_EXAMPLE
+docker build -t gcr.io/<MY_REPO>/<MY_IMAGE>:<MY_TAG> .
+gcloud docker -- push gcr.io/<MY_REPO>/<MY_IMAGE>:<MY_TAG>
+#+END_EXAMPLE
+
 - Delete all containers
 
 [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-all-containers.sh][delete-all-containers.sh]]
@@ -6386,40 +6398,6 @@ Compose always starts containers in dependency order, but it will not wait for i
    --cap-add sys_ptrace \
    strace
  #+END_EXAMPLE
-** DONE container get docker host from sock file /var/run/docker.sock
-   CLOSED: [2017-08-20 Sun 16:38]
- https://medium.com/lucjuggery/about-var-run-docker-sock-3bfd276e12fd
- /var/run/docker.sock
-
- unix:///var/run/docker.sock
-
- # create container
- curl -XPOST --unix-socket /var/run/docker.sock -d '{"Image":"nginx:alpine"}' -H 'Content-Type: application/json' http://localhost/containers/create
-
- docker ps -a
-
- # start container
- curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/3c8b12b5b84b/start
-
- # check status
- docker ps
-
- # Listen events from the Docker daemon
- docker run -v /var/run/docker.sock:/var/run/docker.sock -ti alpine sh
- apk add --update curl
- curl --unix-socket /var/run/docker.sock http://localhost/events
-
- # stop container
- curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/3c8b12b5b84b/stop
-
- # list containers
- curl -XGET --unix-socket /var/run/docker.sock http://localhost/containers/json | jq
-*** useful link
- http://dockone.io/article/109
-
- http://dockone.io/article/109
- http://blog.trifork.com/2013/12/24/docker-from-a-distance-the-remote-api/
- https://stackoverflow.com/questions/37178824/how-to-find-docker-rest-api-url
 ** DONE docker share volumes across containers: volumes_from
    CLOSED: [2017-08-30 Wed 16:22]
  https://stackoverflow.com/questions/44284484/docker-compose-share-named-volume-between-multiple-containers
@@ -7410,6 +7388,6 @@ This can simplify the process of creating minimal container images, but may resu
 
 Please note this feature squashes all the newly built layers into a single layer, it is not squashing to scratch.
 #+END_EXAMPLE
-* TODO simplify docker add
+* TODO simplify docker add                                         :noexport:
 RUN wget -qO- https://github.com/cloudfoundry-incubator/credhub-cli/releases/download/1.5.3/credhub-linux-1.5.3.tgz | tar xvz && \
     mv credhub /usr/bin
