@@ -16,9 +16,8 @@
 <a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
 #+END_HTML
 
-- PDF Link: [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/cheatsheet-docker-A4.pdf][cheatsheet-docker-A4.pdf]]
+- PDF Link: [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/cheatsheet-docker-A4.pdf][cheatsheet-docker-A4.pdf]], Category: [[https://cheatsheet.dennyzhang.com/category/tools/][tools]]
 - Blog URL: https://cheatsheet.dennyzhang.com/cheatsheet-docker-A4
-- Category: [[https://cheatsheet.dennyzhang.com/category/tools/][tools]]
 
 File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or star [[https://github.com/DennyZhang/cheatsheet-docker-A4][this repo]].
 
@@ -5044,16 +5043,16 @@ server {
  listen 8080;
  server_name my.docker.registry.com;
 
- # ssl on;
- # ssl_certificate /etc/ssl/certs/docker-registry;
- # ssl_certificate_key /etc/ssl/private/docker-registry;
+# ssl on;
+# ssl_certificate /etc/ssl/certs/docker-registry;
+# ssl_certificate_key /etc/ssl/private/docker-registry;
 
  proxy_set_header Host       $http_host;   # required for Docker client sake
  proxy_set_header X-Real-IP  $remote_addr; # pass on real client IP
 
  client_max_body_size 0; # disable any limits to avoid HTTP 413 for large image uploads
 
- # required to avoid HTTP 411: see Issue #1486 (https://github.com/dotcloud/docker/issues/1486)
+# required to avoid HTTP 411: see Issue #1486 (https://github.com/dotcloud/docker/issues/1486)
  chunked_transfer_encoding on;
 
  location / {
@@ -6215,7 +6214,7 @@ Compose always starts containers in dependency order, but it will not wait for i
     CLOSED: [2017-03-21 Tue 18:03]
  adduser upload
 
- # Inject ssh key to /home/upload/.ssh/
+# Inject ssh key to /home/upload/.ssh/
 
  http_repo_dir=/data/httpd/repo
  mkdir -p ${http_repo_dir}/upload
@@ -6233,7 +6232,7 @@ Compose always starts containers in dependency order, but it will not wait for i
  cd /data
  git clone git@bitbucket.org:lrpdevops/mdmdevops-totvslabs.git
 
- # prepare ssl
+# prepare ssl
  http_repo_dir=/data/httpd/repo
  mkdir -p "$http_repo_dir"
  chown upload:upload "$http_repo_dir"
@@ -6339,7 +6338,7 @@ Compose always starts containers in dependency order, but it will not wait for i
  - Free for 5 servers
  - 10 users: $10 per month
 *** requirement
- #+BEGIN_EXAMPLE
+#+BEGIN_EXAMPLE
  ozgur.v.amac [8:17 AM]
  @dennyzhang What is your opinion about Bitbucket pipelines? Do you think we can use it to make images available to docker hub somehow? I am asking because I have not had a chance to figure out.
 
@@ -6375,7 +6374,7 @@ Compose always starts containers in dependency order, but it will not wait for i
 
  dennyzhang [10:12 AM]
  Nice, ozgur. got it. Will update asap.
- #+END_EXAMPLE
+#+END_EXAMPLE
 ** DONE Ubuntu 16.04 configure DOCKER_OPTS: /lib/systemd/system/
    CLOSED: [2017-07-10 Mon 10:14]
  https://github.com/moby/moby/issues/9889
@@ -6385,28 +6384,28 @@ Compose always starts containers in dependency order, but it will not wait for i
  The /etc/default/docker file is only used on systems using "upstart" and "SysVInit", not on systems using systemd.
 
  check /lib/systemd/system/docker.service
- #+BEGIN_EXAMPLE
+#+BEGIN_EXAMPLE
  [Service]
  EnvironmentFile=/etc/default/docker
  ExecStart=/usr/bin/docker -d $DOCKER_OPTS -H fd://
- #+END_EXAMPLE
+#+END_EXAMPLE
 ** DONE Pod is grouping of one or more containers.
    CLOSED: [2017-07-13 Thu 13:31]
  Pod share the same ip address, the same localhost, IPC
 ** DONE docker start container with pid configured
    CLOSED: [2017-07-30 Sun 09:06]
  https://medium.com/@rothgar/how-to-debug-a-running-docker-container-from-a-separate-container-983f11740dc6
- #+BEGIN_EXAMPLE
+#+BEGIN_EXAMPLE
  docker run -t --pid=container:container1 \
    --net=container:container1 \
    --cap-add sys_admin \
    --cap-add sys_ptrace \
    strace
- #+END_EXAMPLE
+#+END_EXAMPLE
 ** DONE docker share volumes across containers: volumes_from
    CLOSED: [2017-08-30 Wed 16:22]
  https://stackoverflow.com/questions/44284484/docker-compose-share-named-volume-between-multiple-containers
- #+BEGIN_EXAMPLE
+#+BEGIN_EXAMPLE
    ui:
      container_name: ui
      image: soterianetworks/kumku-u:base_${IMG_TAG_POSTFIX}
@@ -6437,7 +6436,7 @@ Compose always starts containers in dependency order, but it will not wait for i
    db_home:
    cache_home:
    launch_home:
- #+END_EXAMPLE
+#+END_EXAMPLE
 ** DONE docker can't ping google iptables: remove: --iptables=false
    CLOSED: [2018-04-03 Tue 10:14]
  https://github.com/moby/moby/issues/28241
@@ -6457,14 +6456,14 @@ Compose always starts containers in dependency order, but it will not wait for i
    CLOSED: [2018-07-03 Tue 14:12]
  https://github.com/localstack/localstack/issues/480
 
- #+BEGIN_EXAMPLE
+#+BEGIN_EXAMPLE
  bash-3.2$ docker run -it --volume /usr/local/Cellar/go/packages:/go --volume /tmp/302271400:/output --entrypoint=/bin/sh golang:latest
  docker: Error response from daemon: Mounts denied:
  The path /usr/local/Cellar/go/packages
  is not shared from OS X and is not known to Docker.
  You can configure shared paths from Docker -> Preferences... -> File Sharing.
  See https://docs.docker.com/docker-for-mac/osxfs/#namespaces for more info.
- #+END_EXAMPLE
+#+END_EXAMPLE
 ** DONE [#A] mac docker volume folder: Where is /var/lib/docker on Mac/OS X
    CLOSED: [2018-04-05 Thu 14:55]
  https://forums.docker.com/t/host-path-of-volume/12277/10
@@ -6472,10 +6471,10 @@ Compose always starts containers in dependency order, but it will not wait for i
  screen ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/tty
  Then you can run ls /var/lib/docker/volumes
 ** HALF docker images command error in Ubuntu OS
- #+BEGIN_EXAMPLE
+#+BEGIN_EXAMPLE
  root@carol-official-repo:/opt/mdmdevops/env_setup/repo.carol.ai/jenkins.carol.ai# docker images
  Error response from daemon: layer does not exist
- #+END_EXAMPLE
+#+END_EXAMPLE
  https://github.com/moby/moby/issues/21215
  https://github.com/coreos/bugs/issues/1808
 ** TODO docker cp: no such directory
@@ -6485,14 +6484,14 @@ Compose always starts containers in dependency order, but it will not wait for i
  docker cp ./fix-mappings-reindex-2.0.jar ci_repo:/var/www/repo/
  docker cp ./fix-mappings-reindex-2.0.jar ci_repo:/
 
- #+BEGIN_EXAMPLE
+#+BEGIN_EXAMPLE
  root@injenkins:/tmp# ls -lth ./fix-mappings-reindex-2.0.jar
  -rw-r--r-- 1 root root 36M Aug 31 13:39 ./fix-mappings-reindex-2.0.jar
  root@injenkins:/tmp# docker cp ./fix-mappings-reindex-2.0.jar  ci_repo:/
  no such directory
- #+END_EXAMPLE
+#+END_EXAMPLE
 
- #+BEGIN_EXAMPLE
+#+BEGIN_EXAMPLE
  root@injenkins:/home/denny/mdmdevops/scripts/gui_login/scripts# docker cp /tmp/fix-mappings-reindex-2.0.jar ci_repo:/var/www/repo/
  no such directory
  root@injenkins:/home/denny/mdmdevops/scripts/gui_login/scripts# ls -lth /tmp/fix-mappings-reindex-2.0.jar
@@ -6506,7 +6505,7 @@ Compose always starts containers in dependency order, but it will not wait for i
  drwxr-xr-x    2 1000     1000        4.0K Aug  7 21:31 1.72
  drwxr-xr-x    2 1000     1000        4.0K Jul 26 01:29 1.70
  drwxr-xr-x    2 1000     1000        4.0K Jul 25 01:55 1.71
- #+END_EXAMPLE
+#+END_EXAMPLE
 ** TODO docker hub trigger autobuild by commit message pattern
 ** TODO [#A] docker container change port mapping and bring it up and running
  https://stackoverflow.com/questions/19335444/how-do-i-assign-a-port-mapping-to-an-existing-docker-container
@@ -6515,11 +6514,11 @@ Compose always starts containers in dependency order, but it will not wait for i
 
  2. docker commit
 
- #+BEGIN_EXAMPLE
+#+BEGIN_EXAMPLE
  root@totvsjenkins:/home/denny/devops_docker_image/codecheck# docker start docker-jenkins
  Error response from daemon: driver failed programming external connectivity on endpoint docker-jenkins (49319c2c320acafdd8930ab99f3410c2b3cd9ccb2635f76abd4a5e2261df6196): Bind for 0.0.0.0:48080 failed: port is already allocated
  Error: failed to start containers: docker-jenkins
- #+END_EXAMPLE
+#+END_EXAMPLE
 ** TODO Networking with Kubernetes
  https://www.youtube.com/watch?v=WwQ62OyCNz4
 
@@ -6533,13 +6532,13 @@ Compose always starts containers in dependency order, but it will not wait for i
  https://docs.docker.com/engine/userguide/storagedriver/device-mapper-driver/
  http://jira.jinganiam.com/browse/ID-47
  start-stop-daemon --start --exec /usr/bin/docker --pidfile /var/run/docker-ssd.pid --make-pidfile -- daemon -p /var/run/docker.pid
- #+BEGIN_EXAMPLE
+#+BEGIN_EXAMPLE
  root@8cc3b37f44eb:/# start-stop-daemon --start --exec /usr/bin/docker --pidfile /var/run/docker-ssd.pid --make-pidfile -- daemon -p /var/run/docker.pid
  INFO[0000] API listen on /var/run/docker.sock
  WARN[0000] Udev sync is not supported. This will lead to unexpected behavior, data loss and errors. For more information, see https://docs.docker.com/reference/commandline/daemon/#daemon-storage-driver-option
  ERRO[0000] [graphdriver] prior storage driver "devicemapper" failed: devmapper: Device docker-0:60-50903-pool is not a thin pool
  FATA[0000] Error starting daemon: error initializing graphdriver: devmapper: Device docker-0:60-50903-pool is not a thin pool
- #+END_EXAMPLE
+#+END_EXAMPLE
 ** TODO docker healthcheck: ok, warning and failed
 ** TODO Docker base image can't take variable
  root@totvsjenkins:/home/denny/soteria_code/brozton-soterianetworks# docker-compose build
