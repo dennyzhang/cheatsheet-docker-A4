@@ -211,14 +211,14 @@ http://jpetazzo.github.io
 |--------------------------------------------------------------------------------------------------+--------------------------------------------------------|
 | docker stop $(docker ps -a -q)                                                                   | stop all containers                                    |
 | docker rm $(docker ps -a -q)                                                                     | remove all containers                                  |
-| docker run -t -p 18000:80 -p 18080:8080 -i denny/totvslabs:latest /bin/bash                      | start a container                                      |
-| docker push denny/totvslabs                                                                      | push an image to docker hub                            |
+| docker run -t -p 18000:80 -p 18080:8080 -i denny/XXX:latest /bin/bash                   | start a container                                      |
+| docker push denny/XXX                                                                      | push an image to docker hub                            |
 | docker inspect 2b1c66fbc419                                                                      | get detail info about a container or image             |
 | docker run -d -P --name web -v /src/webapp:/opt/webapp training/webapp python app.py             | mount the host directory of /src/webapp to /opt/webapp |
 |--------------------------------------------------------------------------------------------------+--------------------------------------------------------|
-| docker build -t totvslabs/mdm:v1 --rm=true .                                                     |                                                        |
-| docker run -t -P -i totvslabs/mdm:v1 /bin/bash                                                   |                                                        |
-| docker push totvslabs/mdm                                                                        |                                                        |
+| docker build -t XXX/mdm:v1 --rm=true .                                                     |                                                        |
+| docker run -t -P -i XXX/mdm:v1 /bin/bash                                                   |                                                        |
+| docker push XXX/mdm                                                                        |                                                        |
 |--------------------------------------------------------------------------------------------------+--------------------------------------------------------|
 | https://status.docker.com                                                                        | docker service status                                  |
 ** manually start docker
@@ -375,7 +375,7 @@ INFO[0000] Listening for HTTP on unix (/var/run/docker.sock)
 *** CANCELED docker container get docker ip
   CLOSED: [2015-05-29 Fri 00:06]
 http://blog.michaelhamrah.com/2014/06/accessing-the-docker-host-server-within-a-container/
-docker run -d -t --privileged --name mdm-all-in-one-test -p 7022:22 -e DOCKER_IP=10.0.42.1 totvslabs/mdm:latest /usr/sbin/sshd -D
+docker run -d -t --privileged --name mdm-all-in-one-test -p 7022:22 -e DOCKER_IP=10.0.42.1 XXX/mdm:latest /usr/sbin/sshd -D
 
 repo_server="`env | grep SSH_CLIENT | awk -F'=' '{print $2}' | awk -F' ' '{print $1}'`:18000"
 *** CANCELED Dckerfile define a common function: no supported, we can define a script
@@ -700,9 +700,9 @@ Bringing machine 'default' up with 'virtualbox' provider...
 ==> default: Processing triggers for ureadahead (0.100.0-16) ...
 ==> default: Setting up lxc-docker (1.5.0) ...
 ==> default: Processing triggers for libc-bin (2.19-0ubuntu6.6) ...
-==> default: Pulling repository totvslabs/mdm
-==> default: 3e2418a2e608: Pulling image (v1) from totvslabs/mdm
-==> default: 3e2418a2e608: Pulling image (v1) from totvslabs/mdm, endpoint: https://registry-1.docker.io/v1/
+==> default: Pulling repository XXX/mdm
+==> default: 3e2418a2e608: Pulling image (v1) from XXX/mdm
+==> default: 3e2418a2e608: Pulling image (v1) from XXX/mdm, endpoint: https://registry-1.docker.io/v1/
 ==> default: 3e2418a2e608: Pulling dependent layers
 ==> default: 511136ea3c5a: Pulling metadata
 ==> default: 511136ea3c5a: Pulling fs layer
@@ -776,7 +776,7 @@ Bringing machine 'default' up with 'virtualbox' provider...
 ==> default: 3e2418a2e608: Pulling fs layer
 ==> default: 3e2418a2e608: Download complete
 ==> default: 3e2418a2e608: Download complete
-==> default: Status: Downloaded newer image for totvslabs/mdm:v1
+==> default: Status: Downloaded newer image for XXX/mdm:v1
 macs-air:vagrant mac$ vagrant ssh
 Welcome to Ubuntu 14.04.2 LTS (GNU/Linux 3.13.0-46-generic x86_64)
 
@@ -804,7 +804,7 @@ root@vagrant-ubuntu-trusty-64:~# docker ps
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
 root@vagrant-ubuntu-trusty-64:~# docker images
 REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
-totvslabs/mdm       v1                  3e2418a2e608        14 hours ago        625.8 MB
+XXX/mdm       v1                  3e2418a2e608        14 hours ago        625.8 MB
 root@vagrant-ubuntu-trusty-64:~# ls -lth /var/lib/docker/devicemapper/devicemapper
 total 1.1G
 -rw------- 1 root root 100G Mar  9 01:06 data
@@ -824,7 +824,7 @@ drwx------  2 root root 4.0K Mar  9 00:54 containers
 #+END_EXAMPLE
 ** DONE docker do the directory mapping
    CLOSED: [2015-03-08 Sun 05:51]
-  docker run -d -v /root/code:/root/code -p 2200:22 -p 18080:8080 -p 18000:80 totvslabs/mdm:v1 /usr/sbin/sshd -D
+  docker run -d -v /root/code:/root/code -p 2200:22 -p 18080:8080 -p 18000:80 XXX/mdm:v1 /usr/sbin/sshd -D
 ** DONE docker apply chef: jenkins job
   CLOSED: [2015-03-08 Sun 06:39]
 cat > /root/solo.rb <<EOF
@@ -881,8 +881,8 @@ Total Memory: 993.9 MiB
 Name: aio-ubuntu-1404
 ID: HHHA:OQPR:35EU:6IUR:QVCJ:ZRRK:L7IH:KJMZ:5DMK:4R26:HB3F:347F
 WARNING: No swap limit support
-root@aio-ubuntu-1404:~# docker run -d -v /root/vagrant:/root/vagrant -p 2200:22 -p 18080:8080 -p 18000:80 totvslabs/mdm:v1 /usr/sbin/sshd -D
-< -p 18080:8080 -p 18000:80 totvslabs/mdm:v1 /usr/sbin/sshd -D
+root@aio-ubuntu-1404:~# docker run -d -v /root/vagrant:/root/vagrant -p 2200:22 -p 18080:8080 -p 18000:80 XXX/mdm:v1 /usr/sbin/sshd -D
+< -p 18080:8080 -p 18000:80 XXX/mdm:v1 /usr/sbin/sshd -D
 FATA[0000] Error response from daemon: Error running DeviceCreate (createSnapDevice) dm_task_run failed
 root@aio-ubuntu-1404:~#
 #+END_EXAMPLE
@@ -893,8 +893,8 @@ docker images
 REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
 <none>              <none>              8118ced6048d        3 minutes ago       642.4 MB
 <none>              <none>              9801d16e6777        33 minutes ago      410.1 MB
-totvslabs/mdm       v2                  1095634005de        About an hour ago   621.5 MB
-totvslabs/mdm       v1                  3e2418a2e608        30 hours ago        417 MB
+XXX/mdm       v2                  1095634005de        About an hour ago   621.5 MB
+XXX/mdm       v1                  3e2418a2e608        30 hours ago        417 MB
 ubuntu              14.04               2d24f826cb16        2 weeks ago         188.3 MB
 macs-air:sandbox-test mac$ docker images -a
 docker images -a
@@ -918,7 +918,7 @@ REPOSITORY          TAG                 IMAGE ID            CREATED             
 <none>              <none>              23fdfd795f42        40 minutes ago      188.3 MB
 <none>              <none>              5c83290fadd8        40 minutes ago      188.3 MB
 <none>              <none>              62613585bbb7        40 minutes ago      188.3 MB
-totvslabs/mdm       v2                  1095634005de        About an hour ago   621.5 MB
+XXX/mdm       v2                  1095634005de        About an hour ago   621.5 MB
 <none>              <none>              c4931b5b9b19        About an hour ago   621.5 MB
 <none>              <none>              783586e31bf8        About an hour ago   621.5 MB
 <none>              <none>              7464cae37e74        About an hour ago   444.5 MB
@@ -940,7 +940,7 @@ totvslabs/mdm       v2                  1095634005de        About an hour ago   
 <none>              <none>              b69103f1b7a6        11 hours ago        220.3 MB
 <none>              <none>              b750f0b5b1df        11 hours ago        208.9 MB
 <none>              <none>              fb44a8a71885        11 hours ago        188.3 MB
-totvslabs/mdm       v1                  3e2418a2e608        30 hours ago        417 MB
+XXX/mdm       v1                  3e2418a2e608        30 hours ago        417 MB
 <none>              <none>              71d449bc0252        32 hours ago        417 MB
 <none>              <none>              6271cc67a45f        32 hours ago        235.7 MB
 <none>              <none>              f7c8c8c92180        32 hours ago        215.1 MB
@@ -1047,10 +1047,10 @@ High:            0          0          0
 -/+ buffers/cache:       1701        300
 Swap:            0          0          0
 #+END_EXAMPLE
-** DONE [#A] docker history totvslabs/mdm:v3
+** DONE [#A] docker history XXX/mdm:v3
   CLOSED: [2015-03-16 Mon 09:44]
 #+BEGIN_EXAMPLE
-macs-air:image_template mac$ docker history totvslabs/mdm:v3
+macs-air:image_template mac$ docker history XXX/mdm:v3
 IMAGE               CREATED             CREATED BY                                      SIZE
 19d1769259ad        3 minutes ago       /bin/sh -c #(nop) CMD [/usr/sbin/sshd -D]       0 B
 22dddd4f906e        3 minutes ago       /bin/sh -c #(nop) EXPOSE map[22/tcp:{}]         0 B
@@ -1067,7 +1067,7 @@ f0dde87450ec        5 days ago          /bin/sh -c #(nop) ADD file:a2d97c73fb08b
 #+END_EXAMPLE
 .
 #+BEGIN_EXAMPLE
-macs-air:image_template mac$ docker history totvslabs/mdm:v4
+macs-air:image_template mac$ docker history XXX/mdm:v4
 IMAGE               CREATED             CREATED BY                                      SIZE
 80ca99f8da09        4 minutes ago       /bin/sh -c #(nop) CMD [/usr/sbin/sshd -D]       0 B
 3f4601894390        4 minutes ago       /bin/sh -c #(nop) EXPOSE map[22/tcp:{}]         0 B
@@ -1165,9 +1165,9 @@ driver_config:
   use_sudo: false
   privileged: true
   tls_verify: true
-  tls_cacert: /Users/mac/Dropbox/private_data/project/docker/docker_tls_totvslabs/ca.pem
-  tls_cert: /Users/mac/Dropbox/private_data/project/docker/docker_tls_totvslabs/cert.pem
-  tls_key: /Users/mac/Dropbox/private_data/project/docker/docker_tls_totvslabs/key.pem
+  tls_cacert: /Users/mac/Dropbox/private_data/project/docker/docker_tls_XXX/ca.pem
+  tls_cert: /Users/mac/Dropbox/private_data/project/docker/docker_tls_XXX/cert.pem
+  tls_key: /Users/mac/Dropbox/private_data/project/docker/docker_tls_XXX/key.pem
   socket: tcp://10.165.4.67:4243
   provision_command: "curl -L https://www.opscode.com/chef/install.sh | bash"
   # forward:
@@ -1204,9 +1204,9 @@ driver_config:
   use_sudo: false
   privileged: true
   tls_verify: true
-  tls_cacert: /Users/mac/Dropbox/private_data/project/docker/docker_tls_totvslabs/ca.pem
-  tls_cert: /Users/mac/Dropbox/private_data/project/docker/docker_tls_totvslabs/cert.pem
-  tls_key: /Users/mac/Dropbox/private_data/project/docker/docker_tls_totvslabs/key.pem
+  tls_cacert: /Users/mac/Dropbox/private_data/project/docker/docker_tls_XXX/ca.pem
+  tls_cert: /Users/mac/Dropbox/private_data/project/docker/docker_tls_XXX/cert.pem
+  tls_key: /Users/mac/Dropbox/private_data/project/docker/docker_tls_XXX/key.pem
   socket: tcp://10.165.4.67:4243
   provision_command: "curl -L https://www.opscode.com/chef/install.sh | bash"
   # forward:
@@ -3081,16 +3081,16 @@ Boot2Docker is essentially a remote Docker engine with a read only filesystem (o
   CLOSED: [2015-02-04 Wed 00:04]
 https://docs.docker.com/installation/mac/
 Install virtualbox and boot2docker
-*** CANCELED docker pull totvslabs/mdm:v3: x509: certificate has expired or is not yet valid
+*** CANCELED docker pull XXX/mdm:v3: x509: certificate has expired or is not yet valid
   CLOSED: [2015-03-21 Sat 10:36]
 https://github.com/docker/docker/issues/4507
 ntpdate pool.ntp.org
 
 #+BEGIN_EXAMPLE
-root@aio-ubuntu-1404:~# docker pull totvslabs/mdm:v3
-docker pull totvslabs/mdm:v3
-Pulling repository totvslabs/mdm
-FATA[0000] Get https://index.docker.io/v1/repositories/totvslabs/mdm/images: x509: certificate has expired or is not yet valid
+root@aio-ubuntu-1404:~# docker pull XXX/mdm:v3
+docker pull XXX/mdm:v3
+Pulling repository XXX/mdm
+FATA[0000] Get https://index.docker.io/v1/repositories/XXX/mdm/images: x509: certificate has expired or is not yet valid
 #+END_EXAMPLE
 *** DONE [#A] docker pull error: certificate signed by unknown authority
   CLOSED: [2015-03-22 Sun 21:12]
@@ -3131,10 +3131,10 @@ docker -d --insecure-registry="www.example.com:8080"
 DOCKER_OPTS="-H unix:///var/run/docker.sock --insecure-registry index.docker.io"
 
 #+BEGIN_EXAMPLE
-root@kitchen-sandbox-test:~# docker pull totvslabs/mdm:v3
-docker pull totvslabs/mdm:v3
-Pulling repository totvslabs/mdm
-2015/03/15 20:41:39 Get https://index.docker.io/v1/repositories/totvslabs/mdm/images: x509: certificate signed by unknown authority
+root@kitchen-sandbox-test:~# docker pull XXX/mdm:v3
+docker pull XXX/mdm:v3
+Pulling repository XXX/mdm
+2015/03/15 20:41:39 Get https://index.docker.io/v1/repositories/XXX/mdm/images: x509: certificate signed by unknown authority
 #+END_EXAMPLE
 **** useful link
 https://github.com/docker/docker/issues/9752
@@ -3386,7 +3386,7 @@ Expected process to exit with [0], but received '1'
 [0m  retries 0
 [0m  retry_delay 2
 [0m  default_guard_interpreter :default
-[0m  subresources [firewall_rule[allow world to ssh], firewall_rule[totvslabs], firewall_rule[localhost], firewall_rule[http]]
+[0m  subresources [firewall_rule[allow world to ssh], firewall_rule[XXX], firewall_rule[localhost], firewall_rule[http]]
 [0m  declared_type :firewall
 [0m  cookbook_name :firewall
 [0m  recipe_name "default"
@@ -4194,7 +4194,7 @@ bridge 模式是 Docker 默认的网络设置,此模式会为每一个容器分�
 ** [#A] remove intermediate container by build docker image
 docker ps -a | grep -v CONTAINER | grep /bin/sh | awk -F' ' '{print $1}' | xargs docker rm
 ** TODO [#A] docker disable people: docker exec -it docker-jenkins bash
-** DONE docker tag: docker tag 8656b532008b totvslabs/mdm_jenkins:latest
+** DONE docker tag: docker tag 8656b532008b XXX/mdm_jenkins:latest
   CLOSED: [2016-04-06 Wed 15:58]
 http://blog.tmtk.net/post/2013-09-16-how_to_remove_tag_on_docker/
 
@@ -4370,8 +4370,8 @@ cbab593b4994        denny/osc:latest    "/usr/sbin/sshd -D"   9 minutes ago     
 #+BEGIN_EXAMPLE
 root@22d0cba1cb6c:/# docker ps -a
 CONTAINER ID        IMAGE                  COMMAND               CREATED             STATUS              PORTS                                                                      NAMES
-1bf423e3e5a8        totvslabs/mdm:latest   "/usr/sbin/sshd -D"   2 minutes ago                                                                                                      mdm-all-in-one
-226f26484976        totvslabs/mdm:latest   "/usr/sbin/sshd -D"   6 minutes ago       Up 2 minutes        0.0.0.0:18000->18000/tcp, 0.0.0.0:18080->18080/tcp, 0.0.0.0:5022->22/tcp   mdm-jenkins
+1bf423e3e5a8        XXX/mdm:latest   "/usr/sbin/sshd -D"   2 minutes ago                                                                                                      mdm-all-in-one
+226f26484976        XXX/mdm:latest   "/usr/sbin/sshd -D"   6 minutes ago       Up 2 minutes        0.0.0.0:18000->18000/tcp, 0.0.0.0:18080->18080/tcp, 0.0.0.0:5022->22/tcp   mdm-jenkins
 root@22d0cba1cb6c:/# docker rm mdm-all-in-one
 
 
@@ -4382,8 +4382,8 @@ root@22d0cba1cb6c:/#
 root@22d0cba1cb6c:/#
 root@22d0cba1cb6c:/# docker ps -a
 CONTAINER ID        IMAGE                  COMMAND               CREATED             STATUS              PORTS                                                                      NAMES
-226f26484976        totvslabs/mdm:latest   "/usr/sbin/sshd -D"   7 minutes ago       Up 4 minutes        0.0.0.0:18000->18000/tcp, 0.0.0.0:18080->18080/tcp, 0.0.0.0:5022->22/tcp   mdm-jenkins
-root@22d0cba1cb6c:/# docker run -d -t --privileged -v /root/couchbase/:/opt/couchbase/ --name mdm-all-in-one -p 8080:8080 -p 8443:8443 -p 8091:8091 -p 9200:9200 -p 80:80 -p 8081:8081 -p 6022:22 totvslabs/mdm:latest /usr/sbin/sshd -D
+226f26484976        XXX/mdm:latest   "/usr/sbin/sshd -D"   7 minutes ago       Up 4 minutes        0.0.0.0:18000->18000/tcp, 0.0.0.0:18080->18080/tcp, 0.0.0.0:5022->22/tcp   mdm-jenkins
+root@22d0cba1cb6c:/# docker run -d -t --privileged -v /root/couchbase/:/opt/couchbase/ --name mdm-all-in-one -p 8080:8080 -p 8443:8443 -p 8091:8091 -p 9200:9200 -p 80:80 -p 8081:8081 -p 6022:22 XXX/mdm:latest /usr/sbin/sshd -D
 
 7cf51d57414290f615d734a89a2c4aa6d544eb7522c218d147b2acfeda9433c3
 
@@ -4395,12 +4395,12 @@ root@22d0cba1cb6c:/#
 root@22d0cba1cb6c:/#
 root@22d0cba1cb6c:/# docker ps -a
 CONTAINER ID        IMAGE                  COMMAND               CREATED             STATUS              PORTS                                                                                                                                                NAMES
-7cf51d574142        totvslabs/mdm:latest   "/usr/sbin/sshd -D"   2 minutes ago       Up 5 seconds        0.0.0.0:80->80/tcp, 0.0.0.0:8080-8081->8080-8081/tcp, 0.0.0.0:8091->8091/tcp, 0.0.0.0:8443->8443/tcp, 0.0.0.0:9200->9200/tcp, 0.0.0.0:6022->22/tcp   mdm-all-in-one
-226f26484976        totvslabs/mdm:latest   "/usr/sbin/sshd -D"   9 minutes ago       Up 6 minutes        0.0.0.0:18000->18000/tcp, 0.0.0.0:18080->18080/tcp, 0.0.0.0:5022->22/tcp                                                                             mdm-jenkins
+7cf51d574142        XXX/mdm:latest   "/usr/sbin/sshd -D"   2 minutes ago       Up 5 seconds        0.0.0.0:80->80/tcp, 0.0.0.0:8080-8081->8080-8081/tcp, 0.0.0.0:8091->8091/tcp, 0.0.0.0:8443->8443/tcp, 0.0.0.0:9200->9200/tcp, 0.0.0.0:6022->22/tcp   mdm-all-in-one
+226f26484976        XXX/mdm:latest   "/usr/sbin/sshd -D"   9 minutes ago       Up 6 minutes        0.0.0.0:18000->18000/tcp, 0.0.0.0:18080->18080/tcp, 0.0.0.0:5022->22/tcp                                                                             mdm-jenkins
 #+END_EXAMPLE
 ** TODO [#B] docker commit stuck
 #+BEGIN_EXAMPLE
-root@oregon:/home/denny/mdmdevops/misc# docker commit -m "Initial version" -a "Denny Zhang<denny.zhang@totvs.com>" 22d0cba1cb6c totvslabs/sandbox-test:v1
+root@oregon:/home/denny/mdmdevops/misc# docker commit -m "Initial version" -a "Denny Zhang<denny.zhang@totvs.com>" 22d0cba1cb6c XXX/sandbox-test:v1
 
 #+END_EXAMPLE
 ** DONE [#B] Docker can't rename file:  Run into Device or resource busy
@@ -4428,13 +4428,13 @@ https://github.com/docker/docker/issues/9295
 
 The issue is that even though you can "write" to those files, you can't rename them. This is due to both files being bind mounted. I am using ansible to automatically update /etc/hosts with references to either other machines, or to localhost. I then place lines like the following in the file:
 
-127.0.0.1 sandbox admin.fluigdata.com app.fluigdata.com totvslabs.fluigdata.com
+127.0.0.1 sandbox admin.fluigdata.com app.fluigdata.com XXX.fluigdata.com
 #+BEGIN_EXAMPLE
 # https://supermarket.chef.io/cookbooks/hostsfile
 # # TODO: Doesn't work on docker
 # hostsfile_entry '127.0.0.1' do
 #   hostname 'admin.fluigdata.com'
-#   aliases ['app.fluigdata.com' 'totvslabs.fluigdata.com']
+#   aliases ['app.fluigdata.com' 'XXX.fluigdata.com']
 #   unique true
 # end
 #+END_EXAMPLE
@@ -4486,16 +4486,16 @@ https://github.com/docker/docker/issues/12237
 https://github.com/jboss-dockerfiles/wildfly/issues/4
 https://github.com/docker/docker/issues/2461
 
-docker run -t -d --privileged -p 9022:22 totvslabs/kitchendocker:v2 /usr/sbin/sshd -D
+docker run -t -d --privileged -p 9022:22 XXX/kitchendocker:v2 /usr/sbin/sshd -D
 ssh -p 9022 root@mdmlab
 
-docker commit -m "initial" -a "Denny<denny.zhang@totvs.com>" b823b3ae8f54 totvslabs/sandbox-test:v1
+docker commit -m "initial" -a "Denny<denny.zhang@totvs.com>" b823b3ae8f54 XXX/sandbox-test:v1
 
 wget https://raw.githubusercontent.com/TOTVS/mdmpublic/master/test/bootstrap_mdm_sandbox.sh
 
 #+BEGIN_EXAMPLE
-root@b823b3ae8f54:~# docker pull totvslabs/mdm:latest
-latest: Pulling from totvslabs/mdm
+root@b823b3ae8f54:~# docker pull XXX/mdm:latest
+latest: Pulling from XXX/mdm
 9ea0c29266b3: Extracting [=============>                                     ] 491.5 kB/1.79 MB
 9ea0c29266b3: Error downloading dependent layers
 274566660d14: Download complete
@@ -4509,7 +4509,7 @@ c058296e31b2: Downloading [========================>                          ] 
 17011c5f13b5: Download complete
 5a40679892c4: Download complete
 6ef17911f6a3: Download complete
-6ef17911f6a3: Error pulling image (latest) from totvslabs/mdm, ApplyLayer exit status 1 stdout:  stderr: lstat /var/lib/jenkins/plugins/git/.wh..opq: operation not permitted ugins/git/.wh..opq: operation not permitted
+6ef17911f6a3: Error pulling image (latest) from XXX/mdm, ApplyLayer exit status 1 stdout:  stderr: lstat /var/lib/jenkins/plugins/git/.wh..opq: operation not permitted ugins/git/.wh..opq: operation not permitted
 a62a42e77c9c: Download complete
 2c014f14d3d9: Download complete
 b7cf8f0d9e82: Download complete
@@ -4522,7 +4522,7 @@ c0e1b2dc3545: Download complete
 287e252bf5f3: Download complete
 3f5ba0eaf957: Download complete
 4983ec8ad0a6: Download complete
-Error pulling image (latest) from totvslabs/mdm, ApplyLayer exit status 1 stdout:  stderr: lstat /var/lib/jenkins/plugins/git/.wh..opq: operation not permitted
+Error pulling image (latest) from XXX/mdm, ApplyLayer exit status 1 stdout:  stderr: lstat /var/lib/jenkins/plugins/git/.wh..opq: operation not permitted
 #+END_EXAMPLE
 ** TODO [#A] docker jenkins container not responding
 ** DONE docker mysql status: error while loading shared libraries: libaio.so.1
@@ -5599,9 +5599,9 @@ sudo docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs sudo docker rm
    CLOSED: [2016-09-05 Mon 13:19]
 docker network create --subnet=172.18.0.0/16 longruncluster
 
-docker run -t -d -h kitchen-cluster-node1 --name kitchen-cluster-node1 --privileged -p 5122:22  --net=longruncluster --ip 172.18.0.22 -v /data/docker/longruncluster/couchbase1:/opt/couchbase totvslabs/mdm:latest /usr/sbin/sshd -D
-docker run -t -d -h kitchen-cluster-node2 --name kitchen-cluster-node2 --privileged -p 5123:22  --net=longruncluster --ip 172.18.0.23  -v /data/docker/longruncluster/couchbase2:/opt/couchbase totvslabs/mdm:latest /usr/sbin/sshd -D
-docker run -t -d -h kitchen-cluster-node3 --name kitchen-cluster-node3 --privileged -p 5124:22  --net=longruncluster --ip 172.18.0.24  -v /data/docker/longruncluster/couchbase3:/opt/couchbase totvslabs/mdm:latest /usr/sbin/sshd -D
+docker run -t -d -h kitchen-cluster-node1 --name kitchen-cluster-node1 --privileged -p 5122:22  --net=longruncluster --ip 172.18.0.22 -v /data/docker/longruncluster/couchbase1:/opt/couchbase XXX/mdm:latest /usr/sbin/sshd -D
+docker run -t -d -h kitchen-cluster-node2 --name kitchen-cluster-node2 --privileged -p 5123:22  --net=longruncluster --ip 172.18.0.23  -v /data/docker/longruncluster/couchbase2:/opt/couchbase XXX/mdm:latest /usr/sbin/sshd -D
+docker run -t -d -h kitchen-cluster-node3 --name kitchen-cluster-node3 --privileged -p 5124:22  --net=longruncluster --ip 172.18.0.24  -v /data/docker/longruncluster/couchbase3:/opt/couchbase XXX/mdm:latest /usr/sbin/sshd -D
 ** DONE docker-gc: remove old container
   CLOSED: [2016-09-06 Tue 20:28]
 https://github.com/spotify/docker-gc
@@ -5611,7 +5611,7 @@ A simple Docker container and image garbage collection script.
 
 - Containers that exited more than an hour ago are removed.
 - Images that don't belong to any remaining container after that are removed.
-** DONE docker login: docker login -u totvslabsreadonly -p TOTVSChangeMe1 -e info@totvs.com
+** DONE docker login: docker login -u XXXreadonly -p TOTVSChangeMe1 -e info@totvs.com
    CLOSED: [2016-09-10 Sat 17:55]
 ** DONE docker start container with specific ip
   CLOSED: [2016-09-22 Thu 17:12]
@@ -5619,7 +5619,7 @@ docker network create --subnet=172.18.0.0/16 longruncluster
 
 docker stop kitchen-cluster-node1; docker rm kitchen-cluster-node1
 
-docker run -t -d -h kitchen-cluster-node1 --name kitchen-cluster-node1 --privileged -p 5122:22 --net=longruncluster --ip 172.18.0.22 -v /data/docker/longruncluster/couchbase1:/opt/couchbase totvslabs/mdm:latest /usr/sbin/sshd -D
+docker run -t -d -h kitchen-cluster-node1 --name kitchen-cluster-node1 --privileged -p 5122:22 --net=longruncluster --ip 172.18.0.22 -v /data/docker/longruncluster/couchbase1:/opt/couchbase XXX/mdm:latest /usr/sbin/sshd -D
 
 docker exec -it kitchen-cluster-node1 bash
 
@@ -5659,7 +5659,7 @@ gpg:               imported: 1  (RSA: 1)
 https://www.reddit.com/r/devops/comments/530jde/docker_mess_up_firewall_setting/
 ** DONE [#A] docker run fail in linode: reboot seem to solved the problem :IMPORTANT:
    CLOSED: [2017-10-30 Mon 12:59]
-root@ubuntu:~# docker run -t -d -h jenkins --name docker-jenkins --privileged -p 51022:9000 -p 51023:22 -p 51081:18000 -p 48080:18080 totvslabs/mdm_jenkins:latest /usr/sbin/sshd -D
+root@ubuntu:~# docker run -t -d -h jenkins --name docker-jenkins --privileged -p 51022:9000 -p 51023:22 -p 51081:18000 -p 48080:18080 XXX/mdm_jenkins:latest /usr/sbin/sshd -D
 
 60ef25a7ff7f176ed4dd37b4d0f04a1ca4df913339eed271f87073b3efd32d6d
 docker: Error response from daemon: driver failed programming external connectivity on endpoint docker-jenkins (a6fa21dcc3bec1f62fb211b49789eb72458358c6fb210006a804b8094c3f1061): iptables failed: iptables --wait -t filter -A DOCKER ! -i docker0 -o docker0 -p tcp -d 172.17.0.2 --dport 18080 -j ACCEPT: iptables: No chain/target/match by that name.
@@ -5808,7 +5808,7 @@ time="2016-11-25T03:08:08.281520750Z" level=info msg="libcontainerd: new contain
 time="2016-11-25T03:08:08.281700083Z" level=fatal msg="Failed to connect to containerd. Please make sure containerd is installed in your PATH or you have specificed the correct address. Got error: write /proc/16/oom_score_adj: permission denied"
 
 #+BEGIN_EXAMPLE
-root@totvsjenkins:/home/denny# docker run -t -d -h mytest --name my-test totvslabs/docker:v1.0 /bin/bash
+root@totvsjenkins:/home/denny# docker run -t -d -h mytest --name my-test XXX/docker:v1.0 /bin/bash
 3cd7faa784d75f1f2ff5cf4ebefcd209f2a30b77c78c3574d196cac2e16ff93d
 root@totvsjenkins:/home/denny# docker exec -it my-test bash
 root@mytest:/#
@@ -6061,9 +6061,9 @@ http://stackoverflow.com/questions/35744650/docker-network-nginx-resolver
 https://unix.stackexchange.com/questions/264315/can-i-build-a-docker-container-from-dockerfile-in-an-interactive-way-with-alloca
 https://github.com/moby/moby/issues/1669
 
-docker build -f jenkins_v1_2.dockerfile -t totvslabs/jenkins:v1.2 --rm=false .
+docker build -f jenkins_v1_2.dockerfile -t XXX/jenkins:v1.2 --rm=false .
 
-docker build -f jenkins_v1_2.dockerfile -t totvslabs/jenkins:v1.2 --rm=true .
+docker build -f jenkins_v1_2.dockerfile -t XXX/jenkins:v1.2 --rm=true .
 #+BEGIN_EXAMPLE
 Docker does not support interactive builds for good reasons as explained in this issue.
 
@@ -6230,14 +6230,14 @@ Compose always starts containers in dependency order, but it will not wait for i
  apt-get install -y --no-install-recommends lsof
 *** HALF enable SSL
  cd /data
- git clone git@bitbucket.org:lrpdevops/mdmdevops-totvslabs.git
+ git clone git@bitbucket.org:lrpdevops/mdmdevops-XXX.git
 
 # prepare ssl
  http_repo_dir=/data/httpd/repo
  mkdir -p "$http_repo_dir"
  chown upload:upload "$http_repo_dir"
 
- working_dir="/data/mdmdevops-totvslabs/misc/repo.carol.ai"
+ working_dir="/data/mdmdevops-XXX/misc/repo.carol.ai"
  conf_directory="$working_dir/conf/"
  mkdir -p $conf_directory
 
@@ -6252,7 +6252,7 @@ Compose always starts containers in dependency order, but it will not wait for i
 
  docker stop http-repo; docker rm http-repo
  http_repo_dir=/data/httpd/repo
- working_dir="/data/mdmdevops-totvslabs/misc/repo.carol.ai"
+ working_dir="/data/mdmdevops-XXX/misc/repo.carol.ai"
  ssl_directory="/data/httpd/ssl"
  docker run -dit -h http-repo --name http-repo -p 443:443 -p 80:80 \
         -v $conf_directory/upload_ai.conf:/usr/local/apache2/conf/upload_ai.conf \
@@ -6592,159 +6592,6 @@ http://localhost:8080
    CLOSED: [2017-08-08 Tue 22:59]
 ** TODO Get more history timeline
 ** TODO Get monitoring and alerts: Get alerts, healthcheck failed or memory is over 500MB
-* Dockerfile                                                       :noexport:
-** DONE dockerfile define multiple line command
-  CLOSED: [2015-03-09 Mon 00:38]
-https://github.com/docker/docker/issues/1799
-#+BEGIN_EXAMPLE
-Anyone know how to use heredoc with this syntax? Docker wants to bunch it onto a single line and causes a bash syntax error:
-
-RUN cat > /etc/example.conf <<'EOF' \
-This is one multiple lines \
-and should stay that way \
-EOF
-#+END_EXAMPLE
-** DONE docker entrypoint: entrypoint: ["tail", "-f", "/dev/null"]
-   CLOSED: [2018-04-06 Fri 15:08]
-** DONE Dockerfile entrypoint VS CMD
-  CLOSED: [2017-03-15 Wed 16:40]
-http://www.projectatomic.io/docs/docker-image-author-guidance/
-- CMD simply sets a command to run in the image if no arguments are passed to docker run,
-- ENTRYPOINT is meant to make your image behave like a binary.
-
-CMD ["ls", "/" ]
-
-ENTRYPOINT $HOME/docker-entrypoint.sh
-
-Be careful with using ENTRYPOINT; it will make it more difficult to get a shell inside your image.
-** dockerfile example
-#+BEGIN_EXAMPLE
-########## How To Build Docker Image #############
-##
-##  Build image from Dockerfile. docker build -t totvslabs/mdm:v2 --rm=false .
-##  Run docker intermediate container: docker run -t -i totvslabs/mdm:v2 /bin/bash
-##  Commit local image: docker commit -m "Initial version" -a "Denny Zhang<denny.zhang@totvs.com>" 9187d029f904 totvslabs/mdm:v2
-##  Remove intermediate container: docker stop $(docker ps -a -q); docker rm $(docker ps -a -q)
-##  Release to docker hub: docker push totvslabs/mdm:v2
-##
-##################################################
-
-########## How To Use Docker Image ###############
-##
-##  Install docker utility
-##  Download docker image: docker pull totvslabs/mdm:v2
-##  Boot docker container: docker run -t -P -d totvslabs/mdm:v2 /bin/bash
-##
-##################################################
-
-FROM ubuntu:14.04
-MAINTAINER TOTVS Labs <denny.zhang@totvs.com>
-RUN apt-get -yqq update
-
-########################################################################################
-# Enable Chef
-
-RUN apt-get -yqq install curl lsb-release
-RUN curl -L https://getchef.com/chef/install.sh | bash
-
-########################################################################################
-#  Start sshd: http://docs.docker.com/examples/running_ssh_service/
-RUN apt-get install -y openssh-server
-RUN mkdir /var/run/sshd
-RUN echo 'root:TOTVSFoobar1!' | chpasswd
-RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-
-# SSH login fix. Otherwise user is kicked off after login
-RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
-
-RUN mkdir -p /root/.ssh
-RUN echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGVkT4Ka/Pt6M/xREwYWatYyBqaBgDVS1bCy7CViZ5VGr1z+sNwI2cBoRwWxqHwvOgfAm+Wbzwqs+WNvXW6GDZ1kjayh2YnBN5UBYZjpNQK9tmO8KHQwX29UvOaOJ6HIEWOJB9ylyUoWL+WwNf71arpXULBW6skx9fp9F5rHuB0UmQ+omhJGs6+PRSLAEzWaQvtxmm7CuZ7LgslNKskkqx/6CHlQPq2qchRVN5xvnZPuFWgF6cvWvK7kylAQsv8hQtFGsE9Rw1itjisCBVILzEC2mAjg5SqeEB0i7QwdlRr4jgxaxO5jR9wdKo7PaEl9+bibuZrCIhp6V4Y4eaIzAP denny.zhang@totvs.com' >> /root/.ssh/authorized_keys
-
-ENV NOTVISIBLE "in users profile"
-RUN echo "export VISIBLE=now" >> /etc/profile
-
-# Disable strict host checking for github
-RUN echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-
-EXPOSE 22
-CMD ["/usr/sbin/sshd", "-D"]
-
-########################################################################################
-# Apache
-RUN apt-get -yqq install apache2
-# Jenkins
-RUN sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'
-RUN apt-get -yqq update
-RUN apt-get -yqq --force-yes install jenkins
-
-# Install basic packages.
-RUN apt-get -yqq install git update-notifier-common
-
-# TODO JDK, maven
-########################################################################################
-#+END_EXAMPLE
-** TODO syntax check for dockerfile
-https://access.redhat.com/labsinfo/linterfordockerfile
-http://stackoverflow.com/questions/28182047/is-there-a-way-to-lint-the-dockerfile
-https://github.com/projectatomic/dockerfile_lint
-https://github.com/goern/dockerfile_checker
-** DONE dockerfile go to directory: RUN cd /opt && unzip treeio.zip ...
-  CLOSED: [2015-03-12 Thu 22:19]
-http://stackoverflow.com/questions/20632258/docker-change-directory-command
-
-- every RUN creates a new commit & (currently) an AUFS layer
-
-#+BEGIN_EXAMPLE
-You can run a script, or a more complex parameter to the RUN. Here is an example from a Dockerfile I've downloaded to look at previously:
-
-RUN cd /opt && unzip treeio.zip && mv treeio-master treeio && \
-    rm -f treeio.zip && cd treeio && pip install -r requirements.pip
-Because of the use of '&&', it will only get to the final 'pip install' command if all the previous commands have succeeded.
-
-In fact, since every RUN creates a new commit & (currently) an AUFS layer, if you have too many commands in the Dockerfile, you will use up the limits, so merging the RUNs (when the file is stable) can be a very useful thing to do.
-#+END_EXAMPLE
-** BYPASS Dockerfile fail: echo -e /root/.ssh/config
-  CLOSED: [2015-03-12 Thu 18:26]
-# Disable strict host checking for github
-RUN echo "Host github.com" >> /root/.ssh/config
-RUN echo "  StrictHostKeyChecking no" >> /root/.ssh/config
-RUN echo "  IdentityFile /root/.ssh/mdmdevops_id_rsa" >> /root/.ssh/config
-RUN echo "  User git" >> /root/.ssh/config
-** ubuntu install docker-compose
-https://docs.docker.com/compose/install/
-https://docs.docker.com/install/linux/docker-ee/ubuntu/
-
-sudo apt-get install \
-    linux-image-extra-$(uname -r) \
-    linux-image-extra-virtual
-
-wget -qO- https://get.docker.com/ | sh
-
-sudo curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-
-sudo chmod +x /usr/local/bin/docker-compose
-** DONE docker-compose.yml mem_limit
-  CLOSED: [2018-03-08 Thu 20:14]
-https://docs.docker.com/config/containers/resource_constraints/
-
-1000,000,000
-
-#+BEGIN_EXAMPLE
-  jenkins:
-    container_name: mdm-jenkins
-    hostname: mdm-jenkins
-    # Base Docker image: https://github.com/dennyzhang/devops_docker_image/blob/tag_v7/jenkins/Dockerfile_1_0
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "18080:8080/tcp"
-    # 2.5 GB
-    mem_limit: 2500000000
-    environment:
-      JENKINS_TIMEZONE: "America/Los_Angeles"
-      JAVA_OPTS: -Djenkins.install.runSetupWizard=false
-#+END_EXAMPLE
 * [#A] docker sawm                                       :noexport:IMPORTANT:
 https://docs.docker.com/engine/swarm/swarm-tutorial/
 https://github.com/docker/labs/tree/master/cheatsheet-docker-A4][challenges-leetcode-interesting]]
@@ -7317,8 +7164,8 @@ rm /data
 mkdir -p /data/proftpd
 
 docker pull denny/proftproftpd:v1
-export username="ftp_totvslabs"
-export password="TOTVSLabs123ChangeMe"
+export username="ftp_XXX"
+export password="XXX123ChangeMe"
 
 docker stop proftpd; docker rm proftpd
 docker run -t -d -p 21:21 -p 20:20 -e USERNAME=${username} -e PASSWORD=${password} --name proftpd -h proftpd -v /data/proftpd/ftp:/ftp denny/proftproftpd:v1
@@ -7331,11 +7178,11 @@ http://www.proftpd.org/docs/howto/AuthFiles.html
 
 docker exec -it proftpd_ftp_1 bash
 
-ftp_username="ftp_totvslabs"
+ftp_username="ftp_XXX"
 mkdir -p /var/ftp/$ftp_username
 ftpasswd --passwd --file=/etc/proftpd/user.d/${ftp_username}.passwd --name=$ftp_username --uid=1001 --home=/var/ftp/$ftp_username --shell=/bin/false
 
-TOTVSLabs123ChangeMe
+XXX123ChangeMe
 
 ls -lth /etc/proftpd/user.d/
 ls -lth /etc/proftpd/conf.d/
@@ -7343,7 +7190,7 @@ ls -lth /etc/proftpd/conf.d/
 #+BEGIN_EXAMPLE
 root@185b925fbb8a:/etc/proftpd# ftpasswd --passwd --name=$ftp_username --uid=1001 --home=/var/ftp/$ftp_username --shell=/bin/false
 ftpasswd: --passwd: missing --gid argument: default gid set to uid
-ftpasswd: creating passwd entry for user ftp_totvslabs
+ftpasswd: creating passwd entry for user ftp_XXX
 
 ftpasswd: /bin/false is not among the valid system shells.  Use of
 ftpasswd: "RequireValidShell off" may be required, and the PAM
@@ -7364,7 +7211,7 @@ Name (0.0.0.0:andrew): username
 Password:
 ftp> ls
 *** TODO Common mointor: disk usage, download link, dns setting
-curl -u ftp_totvslabs:TOTVSLabs123ChangeMe ftp://ftp.carol.ai:21/hosts
+curl -u ftp_XXX:XXX123ChangeMe ftp://ftp.carol.ai:21/hosts
 * #  --8<-------------------------- separator ------------------------>8-- :noexport:
 * TODO Check https://github.com/wsargent/docker-cheat-sheet        :noexport:
 * DONE docker auto build: https://docs.docker.com/docker-hub/builds/#build-statuses-explained :noexport:
@@ -7429,3 +7276,157 @@ docker ps -a
 
 # list all images
 docker images
+* [#A] docker-compose                                              :noexport:
+* Dockerfile                                                       :noexport:
+** DONE dockerfile define multiple line command
+  CLOSED: [2015-03-09 Mon 00:38]
+https://github.com/docker/docker/issues/1799
+#+BEGIN_EXAMPLE
+Anyone know how to use heredoc with this syntax? Docker wants to bunch it onto a single line and causes a bash syntax error:
+
+RUN cat > /etc/example.conf <<'EOF' \
+This is one multiple lines \
+and should stay that way \
+EOF
+#+END_EXAMPLE
+** DONE docker entrypoint: entrypoint: ["tail", "-f", "/dev/null"]
+   CLOSED: [2018-04-06 Fri 15:08]
+** DONE Dockerfile entrypoint VS CMD
+  CLOSED: [2017-03-15 Wed 16:40]
+http://www.projectatomic.io/docs/docker-image-author-guidance/
+- CMD simply sets a command to run in the image if no arguments are passed to docker run,
+- ENTRYPOINT is meant to make your image behave like a binary.
+
+CMD ["ls", "/" ]
+
+ENTRYPOINT $HOME/docker-entrypoint.sh
+
+Be careful with using ENTRYPOINT; it will make it more difficult to get a shell inside your image.
+** dockerfile example
+#+BEGIN_EXAMPLE
+########## How To Build Docker Image #############
+##
+##  Build image from Dockerfile. docker build -t XXX/mdm:v2 --rm=false .
+##  Run docker intermediate container: docker run -t -i XXX/mdm:v2 /bin/bash
+##  Commit local image: docker commit -m "Initial version" -a "Denny Zhang<denny.zhang@totvs.com>" 9187d029f904 XXX/mdm:v2
+##  Remove intermediate container: docker stop $(docker ps -a -q); docker rm $(docker ps -a -q)
+##  Release to docker hub: docker push XXX/mdm:v2
+##
+##################################################
+
+########## How To Use Docker Image ###############
+##
+##  Install docker utility
+##  Download docker image: docker pull XXX/mdm:v2
+##  Boot docker container: docker run -t -P -d XXX/mdm:v2 /bin/bash
+##
+##################################################
+
+FROM ubuntu:14.04
+MAINTAINER TOTVS Labs <denny.zhang@totvs.com>
+RUN apt-get -yqq update
+
+########################################################################################
+# Enable Chef
+
+RUN apt-get -yqq install curl lsb-release
+RUN curl -L https://getchef.com/chef/install.sh | bash
+
+########################################################################################
+#  Start sshd: http://docs.docker.com/examples/running_ssh_service/
+RUN apt-get install -y openssh-server
+RUN mkdir /var/run/sshd
+RUN echo 'root:TOTVSFoobar1!' | chpasswd
+RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+# SSH login fix. Otherwise user is kicked off after login
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+RUN mkdir -p /root/.ssh
+RUN echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGVkT4Ka/Pt6M/xREwYWatYyBqaBgDVS1bCy7CViZ5VGr1z+sNwI2cBoRwWxqHwvOgfAm+Wbzwqs+WNvXW6GDZ1kjayh2YnBN5UBYZjpNQK9tmO8KHQwX29UvOaOJ6HIEWOJB9ylyUoWL+WwNf71arpXULBW6skx9fp9F5rHuB0UmQ+omhJGs6+PRSLAEzWaQvtxmm7CuZ7LgslNKskkqx/6CHlQPq2qchRVN5xvnZPuFWgF6cvWvK7kylAQsv8hQtFGsE9Rw1itjisCBVILzEC2mAjg5SqeEB0i7QwdlRr4jgxaxO5jR9wdKo7PaEl9+bibuZrCIhp6V4Y4eaIzAP denny.zhang@totvs.com' >> /root/.ssh/authorized_keys
+
+ENV NOTVISIBLE "in users profile"
+RUN echo "export VISIBLE=now" >> /etc/profile
+
+# Disable strict host checking for github
+RUN echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"]
+
+########################################################################################
+# Apache
+RUN apt-get -yqq install apache2
+# Jenkins
+RUN sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'
+RUN apt-get -yqq update
+RUN apt-get -yqq --force-yes install jenkins
+
+# Install basic packages.
+RUN apt-get -yqq install git update-notifier-common
+
+# TODO JDK, maven
+########################################################################################
+#+END_EXAMPLE
+** TODO syntax check for dockerfile
+https://access.redhat.com/labsinfo/linterfordockerfile
+http://stackoverflow.com/questions/28182047/is-there-a-way-to-lint-the-dockerfile
+https://github.com/projectatomic/dockerfile_lint
+https://github.com/goern/dockerfile_checker
+** DONE dockerfile go to directory: RUN cd /opt && unzip treeio.zip ...
+  CLOSED: [2015-03-12 Thu 22:19]
+http://stackoverflow.com/questions/20632258/docker-change-directory-command
+
+- every RUN creates a new commit & (currently) an AUFS layer
+
+#+BEGIN_EXAMPLE
+You can run a script, or a more complex parameter to the RUN. Here is an example from a Dockerfile I've downloaded to look at previously:
+
+RUN cd /opt && unzip treeio.zip && mv treeio-master treeio && \
+    rm -f treeio.zip && cd treeio && pip install -r requirements.pip
+Because of the use of '&&', it will only get to the final 'pip install' command if all the previous commands have succeeded.
+
+In fact, since every RUN creates a new commit & (currently) an AUFS layer, if you have too many commands in the Dockerfile, you will use up the limits, so merging the RUNs (when the file is stable) can be a very useful thing to do.
+#+END_EXAMPLE
+** BYPASS Dockerfile fail: echo -e /root/.ssh/config
+  CLOSED: [2015-03-12 Thu 18:26]
+# Disable strict host checking for github
+RUN echo "Host github.com" >> /root/.ssh/config
+RUN echo "  StrictHostKeyChecking no" >> /root/.ssh/config
+RUN echo "  IdentityFile /root/.ssh/mdmdevops_id_rsa" >> /root/.ssh/config
+RUN echo "  User git" >> /root/.ssh/config
+** ubuntu install docker-compose
+https://docs.docker.com/compose/install/
+https://docs.docker.com/install/linux/docker-ee/ubuntu/
+
+sudo apt-get install \
+    linux-image-extra-$(uname -r) \
+    linux-image-extra-virtual
+
+wget -qO- https://get.docker.com/ | sh
+
+sudo curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+
+sudo chmod +x /usr/local/bin/docker-compose
+** DONE docker-compose.yml mem_limit
+  CLOSED: [2018-03-08 Thu 20:14]
+https://docs.docker.com/config/containers/resource_constraints/
+
+1000,000,000
+
+#+BEGIN_EXAMPLE
+  jenkins:
+    container_name: mdm-jenkins
+    hostname: mdm-jenkins
+    # Base Docker image: https://github.com/dennyzhang/devops_docker_image/blob/tag_v7/jenkins/Dockerfile_1_0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "18080:8080/tcp"
+    # 2.5 GB
+    mem_limit: 2500000000
+    environment:
+      JENKINS_TIMEZONE: "America/Los_Angeles"
+      JAVA_OPTS: -Djenkins.install.runSetupWizard=false
+#+END_EXAMPLE
