@@ -22,7 +22,23 @@
 File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or star [[https://github.com/DennyZhang/cheatsheet-docker-A4][this repo]].
 
 See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][#denny-cheatsheets]]
-
+** Ubuntu docker: Install missing packages
+| Name                     | Summary                                          |
+|--------------------------+--------------------------------------------------|
+| Pull ubuntu docker image | =docker pull ubuntu=                             |
+| man: command not found   | =apt-get update=, =apt-get install man=          |
+| ping: command not found  | =apt-get update=, =apt-get install iputils-ping= |
+** Docker Socket file
+| Name                               | Summary                                                                                                                                               |
+|------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Links                              | [[https://docs.docker.com/develop/sdk/][Link: Develop with Docker Engine SDKs and API]]                                                                                                         |
+| Run container mounting socket file | =docker run -v /var/run/docker.sock:/var/run/docker.sock -ti alpine sh=                                                                               |
+| A different docker socket file     | =export DOCKER_HOST=unix:///my/docker.sock=                                                                                                           |
+| List containers                    | =curl -XGET --unix-socket /myrun/docker.sock http://localhost/containers/json=                                                                        |
+| Stop container                     | =curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/<container_id>/stop=                                                      |
+| Start container                    | =curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/<container_id>/start=                                                     |
+| List events                        | =curl --unix-socket /var/run/docker.sock http://localhost/events=                                                                                     |
+| Create container                   | =curl -XPOST --unix-socket /var/run/docker.sock -d '{"Image":"nginx:alpine"}' -H 'Content-Type: application/json' http://localhost/containers/create= |
 ** Docker Compose
 | Name                             | Summary                                                                              |
 |----------------------------------+--------------------------------------------------------------------------------------|
@@ -32,14 +48,12 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 | Start compose env                | =docker-compose up=, =docker-compose up -d=                                          |
 | Stop compose env                 | =docker-compose down=, =docker-compose down -v=                                      |
 | Check logs                       | =docker-compose logs=                                                                |
-
 ** Container Runtime
 | Name    | Summary                                                                                  |
 |---------+------------------------------------------------------------------------------------------|
 | dockerd |                                                                                          |
 | [[https://github.com/rkt/rkt][rkt]]     | a pod-native container engine for Linux.                                                 |
 | [[https://github.com/kubernetes-sigs/cri-o][CRI-O]]   | Open Container Initiative-based implementation of Kubernetes Container Runtime Interface |
-
 ** Check Status
 | Name                               | Summary                                                       |
 |------------------------------------+---------------------------------------------------------------|
@@ -48,8 +62,7 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 | List containers                    | =docker ps=                                                   |
 | List all containers                | =docker ps -a=                                                |
 | List containers by labels          | =docker ps --filter "label=org.label-schema.group"=           |
-| List all images                         | =docker images -a=                                  |
-
+| List all images                    | =docker images -a=                                            |
 ** Container Basic
 | Name                                    | Summary                                             |
 |-----------------------------------------+-----------------------------------------------------|
@@ -65,19 +78,6 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 | Docker push a tagged image to repo      | =docker push username/repo:tag=                     |
 | Run image from a given tag              | =docker run username/repo:tag=                      |
 | Create docker image                     | =docker build -t denny/image:test .=                |
-
-** Docker Socket file
-| Name                               | Summary                                                                                                                                               |
-|------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Links                              | [[https://docs.docker.com/develop/sdk/][Link: Develop with Docker Engine SDKs and API]]                                                                                                         |
-| Run container mounting socket file | =docker run -v /var/run/docker.sock:/var/run/docker.sock -ti alpine sh=                                                                               |
-| A different docker socket file     | =export DOCKER_HOST=unix:///my/docker.sock=                                                                                                           |
-| List containers                    | =curl -XGET --unix-socket /myrun/docker.sock http://localhost/containers/json=                                                                        |
-| Stop container                     | =curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/<container_id>/stop=                                                      |
-| Start container                    | =curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/<container_id>/start=                                                     |
-| List events                        | =curl --unix-socket /var/run/docker.sock http://localhost/events=                                                                                     |
-| Create container                   | =curl -XPOST --unix-socket /var/run/docker.sock -d '{"Image":"nginx:alpine"}' -H 'Content-Type: application/json' http://localhost/containers/create= |
-
 ** Cleanup
 | Name                           | Summary                                                  |
 |--------------------------------+----------------------------------------------------------|
@@ -85,13 +85,11 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 | Remove all docker images       | =docker rmi $(docker images -q)=                         |
 | Remove orphaned docker volumes | =docker volume rm $(docker volume ls -qf dangling=true)= |
 | Remove dead containers         | =docker rm $(docker ps --filter status=dead -qa)=        |
-
 ** Resource Reference
 | Name            | Summary                                                 |
 |-----------------+---------------------------------------------------------|
 | Docker SDK      | https://docs.docker.com/develop/sdk/examples/           |
 | Docker REST API | https://docs.docker.com/engine/api/v1.27/#tag/Container |
-
 ** Scripts
 - Docker build
 #+BEGIN_SRC sh
@@ -159,8 +157,8 @@ License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_lice
 #+END_HTML
 * org-mode configuration                                           :noexport:
 #+STARTUP: overview customtime noalign logdone showall
-#+DESCRIPTION: 
-#+KEYWORDS: 
+#+DESCRIPTION:
+#+KEYWORDS:
 #+LATEX_HEADER: \usepackage[margin=0.6in]{geometry}
 #+LaTeX_CLASS_OPTIONS: [8pt]
 #+LATEX_HEADER: \usepackage[english]{babel}
@@ -180,9 +178,8 @@ License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_lice
 #+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
 #+EXPORT_EXCLUDE_TAGS: exclude noexport
 #+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
-#+LINK_UP:   
-#+LINK_HOME: 
-
+#+LINK_UP:
+#+LINK_HOME:
 * [#A] docker                                            :noexport:IMPORTANT:
 https://docs.docker.com/
 http://jpetazzo.github.io
@@ -3456,7 +3453,6 @@ Client:
  OS/Arch:      linux/amd64
 Cannot connect to the Docker daemon. Is the docker daemon running on this host?
 #+END_EXAMPLE
-
 ** [#A] docker save
 *** tar.bz2
 http://blog.shantanu.io/2014/01/13/reuse-docker-images-and-save-bandwidth/
@@ -4438,7 +4434,6 @@ The issue is that even though you can "write" to those files, you can't rename t
 #   unique true
 # end
 #+END_EXAMPLE
-
 ** DONE docker stats: docker stats docker-jenkins demo-all-in-one1 dev-all-in-one1
   CLOSED: [2016-01-27 Wed 17:14]
 #+BEGIN_EXAMPLE
