@@ -28,13 +28,14 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 | Pull ubuntu docker image | =docker pull ubuntu=                             |
 | man: command not found   | =apt-get update=, =apt-get install man=          |
 | ping: command not found  | =apt-get update=, =apt-get install iputils-ping= |
+| dig: command not found   | =apt-get install dnsutils=                       |
 ** Docker Socket file
 | Name                               | Summary                                                                                                                                               |
 |------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Links                              | [[https://docs.docker.com/develop/sdk/][Link: Develop with Docker Engine SDKs and API]]                                                                                                         |
 | Run container mounting socket file | =docker run -v /var/run/docker.sock:/var/run/docker.sock -ti alpine sh=                                                                               |
 | A different docker socket file     | =export DOCKER_HOST=unix:///my/docker.sock=                                                                                                           |
-| List containers                    | =curl -XGET --unix-socket /myrun/docker.sock http://localhost/containers/json=                                                                        |
+| List containers                    | =curl -XGET --unix-socket /var/run/docker.sock http://localhost/containers/json=                                                                      |
 | Stop container                     | =curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/<container_id>/stop=                                                      |
 | Start container                    | =curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/<container_id>/start=                                                     |
 | List events                        | =curl --unix-socket /var/run/docker.sock http://localhost/events=                                                                                     |
@@ -7425,3 +7426,5 @@ https://docs.docker.com/config/containers/resource_constraints/
       JENKINS_TIMEZONE: "America/Los_Angeles"
       JAVA_OPTS: -Djenkins.install.runSetupWizard=false
 #+END_EXAMPLE
+* DONE doc: docker compose export udp                              :noexport:
+  CLOSED: [2018-07-20 Fri 14:16]
