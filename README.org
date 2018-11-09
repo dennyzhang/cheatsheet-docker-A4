@@ -18,10 +18,9 @@
 
 - PDF Link: [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/cheatsheet-docker-A4.pdf][cheatsheet-docker-A4.pdf]], Category: [[https://cheatsheet.dennyzhang.com/category/tools/][tools]]
 - Blog URL: https://cheatsheet.dennyzhang.com/cheatsheet-docker-A4
+- Related posts: [[https://cheatsheet.dennyzhang.com/kubernetes-yaml-templates][Kubernetes Yaml]], [[https://github.com/topics/denny-cheatsheets][#denny-cheatsheets]]
 
 File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or star [[https://github.com/DennyZhang/cheatsheet-docker-A4][this repo]].
-
-See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][#denny-cheatsheets]]
 ** Ubuntu docker: Install missing packages
 | Name                     | Summary                                          |
 |--------------------------+--------------------------------------------------|
@@ -7428,3 +7427,6 @@ https://docs.docker.com/config/containers/resource_constraints/
 #+END_EXAMPLE
 * DONE doc: docker compose export udp                              :noexport:
   CLOSED: [2018-07-20 Fri 14:16]
+* TODO opensource improvement: CheatSheet: https://github.com/eon01/DockerCheatSheet :noexport:
+* TODO [#A] opensource improvement: docker cheatsheet: https://github.com/wsargent/docker-cheat-sheet :noexport:
+* HALF good to manage docker and docker-compose samples            :noexport:
