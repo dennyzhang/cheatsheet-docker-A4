@@ -28,6 +28,12 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | man: command not found   | =apt-get update=, =apt-get install man=          |
 | ping: command not found  | =apt-get update=, =apt-get install iputils-ping= |
 | dig: command not found   | =apt-get install dnsutils=                       |
+** Docker start service
+| Name                    | Summary                                                                        |
+|-------------------------+--------------------------------------------------------------------------------|
+| Start a ubuntu test env | =docker run ubuntu /bin/echo hello world=                                      |
+| Start nginx             | =docker run -t -d -p 8080:80 --name nginx-test nginx=                          |
+| Start a sshd server     | =docker run -t -d --privileged -p 5022:22 denny/sshd:latest /usr/sbin/sshd -D= |
 ** Docker Socket file
 | Name                               | Summary                                                                                                                                               |
 |------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -40,14 +46,14 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | List events                        | =curl --unix-socket /var/run/docker.sock http://localhost/events=                                                                                     |
 | Create container                   | =curl -XPOST --unix-socket /var/run/docker.sock -d '{"Image":"nginx:alpine"}' -H 'Content-Type: application/json' http://localhost/containers/create= |
 ** Docker Compose
-| Name                             | Summary                                                                              |
-|----------------------------------+--------------------------------------------------------------------------------------|
-| Change entrypoint to run nothing | =entrypoint: ["tail", "-f", "/dev/null"]=                                            |
-| Change restart policy            | =restart: always=, [[https://docs.docker.com/compose/compose-file/#restart_policy][Link: Compose file version 3 reference]]                            |
-| Mount file as volume             | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/samples/mount-file.yml][samples/mount-file.yml]] |
-| Start compose env                | =docker-compose up=, =docker-compose up -d=                                          |
-| Stop compose env                 | =docker-compose down=, =docker-compose down -v=                                      |
-| Check logs                       | =docker-compose logs=                                                                |
+| Name                             | Summary                                                                             |
+|----------------------------------+-------------------------------------------------------------------------------------|
+| Change entrypoint to run nothing | =entrypoint: ["tail", "-f", "/dev/null"]=                                           |
+| Change restart policy            | =restart: always=, [[https://docs.docker.com/compose/compose-file/#restart_policy][Link: Compose file version 3 reference]]                           |
+| Mount file as volume             | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/sample-mount-file.yml][sample-mount-file.yml]] |
+| Start compose env                | =docker-compose up=, =docker-compose up -d=                                         |
+| Stop compose env                 | =docker-compose down=, =docker-compose down -v=                                     |
+| Check logs                       | =docker-compose logs=                                                               |
 ** Container Runtime
 | Name    | Summary                                                                                  |
 |---------+------------------------------------------------------------------------------------------|
@@ -63,21 +69,25 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | List all containers                | =docker ps -a=                                                |
 | List containers by labels          | =docker ps --filter "label=org.label-schema.group"=           |
 | List all images                    | =docker images -a=                                            |
+#+BEGIN_HTML
+<a href="https://www.dennyzhang.com"><img align="right" width="185" height="37" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/dns_small.png"></a>
+#+END_HTML
 ** Container Basic
-| Name                                    | Summary                                             |
-|-----------------------------------------+-----------------------------------------------------|
-| Start docker container                  | =docker run -p 4000:80 imgname=                     |
-| Start docker container in detached mode | =docker run -d -p 4000:80 imgname=                  |
-| Enter a running container               | =docker exec -it [container-id] sh=                 |
-| Stop container                          | =docker stop <hash>=                                |
-| Remove container                        | =docker rm <hash>=                                  |
-| Remove all containers                   | =docker rm $(docker ps -a -q)=                      |
-| Force shutdown of one given container   | =docker kill <hash>=                                |
-| Login to docker hub                     | =docker login=                                      |
-| Tag <image>                             | =docker tag <image> username/repo:tag=              |
-| Docker push a tagged image to repo      | =docker push username/repo:tag=                     |
-| Run image from a given tag              | =docker run username/repo:tag=                      |
-| Create docker image                     | =docker build -t denny/image:test .=                |
+| Name                                    | Summary                                               |
+|-----------------------------------------+-------------------------------------------------------|
+| Start docker container                  | =docker run -p 4000:80 imgname=                       |
+| Start docker container in detached mode | =docker run -d -p 4000:80 imgname=                    |
+| Enter a running container               | =docker exec -it [container-id] sh=                   |
+| Stop container                          | =docker stop <hash>=                                  |
+| Remove container                        | =docker rm <hash>=                                    |
+| Remove all containers                   | =docker rm $(docker ps -a -q)=                        |
+| Force shutdown of one given container   | =docker kill <hash>=                                  |
+| Login to docker hub                     | =docker login=                                        |
+| Tag <image>                             | =docker tag <image> username/repo:tag=                |
+| Docker push a tagged image to repo      | =docker push username/repo:tag=                       |
+| Run image from a given tag              | =docker run username/repo:tag=                        |
+| Create docker image                     | =docker build -t denny/image:test .=                  |
+| Docker files                            | =/var/lib/docker=, =/var/lib/docker/devicemapper/mnt= |
 ** Cleanup
 | Name                           | Summary                                                  |
 |--------------------------------+----------------------------------------------------------|
@@ -90,60 +100,6 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 |-----------------+---------------------------------------------------------|
 | Docker SDK      | https://docs.docker.com/develop/sdk/examples/           |
 | Docker REST API | https://docs.docker.com/engine/api/v1.27/#tag/Container |
-** Scripts
-- Docker build
-#+BEGIN_SRC sh
-cd "$dir" && cat "$dockerfile" | docker build -t "$docker_image" -f - .
-#+END_SRC
-
-- Use google docker registry
-#+BEGIN_EXAMPLE
-docker build -t gcr.io/<MY_REPO>/<MY_IMAGE>:<MY_TAG> .
-gcloud docker -- push gcr.io/<MY_REPO>/<MY_IMAGE>:<MY_TAG>
-#+END_EXAMPLE
-
-- Delete all containers
-
-[[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-all-containers.sh][delete-all-containers.sh]]
-#+BEGIN_EXAMPLE
-curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/delete-all-containers.sh | bash
-#+END_EXAMPLE
-
-- Install test kit
-
-[[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/container-install-devkit.sh][container-install-devkit.sh]]
-#+BEGIN_EXAMPLE
-apt-get -y update
-apt-get install -y curl netcat
-
-curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/container-install-devkit.sh | bash
-#+END_EXAMPLE
-
-- Clean up Disk
-
-Remove All Useless Resources.
-
-#+BEGIN_EXAMPLE
-docker ps --filter status=exited -aq | xargs -r docker rm -v
-#+END_EXAMPLE
-
-Remove unused docker images
-#+BEGIN_EXAMPLE
-docker rmi $(docker images | grep "<none>"  | awk -F' ' '{print $3}')
-#+END_EXAMPLE
-
-Remove intermediate containers generated during docker build
-#+BEGIN_EXAMPLE
-docker ps -a | grep "/bin/sh -c" |  awk -F' ' '{print $1}' | xargs docker rm
-#+END_EXAMPLE
-
-Remove Image with <none> string
-#+BEGIN_EXAMPLE
-echo "Remove docker images with <none> string"
-if docker images | grep none | tee; then
-   docker rmi $(docker images | grep "<none>"  | awk -F' ' '{print $3}') | tee
-fi
-#+END_EXAMPLE
 ** More Resources
 
 License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_license.txt][MIT License]].
@@ -180,6 +136,7 @@ License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_lice
 #+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
 #+LINK_UP:
 #+LINK_HOME:
+* #  --8<-------------------------- separator ------------------------>8-- :noexport:
 * [#A] docker                                            :noexport:IMPORTANT:
 https://docs.docker.com/
 http://jpetazzo.github.io
@@ -7207,8 +7164,6 @@ Password:
 ftp> ls
 *** TODO Common mointor: disk usage, download link, dns setting
 curl -u ftp_XXX:XXX123ChangeMe ftp://ftp.carol.ai:21/hosts
-* #  --8<-------------------------- separator ------------------------>8-- :noexport:
-* TODO Check https://github.com/wsargent/docker-cheat-sheet        :noexport:
 * DONE docker auto build: https://docs.docker.com/docker-hub/builds/#build-statuses-explained :noexport:
   CLOSED: [2018-07-10 Tue 10:18]
 * DONE [#A] docker multi-stage builds: https://docs.docker.com/develop/develop-images/multistage-build/#before-multi-stage-builds :noexport:
@@ -7430,3 +7385,522 @@ https://docs.docker.com/config/containers/resource_constraints/
 * TODO opensource improvement: CheatSheet: https://github.com/eon01/DockerCheatSheet :noexport:
 * TODO [#A] opensource improvement: docker cheatsheet: https://github.com/wsargent/docker-cheat-sheet :noexport:
 * HALF good to manage docker and docker-compose samples            :noexport:
+* Docker: a breakthrough of software delivery                 :noexport:Tool:
+:PROPERTIES:
+:type:   OpenStack_Cloud
+:END:
+| Name                                                                             | Summary                                                       |
+|----------------------------------------------------------------------------------+---------------------------------------------------------------|
+| docker pull ubuntu                                                               | Download a pre-built image, searching https://index.docker.io |
+| docker run -i -t ubuntu /bin/bash                                                | login to a container                                          |
+| /var/lib/docker/containers/227.../config.lxc                                     | lxc configuration                                             |
+| docker run -d ubuntu /bin/sh -c "while true; do echo hello world; sleep 1; done" | start a new daemon container                                  |
+| docker logs e970...96                                                            | Check container log                                           |
+| docker attach e970...96                                                          | Attach to a running container                                 |
+| docker attach -sig-proxy=false e970...96                                         | When sig-proxy false, (Ctrl-C) won't stop container.          |
+| docker stop e970...96                                                            | stop a container                                              |
+| docker run -p 22 -p 80 -t -i <yourname>/supervisor                               | Start a container from your own image                         |
+| docker run -d -p 27017 -m="1g" denny/mongodb --noprealloc --smallfiles           |                                                               |
+
+ps -ef | grep docker: find container id
+** basic use
+http://www.docker.io/the_whole_story/
+#+begin_example
+Docker interests me because it allows simple environment isolation and
+repeatability. I can create a run-time environment once, package it
+up, then run it again on any other machine. Furthermore, everything
+that runs in that environment is isolated from the underlying host
+(much like a virtual machine). And best of all, everything is fast and
+simple.
+#+end_example
+** [question] 如何退出docker container, 而不停掉这个container
+#+begin_example
+[root@compute ~]# sudo docker run -p 22 -p 80 -t -i denny/supervisord
+sudo docker run -p 22 -p 80 -t -i denny/supervisord
+2013-12-11 06:21:34,459 CRIT Supervisor running as root (no user in config file)
+2013-12-11 06:21:34,459 WARN Included extra file "/etc/supervisor/conf.d/supervisord.conf" during parsing
+2013-12-11 06:21:34,485 INFO RPC interface 'supervisor' initialized
+2013-12-11 06:21:34,485 WARN cElementTree not installed, using slower XML parser for XML-RPC
+2013-12-11 06:21:34,485 CRIT Server 'unix_http_server' running without any HTTP authentication checking
+2013-12-11 06:21:34,485 INFO supervisord started with pid 1
+2013-12-11 06:21:35,490 INFO spawned: 'sshd' with pid 5
+2013-12-11 06:21:35,497 INFO spawned: 'apache2' with pid 6
+2013-12-11 06:21:36,541 INFO success: sshd entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2013-12-11 06:21:36,541 INFO success: apache2 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+#+end_example
+** [#A] [question] why Docker's container use less resource than vm?
+http://www.infoq.com/articles/docker-containers/
+
+http://docs.docker.io/en/latest/faq/
+
+http://stackoverflow.com/questions/16047306/how-is-docker-io-different-from-a-normal-virtual-machine/16048358#16048358
+
+- A full virtualized system usually takes minutes to start, LXC containers take seconds, and sometimes even less than a second.
+
+- VMs are best used to allocate chunks of hardware resources. Containers operate at the process level
+- LXC enables differnet containers to share a lot of the host operating system resources.
+*** misc                                                           :noexport:
+#+begin_example
+Docker currently uses LinuX Containers (LXC), which run in the same operating system as its host. This allows it to share a lot of the host operating system resources. It also uses AuFS for the file system. It also manages the networking for you as well.
+
+AuFS is a layered file system, so you can have a read only part, and a write part, and merge those together. So you could have the common parts of the operating system as read only, which are shared amongst all of your containers, and then give each container its own mount for writing.
+
+So let's say you have a container image that is 1GB in size. If you wanted to use a Full VM, you would need to have 1GB times x number of VMs you want. With LXC and AuFS you can share the bulk of the 1GB and if you have 1000 containers you still might only have a little over 1GB of space for the containers OS, assuming they are all running the same OS image.
+
+A full virtualized system gets its own set of resources allocated to it, and does minimal sharing. You get more isolation, but it is much heavier (requires more resources).
+
+With LXC you get less isolation, but they are more lightweight and require less resources. So you could easily run 1000's on a host, and it doesn't even blink. Try doing that with Xen, and unless you have a really big host, I don't think it is possible.
+
+A full virtualized system usually takes minutes to start, LXC containers take seconds, and sometimes even less than a second.
+
+There are pros and cons for each type of virtualized system. If you want full isolation with guaranteed resources then a full VM is the way to go. If you just want to isolate processes from each other and want to run a ton of them on a reasonably sized host, then LXC might be the way to go.
+
+For more information check out these set of blog posts which do a good job of explaining now LXC works: http://blog.dotcloud.com/under-the-hood-linux-kernels-on-dotcloud-part
+
+I feel foolish for asking, but why is deploying software to a docker image (if that's the right term) easier than simply deploying to a consistent production environment?
+
+Deploying a consistent production environment is easier said than done. Even if you use tools like chef and puppet, there are always OS updates and other things that change between hosts and environments.
+
+What docker does is it gives you the ability to snapshot the OS into a common image, and makes it easy to deploy on other docker hosts. Locally, dev, qa, prod, etc, all the same image. Sure you can do this with other tools, but not as easily or fast.
+
+This is great for unit testing, lets say you have 1000 tests and they need to connect to a database, and in order to not break anything you need to run serially so that the tests don't step on each other (run each test in a transaction and roll back). With Docker you could create an image of your database, and then run all the tests in parallel since you know they will all be running against the same snapshot of the database. Since they are running in parallel and in LXC containers they could run all on the same box at the same time, and your tests will finish much faster. Try doing that with a full VM.
+
+Edit: From comments...
+
+Interesting! I suppose I'm still confused by the notion of "snapshot[ting] the OS". How does one do that without, well, making an image of the OS?
+
+Well, let's see if I can explain. You start with a base image, and then make your changes, and commit those changes using docker, and it creates an image. This image contains only the differences from the base. When you want to run your image, you also need the base, and it layers your image on top of the base using a layered file system, in this case AUFS. AUFS merges the different layers together and you get what you want, and you just need to run it. you can keep adding more and more images(layers) and it will keep only saving the diffs.
+#+end_example
+*** filesystem
+ls -lt  /var/lib/docker/graph/
+
+ls -lt  /var/lib/docker/containers
+
+AuFS is a layered file system, so you can have a read only part, and a write part, and merge those together.
+
+A full virtualized system gets its own set of resources allocated to it, and does minimal sharing.
+
+When you docker run an image. AUFS will 'merge' all layers into one usage file system.
+*** network
+get ip:
+
+grep lxc.network.ipv4 /var/lib/docker/containers/c8f8bde235962390e7d797eddc54da5b55bd5ba47b3625e7c5975c352abb52ad/config.lxc
+**** iptables-save
+#+begin_example
+<8b6a1c6cc89d0d4a6800f7a7694aaf0462388b3d15b6d676]# iptables-save
+iptables-save
+# Generated by iptables-save v1.4.7 on Wed Dec 11 03:18:18 2013
+*nat
+:PREROUTING ACCEPT [40:3416]
+:POSTROUTING ACCEPT [310:18631]
+:OUTPUT ACCEPT [310:18631]
+:DOCKER - [0:0]
+:neutron-openvswi-OUTPUT - [0:0]
+:neutron-openvswi-POSTROUTING - [0:0]
+:neutron-openvswi-PREROUTING - [0:0]
+:neutron-openvswi-float-snat - [0:0]
+:neutron-openvswi-snat - [0:0]
+:neutron-postrouting-bottom - [0:0]
+-A PREROUTING -j neutron-openvswi-PREROUTING
+-A PREROUTING -m addrtype --dst-type LOCAL -j DOCKER
+-A POSTROUTING -j neutron-openvswi-POSTROUTING
+-A POSTROUTING -j neutron-postrouting-bottom
+-A POSTROUTING -s 172.17.0.0/16 ! -d 172.17.0.0/16 -j MASQUERADE
+-A OUTPUT -j neutron-openvswi-OUTPUT
+-A OUTPUT ! -d 127.0.0.0/8 -m addrtype --dst-type LOCAL -j DOCKER
+-A DOCKER ! -i docker0 -p tcp -m tcp --dport 49160 -j DNAT --to-destination 172.17.0.28:8080
+-A neutron-openvswi-snat -j neutron-openvswi-float-snat
+-A neutron-postrouting-bottom -j neutron-openvswi-snat
+COMMIT
+# Completed on Wed Dec 11 03:18:18 2013
+# Generated by iptables-save v1.4.7 on Wed Dec 11 03:18:18 2013
+*mangle
+:PREROUTING ACCEPT [1686528:951517614]
+:INPUT ACCEPT [878227:456857332]
+:FORWARD ACCEPT [802843:494440141]
+:OUTPUT ACCEPT [238768:41617390]
+:POSTROUTING ACCEPT [1041611:536057531]
+COMMIT
+# Completed on Wed Dec 11 03:18:18 2013
+# Generated by iptables-save v1.4.7 on Wed Dec 11 03:18:18 2013
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [233828:41379304]
+:neutron-filter-top - [0:0]
+:neutron-openvswi-FORWARD - [0:0]
+:neutron-openvswi-INPUT - [0:0]
+:neutron-openvswi-OUTPUT - [0:0]
+:neutron-openvswi-i19a9e9d1-9 - [0:0]
+:neutron-openvswi-ifbf44c00-1 - [0:0]
+:neutron-openvswi-local - [0:0]
+:neutron-openvswi-o19a9e9d1-9 - [0:0]
+:neutron-openvswi-ofbf44c00-1 - [0:0]
+:neutron-openvswi-s19a9e9d1-9 - [0:0]
+:neutron-openvswi-sfbf44c00-1 - [0:0]
+:neutron-openvswi-sg-chain - [0:0]
+:neutron-openvswi-sg-fallback - [0:0]
+-A INPUT -s 192.168.209.130/32 -p tcp -m tcp --dport 9696 -j ACCEPT
+-A INPUT -j neutron-openvswi-INPUT
+-A INPUT -s 192.168.209.131/32 -p tcp -m multiport --dports 5900:5999 -m comment --comment "001 nova compute incoming 192.168.209.131" -j ACCEPT
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -p icmp -j ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
+-A INPUT -j REJECT --reject-with icmp-host-prohibited
+-A FORWARD -i docker0 -o docker0 -j ACCEPT
+-A FORWARD -i docker0 ! -o docker0 -j ACCEPT
+-A FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -j neutron-filter-top
+-A FORWARD -j neutron-openvswi-FORWARD
+-A FORWARD -j REJECT --reject-with icmp-host-prohibited
+-A OUTPUT -j neutron-filter-top
+-A OUTPUT -j neutron-openvswi-OUTPUT
+-A neutron-filter-top -j neutron-openvswi-local
+-A neutron-openvswi-FORWARD -m physdev --physdev-out tapfbf44c00-1c --physdev-is-bridged -j neutron-openvswi-sg-chain
+-A neutron-openvswi-FORWARD -m physdev --physdev-in tapfbf44c00-1c --physdev-is-bridged -j neutron-openvswi-sg-chain
+-A neutron-openvswi-FORWARD -m physdev --physdev-out tap19a9e9d1-99 --physdev-is-bridged -j neutron-openvswi-sg-chain
+-A neutron-openvswi-FORWARD -m physdev --physdev-in tap19a9e9d1-99 --physdev-is-bridged -j neutron-openvswi-sg-chain
+-A neutron-openvswi-INPUT -m physdev --physdev-in tapfbf44c00-1c --physdev-is-bridged -j neutron-openvswi-ofbf44c00-1
+-A neutron-openvswi-INPUT -m physdev --physdev-in tap19a9e9d1-99 --physdev-is-bridged -j neutron-openvswi-o19a9e9d1-9
+-A neutron-openvswi-i19a9e9d1-9 -m state --state INVALID -j DROP
+-A neutron-openvswi-i19a9e9d1-9 -m state --state RELATED,ESTABLISHED -j RETURN
+-A neutron-openvswi-i19a9e9d1-9 -p icmp -j RETURN
+-A neutron-openvswi-i19a9e9d1-9 -s 10.0.0.3/32 -j RETURN
+-A neutron-openvswi-i19a9e9d1-9 -p tcp -m tcp --dport 22 -j RETURN
+-A neutron-openvswi-i19a9e9d1-9 -s 10.0.0.2/32 -p udp -m udp --sport 67 --dport 68 -j RETURN
+-A neutron-openvswi-i19a9e9d1-9 -j neutron-openvswi-sg-fallback
+-A neutron-openvswi-ifbf44c00-1 -m state --state INVALID -j DROP
+-A neutron-openvswi-ifbf44c00-1 -m state --state RELATED,ESTABLISHED -j RETURN
+-A neutron-openvswi-ifbf44c00-1 -p icmp -j RETURN
+-A neutron-openvswi-ifbf44c00-1 -s 10.0.0.4/32 -j RETURN
+-A neutron-openvswi-ifbf44c00-1 -p tcp -m tcp --dport 22 -j RETURN
+-A neutron-openvswi-ifbf44c00-1 -s 10.0.0.2/32 -p udp -m udp --sport 67 --dport 68 -j RETURN
+-A neutron-openvswi-ifbf44c00-1 -j neutron-openvswi-sg-fallback
+-A neutron-openvswi-o19a9e9d1-9 -p udp -m udp --sport 68 --dport 67 -j RETURN
+-A neutron-openvswi-o19a9e9d1-9 -j neutron-openvswi-s19a9e9d1-9
+-A neutron-openvswi-o19a9e9d1-9 -p udp -m udp --sport 67 --dport 68 -j DROP
+-A neutron-openvswi-o19a9e9d1-9 -m state --state INVALID -j DROP
+-A neutron-openvswi-o19a9e9d1-9 -m state --state RELATED,ESTABLISHED -j RETURN
+-A neutron-openvswi-o19a9e9d1-9 -j RETURN
+-A neutron-openvswi-o19a9e9d1-9 -j neutron-openvswi-sg-fallback
+-A neutron-openvswi-ofbf44c00-1 -p udp -m udp --sport 68 --dport 67 -j RETURN
+-A neutron-openvswi-ofbf44c00-1 -j neutron-openvswi-sfbf44c00-1
+-A neutron-openvswi-ofbf44c00-1 -p udp -m udp --sport 67 --dport 68 -j DROP
+-A neutron-openvswi-ofbf44c00-1 -m state --state INVALID -j DROP
+-A neutron-openvswi-ofbf44c00-1 -m state --state RELATED,ESTABLISHED -j RETURN
+-A neutron-openvswi-ofbf44c00-1 -j RETURN
+-A neutron-openvswi-ofbf44c00-1 -j neutron-openvswi-sg-fallback
+-A neutron-openvswi-s19a9e9d1-9 -s 10.0.0.4/32 -m mac --mac-source FA:16:3E:32:8F:60 -j RETURN
+-A neutron-openvswi-s19a9e9d1-9 -j DROP
+-A neutron-openvswi-sfbf44c00-1 -s 10.0.0.3/32 -m mac --mac-source FA:16:3E:AE:F8:7C -j RETURN
+-A neutron-openvswi-sfbf44c00-1 -j DROP
+-A neutron-openvswi-sg-chain -m physdev --physdev-out tapfbf44c00-1c --physdev-is-bridged -j neutron-openvswi-ifbf44c00-1
+-A neutron-openvswi-sg-chain -m physdev --physdev-in tapfbf44c00-1c --physdev-is-bridged -j neutron-openvswi-ofbf44c00-1
+-A neutron-openvswi-sg-chain -m physdev --physdev-out tap19a9e9d1-99 --physdev-is-bridged -j neutron-openvswi-i19a9e9d1-9
+-A neutron-openvswi-sg-chain -m physdev --physdev-in tap19a9e9d1-99 --physdev-is-bridged -j neutron-openvswi-o19a9e9d1-9
+-A neutron-openvswi-sg-chain -j ACCEPT
+-A neutron-openvswi-sg-fallback -j DROP
+COMMIT
+# Completed on Wed Dec 11 03:18:18 2013
+#+end_example
+**** ip a
+#+begin_example
+<8b6a1c6cc89d0d4a6800f7a7694aaf0462388b3d15b6d676]# ip a
+ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether 00:0c:29:a4:54:fd brd ff:ff:ff:ff:ff:ff
+    inet 192.168.209.130/24 brd 192.168.209.255 scope global eth0
+    inet6 fe80::20c:29ff:fea4:54fd/64 scope link
+       valid_lft forever preferred_lft forever
+3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether 00:0c:29:a4:54:07 brd ff:ff:ff:ff:ff:ff
+    inet 172.16.162.130/24 brd 172.16.162.255 scope global eth1
+    inet6 fe80::20c:29ff:fea4:5407/64 scope link
+       valid_lft forever preferred_lft forever
+4: ovs-system: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN
+    link/ether 62:87:ad:0a:dd:2a brd ff:ff:ff:ff:ff:ff
+5: br-int: <BROADCAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN
+    link/ether 66:62:4c:ea:fd:4a brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::584d:7cff:fe2d:7807/64 scope link
+       valid_lft forever preferred_lft forever
+6: br-tun: <BROADCAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN
+    link/ether 32:ea:70:aa:9f:4f brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::3041:d1ff:fe64:97e8/64 scope link
+       valid_lft forever preferred_lft forever
+7: pan0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN
+    link/ether b2:1c:42:2f:19:ec brd ff:ff:ff:ff:ff:ff
+9: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN
+    link/ether fe:aa:44:84:21:cc brd ff:ff:ff:ff:ff:ff
+    inet 172.17.42.1/16 scope global docker0
+    inet6 fe80::147e:ff:fe31:8ba7/64 scope link
+       valid_lft forever preferred_lft forever
+89: vethnRwtyr: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether fe:aa:44:84:21:cc brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::fcaa:44ff:fe84:21cc/64 scope link
+       valid_lft forever preferred_lft forever
+#+end_example
+**** [#A] Docker leverage NAT network, for container to talk with the internet
+Network namespace: a container gets its own virtual network device and
+virtual IP (so it can bind to whatever port it likes without taking up
+its hosts ports).
+
+-A DOCKER ! -i docker0 -p tcp -m tcp --dport 49160 -j DNAT --to-destination 172.17.0.28:8080
+***** 启动一个vnet: 172.17.42.1
+#+begin_example
+[root@compute ~]#ip a
+ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether 00:0c:29:a4:54:fd brd ff:ff:ff:ff:ff:ff
+    inet 192.168.209.130/24 brd 192.168.209.255 scope global eth0
+    inet6 fe80::20c:29ff:fea4:54fd/64 scope link
+       valid_lft forever preferred_lft forever
+3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether 00:0c:29:a4:54:07 brd ff:ff:ff:ff:ff:ff
+    inet 172.16.162.130/24 brd 172.16.162.255 scope global eth1
+    inet6 fe80::20c:29ff:fea4:5407/64 scope link
+       valid_lft forever preferred_lft forever
+4: ovs-system: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN
+    link/ether 62:87:ad:0a:dd:2a brd ff:ff:ff:ff:ff:ff
+5: br-int: <BROADCAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN
+    link/ether 66:62:4c:ea:fd:4a brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::584d:7cff:fe2d:7807/64 scope link
+       valid_lft forever preferred_lft forever
+6: br-tun: <BROADCAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN
+    link/ether 32:ea:70:aa:9f:4f brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::3041:d1ff:fe64:97e8/64 scope link
+       valid_lft forever preferred_lft forever
+7: pan0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN
+    link/ether b2:1c:42:2f:19:ec brd ff:ff:ff:ff:ff:ff
+9: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN
+    link/ether fe:4f:40:06:ff:07 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.42.1/16 scope global docker0
+    inet6 fe80::147e:ff:fe31:8ba7/64 scope link
+       valid_lft forever preferred_lft forever
+11: vethV9wjWn: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether fe:4f:40:06:ff:07 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::fc4f:40ff:fe06:ff07/64 scope link
+       valid_lft forever preferred_lft forever
+[root@compute ~]# route -n
+route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+192.168.209.0   0.0.0.0         255.255.255.0   U     0      0        0 eth0
+172.16.162.0    0.0.0.0         255.255.255.0   U     0      0        0 eth1
+169.254.0.0     0.0.0.0         255.255.0.0     U     1002   0        0 eth0
+169.254.0.0     0.0.0.0         255.255.0.0     U     1003   0        0 eth1
+172.17.0.0      0.0.0.0         255.255.0.0     U     0      0        0 docker0
+0.0.0.0         192.168.209.2   0.0.0.0         UG    0      0        0 eth0
+[root@compute ~]# ps -ef | grep docker
+ps -ef | grep docker
+root      2907     1  6 23:05 pts/0    00:00:40 /usr/bin/docker -d
+root      3006  2784  0 23:05 pts/0    00:00:00 docker run -i -t ubuntu /bin/bash
+root      3780  2907  0 23:13 pts/2    00:00:00 lxc-start -n 22778cacd971d2a3f695a6bc5792bb9238c97bbfa13599d4272749838e6ec34b -f /var/lib/docker/containers/22778cacd971d2a3f695a6bc5792bb9238c97bbfa13599d4272749838e6ec34b/config.lxc -- /.dockerinit -g 172.17.42.1 -- /bin/bash
+root      5303  3620  0 23:16 pts/1    00:00:00 grep docker
+#+end_example
+***** Docker通过iptables实现NAT
+http://docs.docker.io/en/latest/examples/python_web_app/
+#+begin_example
+[root@compute ~]# ipables-save
+ipables-save
+-bash: ipables-save: command not found
+[root@compute ~]# iptables-save
+iptables-save
+# Generated by iptables-save v1.4.7 on Wed Dec 11 01:19:28 2013
+*nat
+:PREROUTING ACCEPT [1:64]
+:POSTROUTING ACCEPT [4:252]
+:OUTPUT ACCEPT [4:252]
+:DOCKER - [0:0]
+:neutron-openvswi-OUTPUT - [0:0]
+:neutron-openvswi-POSTROUTING - [0:0]
+:neutron-openvswi-PREROUTING - [0:0]
+:neutron-openvswi-float-snat - [0:0]
+:neutron-openvswi-snat - [0:0]
+:neutron-postrouting-bottom - [0:0]
+-A PREROUTING -j neutron-openvswi-PREROUTING
+-A PREROUTING -m addrtype --dst-type LOCAL -j DOCKER
+-A POSTROUTING -j neutron-openvswi-POSTROUTING
+-A POSTROUTING -j neutron-postrouting-bottom
+-A POSTROUTING -s 172.17.0.0/16 ! -d 172.17.0.0/16 -j MASQUERADE
+-A OUTPUT -j neutron-openvswi-OUTPUT
+-A OUTPUT ! -d 127.0.0.0/8 -m addrtype --dst-type LOCAL -j DOCKER
+-A DOCKER ! -i docker0 -p tcp -m tcp --dport 49160 -j DNAT --to-destination 172.17.0.28:8080
+-A DOCKER ! -i docker0 -p tcp -m tcp --dport 49154 -j DNAT --to-destination 172.17.0.81:8087
+-A DOCKER ! -i docker0 -p tcp -m tcp --dport 49155 -j DNAT --to-destination 172.17.0.81:8098
+-A neutron-openvswi-snat -j neutron-openvswi-float-snat
+-A neutron-postrouting-bottom -j neutron-openvswi-snat
+COMMIT
+# Completed on Wed Dec 11 01:19:28 2013
+# Generated by iptables-save v1.4.7 on Wed Dec 11 01:19:28 2013
+*mangle
+:PREROUTING ACCEPT [877603:886207084]
+:INPUT ACCEPT [369741:436288542]
+:FORWARD ACCEPT [502404:449698401]
+:OUTPUT ACCEPT [157968:7927848]
+:POSTROUTING ACCEPT [660372:457626249]
+COMMIT
+# Completed on Wed Dec 11 01:19:28 2013
+# Generated by iptables-save v1.4.7 on Wed Dec 11 01:19:28 2013
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [153028:7689762]
+:neutron-filter-top - [0:0]
+:neutron-openvswi-FORWARD - [0:0]
+:neutron-openvswi-INPUT - [0:0]
+:neutron-openvswi-OUTPUT - [0:0]
+:neutron-openvswi-i19a9e9d1-9 - [0:0]
+:neutron-openvswi-ifbf44c00-1 - [0:0]
+:neutron-openvswi-local - [0:0]
+:neutron-openvswi-o19a9e9d1-9 - [0:0]
+:neutron-openvswi-ofbf44c00-1 - [0:0]
+:neutron-openvswi-s19a9e9d1-9 - [0:0]
+:neutron-openvswi-sfbf44c00-1 - [0:0]
+:neutron-openvswi-sg-chain - [0:0]
+:neutron-openvswi-sg-fallback - [0:0]
+-A INPUT -s 192.168.209.130/32 -p tcp -m tcp --dport 9696 -j ACCEPT
+-A INPUT -j neutron-openvswi-INPUT
+-A INPUT -s 192.168.209.131/32 -p tcp -m multiport --dports 5900:5999 -m comment --comment "001 nova compute incoming 192.168.209.131" -j ACCEPT
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -p icmp -j ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
+-A INPUT -j REJECT --reject-with icmp-host-prohibited
+-A FORWARD -i docker0 -o docker0 -j ACCEPT
+-A FORWARD -i docker0 ! -o docker0 -j ACCEPT
+-A FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -j neutron-filter-top
+-A FORWARD -j neutron-openvswi-FORWARD
+-A FORWARD -j REJECT --reject-with icmp-host-prohibited
+-A OUTPUT -j neutron-filter-top
+-A OUTPUT -j neutron-openvswi-OUTPUT
+-A neutron-filter-top -j neutron-openvswi-local
+-A neutron-openvswi-FORWARD -m physdev --physdev-out tapfbf44c00-1c --physdev-is-bridged -j neutron-openvswi-sg-chain
+-A neutron-openvswi-FORWARD -m physdev --physdev-in tapfbf44c00-1c --physdev-is-bridged -j neutron-openvswi-sg-chain
+-A neutron-openvswi-FORWARD -m physdev --physdev-out tap19a9e9d1-99 --physdev-is-bridged -j neutron-openvswi-sg-chain
+-A neutron-openvswi-FORWARD -m physdev --physdev-in tap19a9e9d1-99 --physdev-is-bridged -j neutron-openvswi-sg-chain
+-A neutron-openvswi-INPUT -m physdev --physdev-in tapfbf44c00-1c --physdev-is-bridged -j neutron-openvswi-ofbf44c00-1
+-A neutron-openvswi-INPUT -m physdev --physdev-in tap19a9e9d1-99 --physdev-is-bridged -j neutron-openvswi-o19a9e9d1-9
+-A neutron-openvswi-i19a9e9d1-9 -m state --state INVALID -j DROP
+-A neutron-openvswi-i19a9e9d1-9 -m state --state RELATED,ESTABLISHED -j RETURN
+-A neutron-openvswi-i19a9e9d1-9 -p icmp -j RETURN
+-A neutron-openvswi-i19a9e9d1-9 -s 10.0.0.3/32 -j RETURN
+-A neutron-openvswi-i19a9e9d1-9 -p tcp -m tcp --dport 22 -j RETURN
+-A neutron-openvswi-i19a9e9d1-9 -s 10.0.0.2/32 -p udp -m udp --sport 67 --dport 68 -j RETURN
+-A neutron-openvswi-i19a9e9d1-9 -j neutron-openvswi-sg-fallback
+-A neutron-openvswi-ifbf44c00-1 -m state --state INVALID -j DROP
+-A neutron-openvswi-ifbf44c00-1 -m state --state RELATED,ESTABLISHED -j RETURN
+-A neutron-openvswi-ifbf44c00-1 -p icmp -j RETURN
+-A neutron-openvswi-ifbf44c00-1 -s 10.0.0.4/32 -j RETURN
+-A neutron-openvswi-ifbf44c00-1 -p tcp -m tcp --dport 22 -j RETURN
+-A neutron-openvswi-ifbf44c00-1 -s 10.0.0.2/32 -p udp -m udp --sport 67 --dport 68 -j RETURN
+-A neutron-openvswi-ifbf44c00-1 -j neutron-openvswi-sg-fallback
+-A neutron-openvswi-o19a9e9d1-9 -p udp -m udp --sport 68 --dport 67 -j RETURN
+-A neutron-openvswi-o19a9e9d1-9 -j neutron-openvswi-s19a9e9d1-9
+-A neutron-openvswi-o19a9e9d1-9 -p udp -m udp --sport 67 --dport 68 -j DROP
+-A neutron-openvswi-o19a9e9d1-9 -m state --state INVALID -j DROP
+-A neutron-openvswi-o19a9e9d1-9 -m state --state RELATED,ESTABLISHED -j RETURN
+-A neutron-openvswi-o19a9e9d1-9 -j RETURN
+-A neutron-openvswi-o19a9e9d1-9 -j neutron-openvswi-sg-fallback
+-A neutron-openvswi-ofbf44c00-1 -p udp -m udp --sport 68 --dport 67 -j RETURN
+-A neutron-openvswi-ofbf44c00-1 -j neutron-openvswi-sfbf44c00-1
+-A neutron-openvswi-ofbf44c00-1 -p udp -m udp --sport 67 --dport 68 -j DROP
+-A neutron-openvswi-ofbf44c00-1 -m state --state INVALID -j DROP
+-A neutron-openvswi-ofbf44c00-1 -m state --state RELATED,ESTABLISHED -j RETURN
+-A neutron-openvswi-ofbf44c00-1 -j RETURN
+-A neutron-openvswi-ofbf44c00-1 -j neutron-openvswi-sg-fallback
+-A neutron-openvswi-s19a9e9d1-9 -s 10.0.0.4/32 -m mac --mac-source FA:16:3E:32:8F:60 -j RETURN
+-A neutron-openvswi-s19a9e9d1-9 -j DROP
+-A neutron-openvswi-sfbf44c00-1 -s 10.0.0.3/32 -m mac --mac-source FA:16:3E:AE:F8:7C -j RETURN
+-A neutron-openvswi-sfbf44c00-1 -j DROP
+-A neutron-openvswi-sg-chain -m physdev --physdev-out tapfbf44c00-1c --physdev-is-bridged -j neutron-openvswi-ifbf44c00-1
+-A neutron-openvswi-sg-chain -m physdev --physdev-in tapfbf44c00-1c --physdev-is-bridged -j neutron-openvswi-ofbf44c00-1
+-A neutron-openvswi-sg-chain -m physdev --physdev-out tap19a9e9d1-99 --physdev-is-bridged -j neutron-openvswi-i19a9e9d1-9
+-A neutron-openvswi-sg-chain -m physdev --physdev-in tap19a9e9d1-99 --physdev-is-bridged -j neutron-openvswi-o19a9e9d1-9
+-A neutron-openvswi-sg-chain -j ACCEPT
+-A neutron-openvswi-sg-fallback -j DROP
+COMMIT
+# Completed on Wed Dec 11 01:19:28 2013
+[root@compute ~]#
+#+end_example
+** TODO What LXC is capable for VM management
+** [#A] [question] Find out how many resource a docker container use?
+** DONE [#A] How to define resource quota used by docker, like cpu, memory, disk capacity: 让Docker传递相关系数给LXC
+   CLOSED: [2013-12-12 Thu 22:54]
+** [#A] [question] How to login to container, to run extra command?
+** # --8<-------------------------- separator ------------------------>8--
+** [#A] [question] How to reuse the deploy logic of Docker to VM, or bare mental server??
+** [#A] [question] What's difference between Docker and heat?
+- Docker: 一个application, 一个light-weight vm
+- heat/aws cloud formation, 简化在vm上应用初始化的操作
+** [#A] [question] Docker to deploy distributed application
+https://github.com/hectcastro/docker-riak
+http://docs.docker.io/en/latest/examples/running_riak_service/
+** [#B] [question] Docker倾向于为每个application, 创建一个containerr image, 但这个OS的image却又是一个阉割版，之后后悔了，那怎么办呢？
+* #  --8<-------------------------- separator ------------------------>8-- :noexport:
+* TODO Check https://github.com/wsargent/docker-cheat-sheet        :noexport:
+* Scripts                                                          :noexport:
+- Docker build
+#+BEGIN_SRC sh
+cd "$dir" && cat "$dockerfile" | docker build -t "$docker_image" -f - .
+#+END_SRC
+
+- Use google docker registry
+#+BEGIN_EXAMPLE
+docker build -t gcr.io/<MY_REPO>/<MY_IMAGE>:<MY_TAG> .
+gcloud docker -- push gcr.io/<MY_REPO>/<MY_IMAGE>:<MY_TAG>
+#+END_EXAMPLE
+
+- Delete all containers
+
+[[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-all-containers.sh][delete-all-containers.sh]]
+#+BEGIN_EXAMPLE
+curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/delete-all-containers.sh | bash
+#+END_EXAMPLE
+
+- Install test kit
+
+[[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/container-install-devkit.sh][container-install-devkit.sh]]
+#+BEGIN_EXAMPLE
+apt-get -y update
+apt-get install -y curl netcat
+
+curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/container-install-devkit.sh | bash
+#+END_EXAMPLE
+
+- Clean up Disk
+
+Remove All Useless Resources.
+
+#+BEGIN_EXAMPLE
+docker ps --filter status=exited -aq | xargs -r docker rm -v
+#+END_EXAMPLE
+
+Remove unused docker images
+#+BEGIN_EXAMPLE
+docker rmi $(docker images | grep "<none>"  | awk -F' ' '{print $3}')
+#+END_EXAMPLE
+
+Remove intermediate containers generated during docker build
+#+BEGIN_EXAMPLE
+docker ps -a | grep "/bin/sh -c" |  awk -F' ' '{print $1}' | xargs docker rm
+#+END_EXAMPLE
+
+Remove Image with <none> string
+#+BEGIN_EXAMPLE
+echo "Remove docker images with <none> string"
+if docker images | grep none | tee; then
+   docker rmi $(docker images | grep "<none>"  | awk -F' ' '{print $3}') | tee
+fi
+#+END_EXAMPLE
