@@ -1,4 +1,4 @@
-* Docker CheatSheet                                                     :Kubernetes:
+* Docker CheatSheet                                              :Kubernetes:
 :PROPERTIES:
 :type:     kubernetes
 :export_file_name: cheatsheet-docker-A4.pdf
@@ -21,57 +21,33 @@
 - Related posts: [[https://cheatsheet.dennyzhang.com/kubernetes-yaml-templates][Kubernetes Yaml]], [[https://github.com/topics/denny-cheatsheets][#denny-cheatsheets]]
 
 File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or star [[https://github.com/DennyZhang/cheatsheet-docker-A4][this repo]].
-** Ubuntu docker: Install missing packages
-| Name                     | Summary                                          |
-|--------------------------+--------------------------------------------------|
-| Pull ubuntu docker image | =docker pull ubuntu=                             |
-| man: command not found   | =apt-get update=, =apt-get install man=          |
-| ping: command not found  | =apt-get update=, =apt-get install iputils-ping= |
-| dig: command not found   | =apt-get install dnsutils=                       |
 ** Docker start service
-| Name                    | Summary                                                                        |
-|-------------------------+--------------------------------------------------------------------------------|
-| Start a ubuntu test env | =docker run ubuntu /bin/echo hello world=                                      |
-| Start nginx             | =docker run -t -d -p 8080:80 --name nginx-test nginx=                          |
-| Start a sshd server     | =docker run -t -d --privileged -p 5022:22 denny/sshd:latest /usr/sbin/sshd -D= |
-** Docker Socket file
-| Name                               | Summary                                                                                                                                               |
-|------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Links                              | [[https://docs.docker.com/develop/sdk/][Link: Develop with Docker Engine SDKs and API]]                                                                                                         |
-| Run container mounting socket file | =docker run -v /var/run/docker.sock:/var/run/docker.sock -ti alpine sh=                                                                               |
-| A different docker socket file     | =export DOCKER_HOST=unix:///my/docker.sock=                                                                                                           |
-| List containers                    | =curl -XGET --unix-socket /var/run/docker.sock http://localhost/containers/json=                                                                      |
-| Stop container                     | =curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/<container_id>/stop=                                                      |
-| Start container                    | =curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/<container_id>/start=                                                     |
-| List events                        | =curl --unix-socket /var/run/docker.sock http://localhost/events=                                                                                     |
-| Create container                   | =curl -XPOST --unix-socket /var/run/docker.sock -d '{"Image":"nginx:alpine"}' -H 'Content-Type: application/json' http://localhost/containers/create= |
-** Docker Compose
-| Name                             | Summary                                                                             |
-|----------------------------------+-------------------------------------------------------------------------------------|
-| Change entrypoint to run nothing | =entrypoint: ["tail", "-f", "/dev/null"]=                                           |
-| Change restart policy            | =restart: always=, [[https://docs.docker.com/compose/compose-file/#restart_policy][Link: Compose file version 3 reference]]                           |
-| Mount file as volume             | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/sample-mount-file.yml][sample-mount-file.yml]] |
-| Start compose env                | =docker-compose up=, =docker-compose up -d=                                         |
-| Stop compose env                 | =docker-compose down=, =docker-compose down -v=                                     |
-| Check logs                       | =docker-compose logs=                                                               |
-** Container Runtime
-| Name    | Summary                                                                                  |
-|---------+------------------------------------------------------------------------------------------|
-| dockerd |                                                                                          |
-| [[https://github.com/rkt/rkt][rkt]]     | a pod-native container engine for Linux.                                                 |
-| [[https://github.com/kubernetes-sigs/cri-o][CRI-O]]   | Open Container Initiative-based implementation of Kubernetes Container Runtime Interface |
-** Check Status
+| Name                    | Summary                                                                                                    |
+|-------------------------+------------------------------------------------------------------------------------------------------------|
+| Start a ubuntu test env | =docker run ubuntu:16.04 /bin/echo hello world=                                                            |
+| Start a centos test env | =docker run centos:centos6 /bin/echo hello world=                                                          |
+| Start nginx             | =docker run -t -d -p 8080:80 --name nginx-test nginx=                                                      |
+| Start a sshd server     | =docker run -t -d --privileged -p 5022:22 denny/sshd:latest /usr/sbin/sshd -D=                             |
+| Start a jenkins server  | =docker run -p 8080:8080 denny/jenkins:1.0=                                                                |
+| Start a ftp server      | =docker run -t -d -p 21:21 -p 20:20 -e USERNAME=${username} -e PASSWORD=${password} denny/proftproftpd:v1= |
+** Docker Check Status
 | Name                               | Summary                                                       |
 |------------------------------------+---------------------------------------------------------------|
 | Tail container logs                | =docker logs --tail 5 $container_name=                        |
 | Check container healthcheck status | =docker inspect --format '{{.State.Health}}' $container_name= |
-| List containers                    | =docker ps=                                                   |
-| List all containers                | =docker ps -a=                                                |
+| List all containers                | =docker ps=, =docker ps -a=                                   |
 | List containers by labels          | =docker ps --filter "label=org.label-schema.group"=           |
-| List all images                    | =docker images -a=                                            |
+| List all images                    | =docker images=, =docker images -a=                           |
 #+BEGIN_HTML
 <a href="https://www.dennyzhang.com"><img align="right" width="185" height="37" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/dns_small.png"></a>
 #+END_HTML
+** Docker Cleanup
+| Name                           | Summary                                                  |
+|--------------------------------+----------------------------------------------------------|
+| Remove the specified image     | =docker rmi <imagename>=                                 |
+| Remove all docker images       | =docker rmi $(docker images -q)=                         |
+| Remove orphaned docker volumes | =docker volume rm $(docker volume ls -qf dangling=true)= |
+| Remove dead containers         | =docker rm $(docker ps --filter status=dead -qa)=        |
 ** Container Basic
 | Name                                    | Summary                                               |
 |-----------------------------------------+-------------------------------------------------------|
@@ -88,18 +64,45 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | Run image from a given tag              | =docker run username/repo:tag=                        |
 | Create docker image                     | =docker build -t denny/image:test .=                  |
 | Docker files                            | =/var/lib/docker=, =/var/lib/docker/devicemapper/mnt= |
-** Cleanup
-| Name                           | Summary                                                  |
-|--------------------------------+----------------------------------------------------------|
-| Remove the specified image     | =docker rmi <imagename>=                                 |
-| Remove all docker images       | =docker rmi $(docker images -q)=                         |
-| Remove orphaned docker volumes | =docker volume rm $(docker volume ls -qf dangling=true)= |
-| Remove dead containers         | =docker rm $(docker ps --filter status=dead -qa)=        |
+** Docker Compose
+| Name                             | Summary                                                                             |
+|----------------------------------+-------------------------------------------------------------------------------------|
+| Change entrypoint to run nothing | =entrypoint: ["tail", "-f", "/dev/null"]=                                           |
+| Change restart policy            | =restart: always=, [[https://docs.docker.com/compose/compose-file/#restart_policy][Link: Compose file version 3 reference]]                           |
+| Mount file as volume             | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/sample-mount-file.yml][sample-mount-file.yml]] |
+| Start compose env                | =docker-compose up=, =docker-compose up -d=                                         |
+| Stop compose env                 | =docker-compose down=, =docker-compose down -v=                                     |
+| Check logs                       | =docker-compose logs=                                                               |
+** Ubuntu docker: Install missing packages
+| Name                     | Summary                                          |
+|--------------------------+--------------------------------------------------|
+| Pull ubuntu docker image | =docker pull ubuntu=                             |
+| man: command not found   | =apt-get update=, =apt-get install man=          |
+| ping: command not found  | =apt-get update=, =apt-get install iputils-ping= |
+| dig: command not found   | =apt-get install dnsutils=                       |
+** Docker Socket file
+| Name                               | Summary                                                                                                                                               |
+|------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Links                              | [[https://docs.docker.com/develop/sdk/][Link: Develop with Docker Engine SDKs and API]]                                                                                                         |
+| Run container mounting socket file | =docker run -v /var/run/docker.sock:/var/run/docker.sock -ti alpine sh=                                                                               |
+| A different docker socket file     | =export DOCKER_HOST=unix:///my/docker.sock=                                                                                                           |
+| List containers                    | =curl -XGET --unix-socket /var/run/docker.sock http://localhost/containers/json=                                                                      |
+| Stop container                     | =curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/<container_id>/stop=                                                      |
+| Start container                    | =curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/<container_id>/start=                                                     |
+| List events                        | =curl --unix-socket /var/run/docker.sock http://localhost/events=                                                                                     |
+| Create container                   | =curl -XPOST --unix-socket /var/run/docker.sock -d '{"Image":"nginx:alpine"}' -H 'Content-Type: application/json' http://localhost/containers/create= |
+** Container Runtime
+| Name    | Summary                                                                                  |
+|---------+------------------------------------------------------------------------------------------|
+| dockerd |                                                                                          |
+| [[https://github.com/rkt/rkt][rkt]]     | a pod-native container engine for Linux.                                                 |
+| [[https://github.com/kubernetes-sigs/cri-o][CRI-O]]   | Open Container Initiative-based implementation of Kubernetes Container Runtime Interface |
 ** Resource Reference
-| Name            | Summary                                                 |
-|-----------------+---------------------------------------------------------|
-| Docker SDK      | https://docs.docker.com/develop/sdk/examples/           |
-| Docker REST API | https://docs.docker.com/engine/api/v1.27/#tag/Container |
+| Name                  | Summary                                                             |
+|-----------------------+---------------------------------------------------------------------|
+| Docker SDK            | https://docs.docker.com/develop/sdk/examples/                       |
+| Docker REST API       | https://docs.docker.com/engine/api/v1.27/#tag/Container             |
+| Docker Hub auto build | https://docs.docker.com/docker-hub/builds/#build-statuses-explained |
 ** More Resources
 
 License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_license.txt][MIT License]].
@@ -144,41 +147,1206 @@ http://jpetazzo.github.io
 | Summary                                                                                          | Comment                                                |
 |--------------------------------------------------------------------------------------------------+--------------------------------------------------------|
 | tail /var/log/docker.log                                                                         |                                                        |
-| docker pull ubuntu:14.04                                                                         | fetch a image                                          |
-| docker pull centos:centos6                                                                       |                                                        |
-| docker run -t --name denny-test -d denny/devubuntu:latest /bin/bash                              |                                                        |
-| docker run -t -d --privileged -p 5022:22 denny/sshd:latest /usr/sbin/sshd -D                     | start a container in daemon mode                       |
 | docker run -d -t -p 3128:443 denny/chefserver:v1 /usr/sbin/sshd -D                               |                                                        |
 | docker run -t -i dennylocal/elasticsearch-mdm:v1 /bin/bash                                       |                                                        |
 | docker commit -m "initial" -a "Denny<denny.zhang001@gmail.com>" 8c0be19ecd87 denny/chefserver:v1 |                                                        |
 | docker run -d -t --privileged --name sandbox -p 7022:22 denny/dennysandbox:latest /bin/bash      | start with a name                                      |
-|--------------------------------------------------------------------------------------------------+--------------------------------------------------------|
 | docker inspect $container_name . grep IPAddress                                                  | Get container's IP                                     |
 | docker inspect $container_name                                                                   | Get detail info for a given container                  |
 |--------------------------------------------------------------------------------------------------+--------------------------------------------------------|
-| /var/lib/docker/aufs/mnt/                                                                        | Copy files to container directory                      |
-| docker ps -a                                                                                     |                                                        |
-| docker info                                                                                      |                                                        |
 | docker save                                                                                      | Save an image to a tar archive                         |
 | docker load                                                                                      | Load an image from a tar archive                       |
-| docker inspect                                                                                   | Return low-level information on a container or image   |
-|--------------------------------------------------------------------------------------------------+--------------------------------------------------------|
-| docker stop $(docker ps -a -q)                                                                   | stop all containers                                    |
 | docker rm $(docker ps -a -q)                                                                     | remove all containers                                  |
-| docker run -t -p 18000:80 -p 18080:8080 -i denny/XXX:latest /bin/bash                   | start a container                                      |
-| docker push denny/XXX                                                                      | push an image to docker hub                            |
-| docker inspect 2b1c66fbc419                                                                      | get detail info about a container or image             |
+| docker push denny/XXX                                                                            | push an image to docker hub                            |
 | docker run -d -P --name web -v /src/webapp:/opt/webapp training/webapp python app.py             | mount the host directory of /src/webapp to /opt/webapp |
-|--------------------------------------------------------------------------------------------------+--------------------------------------------------------|
-| docker build -t XXX/mdm:v1 --rm=true .                                                     |                                                        |
-| docker run -t -P -i XXX/mdm:v1 /bin/bash                                                   |                                                        |
-| docker push XXX/mdm                                                                        |                                                        |
-|--------------------------------------------------------------------------------------------------+--------------------------------------------------------|
+| docker build -t XXX/mdm:v1 --rm=true .                                                           |                                                        |
+| docker run -t -P -i XXX/mdm:v1 /bin/bash                                                         |                                                        |
 | https://status.docker.com                                                                        | docker service status                                  |
 ** manually start docker
 start-stop-daemon --start --exec /usr/bin/docker --pidfile /var/run/docker-ssd.pid --make-pidfile -- daemon -p /var/run/docker.pid
 
 /usr/bin/docker -d
+** TODO How large disk does docker use?
+https://docs.docker.com/userguide/dockervolumes/
+
+Two primary ways you can manage data in Docker: Data volumes, and Data volume containers.
+
+- Data volumes are designed to persist data, independent of the container's life cycle.
+** TODO [#A] how to set port forwarding onfly: looks like it doesn't support this
+** TODO Why my docker image is >600 MB, while ubuntu 14.04 is 188 MB
+#+BEGIN_EXAMPLE
+macs-air:sandbox-test mac$ docker images
+docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+<none>              <none>              8118ced6048d        3 minutes ago       642.4 MB
+<none>              <none>              9801d16e6777        33 minutes ago      410.1 MB
+XXX/mdm       v2                  1095634005de        About an hour ago   621.5 MB
+XXX/mdm       v1                  3e2418a2e608        30 hours ago        417 MB
+ubuntu              14.04               2d24f826cb16        2 weeks ago         188.3 MB
+macs-air:sandbox-test mac$ docker images -a
+docker images -a
+REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+<none>              <none>              8118ced6048d        3 minutes ago       642.4 MB
+<none>              <none>              6c33d3f87edf        3 minutes ago       642.4 MB
+<none>              <none>              0cf12fca34f2        3 minutes ago       642.4 MB
+<none>              <none>              103af91cd39f        3 minutes ago       642.4 MB
+<none>              <none>              6f319238a116        3 minutes ago       642.1 MB
+<none>              <none>              ce40acdab604        3 minutes ago       642.1 MB
+<none>              <none>              c91fc2e9d563        4 minutes ago       621.5 MB
+<none>              <none>              ac6f52a9123a        4 minutes ago       621.5 MB
+<none>              <none>              a7cae9dbe74e        4 minutes ago       621.5 MB
+<none>              <none>              9801d16e6777        33 minutes ago      410.1 MB
+<none>              <none>              37c48e0cf08b        36 minutes ago      255.4 MB
+<none>              <none>              230d29b0c491        36 minutes ago      255.4 MB
+<none>              <none>              6a32d937179e        37 minutes ago      255.4 MB
+<none>              <none>              f73c1ad275cf        37 minutes ago      255.4 MB
+<none>              <none>              cd17661eee48        37 minutes ago      255.1 MB
+<none>              <none>              a40862d66601        38 minutes ago      208.9 MB
+<none>              <none>              23fdfd795f42        40 minutes ago      188.3 MB
+<none>              <none>              5c83290fadd8        40 minutes ago      188.3 MB
+<none>              <none>              62613585bbb7        40 minutes ago      188.3 MB
+XXX/mdm       v2                  1095634005de        About an hour ago   621.5 MB
+<none>              <none>              c4931b5b9b19        About an hour ago   621.5 MB
+<none>              <none>              783586e31bf8        About an hour ago   621.5 MB
+<none>              <none>              7464cae37e74        About an hour ago   444.5 MB
+<none>              <none>              b8c63120077f        About an hour ago   423.9 MB
+<none>              <none>              bd9d07ddaedb        About an hour ago   423.9 MB
+<none>              <none>              2f1c4927f244        About an hour ago   413.4 MB
+<none>              <none>              46bce28312c9        About an hour ago   413.4 MB
+<none>              <none>              cf7c4229feb4        About an hour ago   413.4 MB
+<none>              <none>              6d350b163e56        About an hour ago   413.4 MB
+<none>              <none>              639768c629a2        About an hour ago   413.4 MB
+<none>              <none>              592ce84c9821        About an hour ago   413.4 MB
+<none>              <none>              e363f9241135        11 hours ago        413.4 MB
+<none>              <none>              1ead0ee488f8        11 hours ago        413.4 MB
+<none>              <none>              771faf7c579a        11 hours ago        413.4 MB
+<none>              <none>              c94ba7c29f21        11 hours ago        413.4 MB
+<none>              <none>              141d9606510d        11 hours ago        413.4 MB
+<none>              <none>              ffdfb69480e1        11 hours ago        413.4 MB
+<none>              <none>              127e86022743        11 hours ago        374.8 MB
+<none>              <none>              b69103f1b7a6        11 hours ago        220.3 MB
+<none>              <none>              b750f0b5b1df        11 hours ago        208.9 MB
+<none>              <none>              fb44a8a71885        11 hours ago        188.3 MB
+XXX/mdm       v1                  3e2418a2e608        30 hours ago        417 MB
+<none>              <none>              71d449bc0252        32 hours ago        417 MB
+<none>              <none>              6271cc67a45f        32 hours ago        235.7 MB
+<none>              <none>              f7c8c8c92180        32 hours ago        215.1 MB
+<none>              <none>              32d35259ec14        32 hours ago        215.1 MB
+<none>              <none>              679c4ce72e12        32 hours ago        204.6 MB
+<none>              <none>              65a05ff6ff98        32 hours ago        204.6 MB
+<none>              <none>              a81d5a840c5e        32 hours ago        204.6 MB
+<none>              <none>              da3dc9aa88ea        32 hours ago        204.6 MB
+<none>              <none>              849953a4d24a        32 hours ago        204.6 MB
+<none>              <none>              ffe4981287bc        32 hours ago        204.6 MB
+<none>              <none>              83cec26d130b        32 hours ago        204.5 MB
+<none>              <none>              bd30865240be        32 hours ago        204.5 MB
+<none>              <none>              763e9222a24f        32 hours ago        204.5 MB
+<none>              <none>              f1c759c3a4b5        5 days ago          165.9 MB
+<none>              <none>              54085386062b        5 days ago          11.42 MB
+ubuntu              14.04               2d24f826cb16        2 weeks ago         188.3 MB
+<none>              <none>              117ee323aaa9        2 weeks ago         188.3 MB
+<none>              <none>              1c8294cc5160        2 weeks ago         188.3 MB
+<none>              <none>              fa4fd76b09ce        2 weeks ago         188.1 MB
+<none>              <none>              511136ea3c5a        21 months ago       0 B
+macs-air:sandbox-test mac$
+#+END_EXAMPLE
+** TODO What does -P means for docker: docker run -d -P training/webapp python app.py
+ sudo docker run -d -P training/webapp python app.py
+Let's review what our command did. We've specified two flags: -d and -P. We've already seen the -d flag which tells Docker to run the container in the background. The -P flag is new and tells Docker to map any required network ports inside our container to our host. This lets us view our web application.
+
+We've specified an image: training/webapp. This image is a pre-built image we've created that contains a simple Python Flask web application.
+
+Lastly, we've specified a command for our container to run: python app.py. This launches our web application.
+https://docs.docker.com/userguide/usingdocker/
+** TODO [#A] Run docker container in docker server: no more loopback devices available.
+for i in {0..30}
+do
+    mknod -m0660 /dev/loop$i b 7 $i
+done
+
+http://stackoverflow.com/questions/26239116/run-docker-inside-a-docker-container
+
+https://github.com/openshift/origin/issues/101
+http://schnell18.iteye.com/blog/2203452
+https://github.com/docker/docker/issues/7058
+https://github.com/docker/docker/issues/10880
+
+有人碰到过类似的问题, https://github.com/jpetazzo/dind/issues/19 .这
+个thread很长,但是大意是容器中的loop device回环设备用尽了,需要手工再
+创建一些.
+
+#+BEGIN_EXAMPLE
+root@5c26c93f7c1f:~# docker -d
+INFO[0000] +job serveapi(unix:///var/run/docker.sock)
+INFO[0000] Listening for HTTP on unix (/var/run/docker.sock)
+WARN[0000] Udev sync is not supported. This will lead to unexpected behavior, data loss and errors
+ERRO[0000] There are no more loopback devices available.
+FATA[0000] Shutting down daemon due to errors: error intializing graphdriver: loopback mounting failed
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+root@5c26c93f7c1f:~# service docker start
+ * Starting Docker: docker
+   ...done.
+root@5c26c93f7c1f:~# tail /var/log/docker.log
+time="2015-05-20T17:53:17Z" level=info msg="Listening for HTTP on unix (/var/run/docker.sock)"
+time="2015-05-20T17:53:17Z" level=warning msg="Udev sync is not supported. This will lead to unexpected behavior, data loss and errors"
+time="2015-05-20T17:53:17Z" level=error msg="There are no more loopback devices available."
+time="2015-05-20T17:53:17Z" level=fatal msg="Shutting down daemon due to errors: error intializing graphdriver: loopback mounting failed"
+Warning: '--restart' is deprecated, it will be removed soon. See usage.
+time="2015-05-20T18:00:28Z" level=info msg="+job serveapi(unix:///var/run/docker.sock)"
+time="2015-05-20T18:00:28Z" level=info msg="Listening for HTTP on unix (/var/run/docker.sock)"
+time="2015-05-20T18:00:28Z" level=warning msg="Udev sync is not supported. This will lead to unexpected behavior, data loss and errors"
+time="2015-05-20T18:00:28Z" level=error msg="There are no more loopback devices available."
+time="2015-05-20T18:00:28Z" level=fatal msg="Shutting down daemon due to errors: error intializing graphdriver: loopback mounting failed"
+#+END_EXAMPLE
+*** web page: docker in docker
+http://schnell18.iteye.com/blog/2203452
+**** webcontent                                                    :noexport:
+#+begin_example
+准备做个jenkins的CI服务器,用docker包装,然后在其中嵌套运行docker容器作为构建的环境.
+在docker中嵌套运行docker碰到一下错误:
+Bash代码  收藏代码
+[root@0538345e7d9f /]# INFO[0000] +job serveapi(unix:///var/run/docker.sock)
+WARN[0000] WARNING: Udev sync is not supported. This will lead to unexpected behavior, data loss and errors
+ERRO[0000] There are no more loopback devices available.
+FATA[0000] loopback mounting failed
+有人碰到过类似的问题, https://github.com/jpetazzo/dind/issues/19  .这个thread很长,但是大意是容器中的loop device回环设备用尽了,需要手工再创建一些.示例代码如下:
+Bash代码  收藏代码
+#!/bin/bash
+ensure_loop(){
+  num="$1"
+  dev="/dev/loop$num"
+  if test -b "$dev"; then
+    echo "$dev is a usable loop device."
+    return 0
+  fi
+
+  echo "Attempting to create $dev for docker ..."
+  if ! mknod -m660 $dev b 7 $num; then
+    echo "Failed to create $dev!" 1>&2
+    return 3
+  fi
+
+  return 0
+}
+
+LOOP_A=$(losetup -f)
+LOOP_A=${LOOP_A#/dev/loop}
+LOOP_B=$(expr $LOOP_A + 1)
+
+ensure_loop $LOOP_A
+ensure_loop $LOOP_B
+
+在启动docker后台进程之前,加上上述代码后,又报如下错误:
+Bash代码  收藏代码
+[root@0538345e7d9f /]# sh start_docker_daemon.sh
+Attempting to create /dev/loop4 for docker ...
+Attempting to create /dev/loop5 for docker ...
+[root@0538345e7d9f /]# INFO[0000] +job serveapi(unix:///var/run/docker.sock)
+WARN[0000] WARNING: Udev sync is not supported. This will lead to unexpected behavior, data loss and errors
+FATA[0000] exec: "mkfs.ext4": executable file not found in $PATH
+
+ 这个问题比较简单,是因为这个容器里没有装mkfs.ext4这个工具,它包含在e2fsprogs这个RPM包中.更正这个错误只要在Dockerfile中安装RPM包时多加一个e2fsprogs.
+完整Dockerfile如下:
+Dockerfile代码  收藏代码
+FROM centos:7
+MAINTAINER schnell_18@yahoo.com
+ENV REFRESHED_AT 2015-04-14
+
+# e2fsprogs contains mkfs.ext4
+RUN yum install -y git curl docker java-1.6.0-openjdk e2fsprogs
+
+ENV JENKINS_HOME /opt/jenkins/data
+ENV JENKINS_MIRROR http://mirrors.jenkins-ci.org
+
+RUN mkdir -p $JENKINS_HOME/plugins
+RUN curl -sf -o /opt/jenkins/jenkins.war -L $JENKINS_MIRROR/war-stable/latest/jenkins.war
+
+RUN for plugin in chucknorris greenballs scm-api git-client git ws-cleanup ;\
+    do                                                                      \
+        curl -sf -o $JENKINS_HOME/plugins/${plugin}.hpi                     \
+             -L $JENKINS_MIRROR/plugins/${plugin}/latest/${plugin}.hpi ;    \
+    done
+
+ADD ./dockerjenkins.sh /usr/local/bin/dockerjenkins.sh
+RUN chmod +x /usr/local/bin/dockerjenkins.sh
+
+VOLUME /var/lib/docker
+
+EXPOSE 8080
+
+ENTRYPOINT [ "/usr/local/bin/dockerjenkins.sh" ]
+#+end_example
+** TODO [#A] docker whether to use multiple container image
+#+BEGIN_EXAMPLE
+[7/12/15, 11:56:33 AM] jacobzeng-曾瑞林ruiling: 求分散的image
+[7/12/15, 11:57:49 AM] denny: 什么叫作分散的image?
+[7/12/15, 12:02:39 PM] denny: 我的思路是:
+1.  搭一个private docker hub registration server
+     分别部署在美国和中国.这样都可以就近去取这个2,3G的文件,而不是从docker官网去拿
+2. sandbox solution中会自动起一个squid反向代理,这样大文件的下载就可以快不少.
+
+我初步估计,应该可以把整体测试时间缩短到之前的1/3或1/2
+[7/12/15, 12:03:22 PM] jacobzeng-曾瑞林ruiling: 就是非all in one
+[7/12/15, 12:03:30 PM] jacobzeng-曾瑞林ruiling: 嗯
+[7/12/15, 12:03:49 PM] denny: 多个服务多个container, 是这样意思吗？
+[7/12/15, 12:06:18 PM] jacobzeng-曾瑞林ruiling: 嗯,多image,各自是各自的image,好维护,好下载,好扩展,不只是开发环境,部署也可以直接用
+[7/12/15, 12:08:10 PM] denny: 这个思路的优缺点是.
+pros:
+1. 每个service有自己的container image, 测试和部署起来简单方便
+2. 每个service被隔离开来,逻辑清楚简单.
+
+Cons:
+1. 每个image都是2到3G左右,下载起来会比较慢
+2. 每个image的制作和维护需要花费不少时间
+3. 每个container之间应用层通讯,需要做端口映射.从目前技术来看,多半需要人工改iptable
+[7/12/15, 12:09:07 PM] denny: 这个问题,之前与Chenxue讨论过.
+
+基于上面的论证,我倾向,一个image + chef脚本的思路.
+[7/12/15, 12:09:16 PM] denny: 你怎么看
+[7/12/15, 12:11:09 PM] jacobzeng-曾瑞林ruiling: 1.是问题,2我觉得是我们可以花时间的事情3的话可以预先配置,也可以走container之间内部通信
+[7/12/15, 12:11:19 PM] denny: 或者,我们做个折衷:
+- 线上用image + chef
+- 线下用多个image
+[7/12/15, 12:11:48 PM] denny: 1的问题,可以通过自己搭建一个docker registration来做
+[7/12/15, 12:12:01 PM] denny: 可能时间会短一些.
+[7/12/15, 12:12:22 PM] jacobzeng-曾瑞林ruiling: 只是提个思路,我是觉得可以多尝试
+[7/12/15, 12:13:27 PM] jacobzeng-曾瑞林ruiling: 现在这样用感觉没有利用到docker轻量级的优势
+[7/12/15, 12:13:35 PM] jacobzeng-曾瑞林ruiling: 离开下
+[7/12/15, 12:13:36 PM] denny: 第2点,可以通过一些自动化脚本来做.当然会孽缘不少时间.
+
+我主要担心的是第3点.
+[7/12/15, 12:18:01 PM] denny: 目前对docker的使用,主要是看重它多快速复制相同的env,避免各种奇怪的环境问题.
+
+可以选一个项目做下POC
+#+END_EXAMPLE
+** TODO docker fail rm aufs directory
+http://stackoverflow.com/questions/30984569/error-error-creating-aufs-mount-to-when-building-dockerfile
+#+BEGIN_EXAMPLE
+root@docker-server:/tmp# mv /var/lib/docker/aufs /tmp/
+mv: cannot move '/var/lib/docker/aufs' to '/tmp/aufs': Device or resource busy
+root@docker-server:/tmp# rm -rf /var/lib/docker/aufs
+rm: cannot remove '/var/lib/docker/aufs': Device or resource busy
+#+END_EXAMPLE
+** TODO when docker build image: how to enable --privileged
+*** DONE Update latest docker image fail at tomcat7: docker need use --privileged
+  CLOSED: [2015-07-19 Sun 13:05]
+
+tmux to docker server of osc
+
+touch /var/run/tomcat7.pid
+chown tomcat7 /var/run/tomcat7.pid /var/lib/tomcat7/logs/catalina.out
+start-stop-daemon --start -b -u tomcat7 -g tomcat7 -c tomcat7 -d /tmp/tomcat7-tmp -p /var/run/tomcat7.pid -x /bin/bash -- -c ' set -a; JAVA_HOME="/usr/lib/jvm/java-8-oracle-amd64"; source "/etc/default/tomcat7";              CATALINA_HOME="/usr/share/tomcat7";             CATALINA_BASE="/var/lib/tomcat7";               JAVA_OPTS="-Xmx128M -Djava.awt.headless=true -XX:+UseConcMarkSweepGC";             CATALINA_PID="/var/run/tomcat7.pid";            CATALINA_TMPDIR="/tmp/tomcat7-tmp";             LANG="en_US.UTF-8"; JSSE_HOME="/usr/lib/jvm/java-8-oracle-amd64/jre/";             cd "/var/lib/tomcat7";          "/usr/share/tomcat7/bin/catalina.sh" start'
+
++ status=0
++ set +a -e
++ return 0
++ sleep 5
++ start-stop-daemon --test --start --pidfile /var/run/tomcat7.pid --user tomcat7 --exec /usr/lib/jvm/java-8-oracle-amd64/bin/java
+
+#+BEGIN_EXAMPLE
+root@2c29845463d0:/# ps -ef | grep tomcat
+root      5960     1  0 04:08 ?        00:00:00 grep --color=auto tomcat
+root@2c29845463d0:/# start-stop-daemon --test --start --pidfile /var/run/tomcat7.pid --user tomcat7 --exec /usr/lib/jvm/java-8-oracle-amd64/bin/java
+Would start /usr/lib/jvm/java-8-oracle-amd64/bin/java .
+
+root@2c29845463d0:/# bash -xe /etc/init.d/tomcat7 start
++ set -e
++ PATH=/bin:/usr/bin:/sbin:/usr/sbin
++ NAME=tomcat7
++ DESC='Tomcat servlet engine'
++ DEFAULT=/etc/default/tomcat7
++ JVM_TMP=/tmp/tomcat7-tomcat7-tmp
+++ id -u
++ '[' 0 -ne 0 ']'
++ '[' -r /etc/default/locale ']'
++ . /etc/default/locale
+++ LANG=en_US.UTF-8
+++ LC_ALL=en_US.UTF-8
++ export LANG
++ . /lib/lsb/init-functions
++++ run-parts --lsbsysinit --list /lib/lsb/init-functions.d
+++ for hook in '$(run-parts --lsbsysinit --list /lib/lsb/init-functions.d 2>/dev/null)'
+++ '[' -r /lib/lsb/init-functions.d/20-left-info-blocks ']'
+++ . /lib/lsb/init-functions.d/20-left-info-blocks
+++ for hook in '$(run-parts --lsbsysinit --list /lib/lsb/init-functions.d 2>/dev/null)'
+++ '[' -r /lib/lsb/init-functions.d/50-ubuntu-logging ']'
+++ . /lib/lsb/init-functions.d/50-ubuntu-logging
++++ LOG_DAEMON_MSG=
+++ FANCYTTY=
+++ '[' -e /etc/lsb-base-logging.sh ']'
+++ true
++ '[' -r /etc/default/rcS ']'
++ . /etc/default/rcS
+++ UTC=yes
++ TOMCAT7_USER=tomcat7
++ TOMCAT7_GROUP=tomcat7
++ OPENJDKS=
++ find_openjdks
++ for jvmdir in '/usr/lib/jvm/java-7-openjdk-*'
++ '[' -d /usr/lib/jvm/java-7-openjdk-amd64 -a /usr/lib/jvm/java-7-openjdk-amd64 '!=' /usr/lib/jvm/java-7-openjdk-common ']'
++ OPENJDKS=/usr/lib/jvm/java-7-openjdk-amd64
++ for jvmdir in '/usr/lib/jvm/java-6-openjdk-*'
++ '[' -d '/usr/lib/jvm/java-6-openjdk-*' -a '/usr/lib/jvm/java-6-openjdk-*' '!=' /usr/lib/jvm/java-6-openjdk-common ']'
++ JDK_DIRS='/usr/lib/jvm/default-java /usr/lib/jvm/java-7-openjdk-amd64 /usr/lib/jvm/java-6-openjdk /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-7-oracle'
++ for jdir in '$JDK_DIRS'
++ '[' -r /usr/lib/jvm/default-java/bin/java -a -z '' ']'
++ JAVA_HOME=/usr/lib/jvm/default-java
++ for jdir in '$JDK_DIRS'
++ '[' -r /usr/lib/jvm/java-7-openjdk-amd64/bin/java -a -z /usr/lib/jvm/default-java ']'
++ for jdir in '$JDK_DIRS'
++ '[' -r /usr/lib/jvm/java-6-openjdk/bin/java -a -z /usr/lib/jvm/default-java ']'
++ for jdir in '$JDK_DIRS'
++ '[' -r /usr/lib/jvm/java-6-sun/bin/java -a -z /usr/lib/jvm/default-java ']'
++ for jdir in '$JDK_DIRS'
++ '[' -r /usr/lib/jvm/java-7-oracle/bin/java -a -z /usr/lib/jvm/default-java ']'
++ export JAVA_HOME
++ CATALINA_HOME=/usr/share/tomcat7
++ CATALINA_BASE=/var/lib/tomcat7
++ TOMCAT7_SECURITY=no
++ '[' -z '' ']'
++ JAVA_OPTS='-Djava.awt.headless=true -Xmx128M'
++ '[' -f /etc/default/tomcat7 ']'
++ . /etc/default/tomcat7
+++ TOMCAT7_USER=tomcat7
+++ TOMCAT7_GROUP=tomcat7
+++ JAVA_HOME=/usr/lib/jvm/java-8-oracle-amd64
+++ CATALINA_HOME=/usr/share/tomcat7
+++ CATALINA_BASE=/var/lib/tomcat7
+++ JAVA_OPTS='-Xmx128M -Djava.awt.headless=true'
+++ JAVA_OPTS='-Xmx128M -Djava.awt.headless=true -XX:+UseConcMarkSweepGC'
+++ TOMCAT7_SECURITY=no
+++ JVM_TMP=/tmp/tomcat7-tmp
+++ AUTHBIND=no
+++ CATALINA_OPTS=
+++ JAVA_ENDORSED_DIRS=/usr/share/tomcat6/lib/endorsed
++ '[' '!' -f /usr/share/tomcat7/bin/bootstrap.jar ']'
++ POLICY_CACHE=/var/lib/tomcat7/work/catalina.policy
++ '[' -z '' ']'
++ CATALINA_TMPDIR=/tmp/tomcat7-tmp
++ '[' -n '' ']'
++ SECURITY=
++ '[' no = yes ']'
++ CATALINA_PID=/var/run/tomcat7.pid
++ CATALINA_SH=/usr/share/tomcat7/bin/catalina.sh
++ '[' -z '' -a -r /usr/lib/jvm/java-8-oracle-amd64/jre/lib/jsse.jar ']'
++ JSSE_HOME=/usr/lib/jvm/java-8-oracle-amd64/jre/
++ case "$1" in
++ '[' -z /usr/lib/jvm/java-8-oracle-amd64 ']'
++ '[' '!' -d /var/lib/tomcat7/conf ']'
++ log_daemon_msg 'Starting Tomcat servlet engine' tomcat7
++ '[' -z 'Starting Tomcat servlet engine' ']'
++ log_use_fancy_output
++ TPUT=/usr/bin/tput
++ EXPR=/usr/bin/expr
++ '[' -t 1 ']'
++ '[' xxterm '!=' x ']'
++ '[' xxterm '!=' xdumb ']'
++ '[' -x /usr/bin/tput ']'
++ '[' -x /usr/bin/expr ']'
++ /usr/bin/tput hpa 60
++ /usr/bin/tput setaf 1
++ '[' -z ']'
++ FANCYTTY=1
++ case "$FANCYTTY" in
++ true
++ /usr/bin/tput xenl
+++ /usr/bin/tput cols
++ COLS=179
++ '[' 179 ']'
++ '[' 179 -gt 6 ']'
+++ /usr/bin/expr 179 - 7
++ COL=172
++ log_use_plymouth
++ '[' n = y ']'
++ plymouth --ping
++ printf ' * Starting Tomcat servlet engine tomcat7       '
+ * Starting Tomcat servlet engine tomcat7       ++ /usr/bin/expr 179 - 1
++ /usr/bin/tput hpa 178
+                                                                                                                                                                                  $
+ printf ' '
+ + start-stop-daemon --test --start --pidfile /var/run/tomcat7.pid --user tomcat7 --exec /usr/lib/jvm/java-8-oracle-amd64/bin/java
++ umask 022
++ echo '// AUTO-GENERATED FILE from /etc/tomcat7/policy.d/'
++ echo ''
++ cat /var/lib/tomcat7/conf/policy.d/01system.policy /var/lib/tomcat7/conf/policy.d/02debian.policy /var/lib/tomcat7/conf/policy.d/03catalina.policy /var/lib/tomcat7/conf/policy.d
+/04webapps.policy /var/lib/tomcat7/conf/policy.d/50local.policy
++ rm -rf /tmp/tomcat7-tmp
++ mkdir -p /tmp/tomcat7-tmp
++ chown tomcat7 /tmp/tomcat7-tmp
++ catalina_sh start
+++ echo -Xmx128M -Djava.awt.headless=true -XX:+UseConcMarkSweepGC
+++ sed 's/\"/\\\"/g'
++ JAVA_OPTS='-Xmx128M -Djava.awt.headless=true -XX:+UseConcMarkSweepGC'
++ AUTHBIND_COMMAND=
++ '[' no = yes -a start = start ']'
++ TOMCAT_SH='set -a; JAVA_HOME="/usr/lib/jvm/java-8-oracle-amd64"; source "/etc/default/tomcat7";               CATALINA_HOME="/usr/share/tomcat7";             CATALINA_BASE="/var/lib/tomcat7";          JAVA_OPTS="-Xmx128M -Djava.awt.headless=true -XX:+UseConcMarkSweepGC";          CATALINA_PID="/var/run/tomcat7.pid";            CATALINA_TMPDIR="/tmp/tomcat7-tmp";                LANG="en_US.UTF-8"; JSSE_HOME="/usr/lib/jvm/java-8-oracle-amd64/jre/";          cd "/var/lib/tomcat7";          "/usr/share/tomcat7/bin/catalina.sh" start'
++ '[' no = yes -a start = start ']'
++ set +e
++ touch /var/run/tomcat7.pid /var/lib/tomcat7/logs/catalina.out
++ chown tomcat7 /var/run/tomcat7.pid /var/lib/tomcat7/logs/catalina.out
++ start-stop-daemon --start -b -u tomcat7 -g tomcat7 -c tomcat7 -d /tmp/tomcat7-tmp -p /var/run/tomcat7.pid -x /bin/bash -- -c ' set -a; JAVA_HOME="/usr/lib/jvm/java-8-oracle-amd64"; source "/etc/default/tomcat7";              CATALINA_HOME="/usr/share/tomcat7";             CATALINA_BASE="/var/lib/tomcat7";               JAVA_OPTS="-Xmx128M -Djava.awt.headless=true -XX:+UseConcMarkSweepGC";             CATALINA_PID="/var/run/tomcat7.pid";            CATALINA_TMPDIR="/tmp/tomcat7-tmp";             LANG="en_US.UTF-8"; JSSE_HOME="/usr/lib/jvm/java-8-oracle-amd64/jre/";             cd "/var/lib/tomcat7";          "/usr/share/tomcat7/bin/catalina.sh" start'
++ status=0
++ set +a -e
++ return 0
++ sleep 5
++ start-stop-daemon --test --start --pidfile /var/run/tomcat7.pid --user tomcat7 --exec /usr/lib/jvm/java-8-oracle-amd64/bin/java
++ '[' -f /var/run/tomcat7.pid ']'
++ rm -f /var/run/tomcat7.pid
++ log_end_msg 1
++ '[' -z 1 ']'
++ '[' 172 ']'
++ '[' -x /usr/bin/tput ']'
++ log_use_plymouth
++ '[' n = y ']'
++ plymouth --ping
++ printf '\r'
++ /usr/bin/tput hpa 172
+                                                                                                                                                                            + '[' 1 -eq 0 ']'
++ printf '['
+[+ /usr/bin/tput setaf 1
++ printf fail
+fail+ /usr/bin/tput op
++ echo ']'
+]
++ return 1
+root@2c29845463d0:/# ps -ef | grep tomcat
+tomcat7   5997     1 99 04:09 ?        00:00:07 /usr/lib/jvm/java-8-oracle-amd64/bin/java -Djava.util.logging.config.file=/var/lib/tomcat7/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Xmx128M -Djava.awt.headless=true -XX:+UseConcMarkSweepGC -Djava.endorsed.dirs=/usr/share/tomcat6/lib/endorsed -classpath /usr/share/tomcat7/bin/bootstrap.jar:/usr/share/tomcat7/bin/tomcat-juli.jar -Dcatalina.base=/var/lib/tomcat7 -Dcatalina.home=/usr/share/tomcat7 -Djava.io.tmpdir=/tmp/tomcat7-tmp org.apache.catalina.startup.Bootstrap start
+root      6038     1  0 04:09 ?        00:00:00 grep --color=auto tomcat
+#+END_EXAMPLE
+** TODO [#B] docker: How to resolve docker pull fails, if we can't restart docker server
+https://github.com/docker/docker/issues/3115
+
+#+BEGIN_EXAMPLE
+5089df36ca81: Downloading 522.8 MB
+5089df36ca81: Download complete
+96f92ffea108: Download complete
+709ece14260e: Downloading 189.8 MB
+709ece14260e: Download complete
+598ad0443ad3: Error downloading dependent layers
+Error pulling image (latest) from docker.io/denny/osc, Untar re-exec error: exit status 1: output: unexpected EOF
+root@localhost:~#
+root@localhost:~#
+root@localhost:~# docker ps
+CONTAINER ID        IMAGE               COMMAND               CREATED             STATUS              PORTS                                                                                              NAMES
+0d8215343ca0        denny/osc:latest    "/usr/sbin/sshd -D"   2 days ago          Up 2 days           0.0.0.0:3128->3128/tcp, 0.0.0.0:28000->28000/tcp, 0.0.0.0:28080->28080/tcp, 0.0.0.0:4022->22/tcp   docker-jenkins
+b238788f275c        denny/osc:latest    "/usr/sbin/sshd -D"   4 days ago          Up 4 days           0.0.0.0:9022->22/tcp, 0.0.0.0:11001->10001/tcp                                                     frontend
+573193f277ae        denny/osc:latest    "/usr/sbin/sshd -D"   4 days ago          Up 4 days           0.0.0.0:8022->22/tcp                                                                               backend
+848e8b95ae8b        denny/osc:latest    "/usr/sbin/sshd -D"   4 days ago          Up 4 days           0.0.0.0:7022->22/tcp                                                                               database
+cd851ef5c567        denny/osc:latest    "/usr/sbin/sshd -D"   4 days ago          Up 4 days           0.0.0.0:8080->8080/tcp, 0.0.0.0:5022->22/tcp                                                       iam-registry
+root@localhost:~# docker pull denny/osc:latest
+Repository docker.io/denny/osc already being pulled by another client. Waiting.
+#+END_EXAMPLE
+** TODO [#A] docker disable people: docker exec -it docker-jenkins bash
+** docker
+#+begin_example
+root@be5d4ed8a770:/tmp# cat ./test.cpp
+cat ./test.cpp
+#include <iostream>
+using namespace std;
+int main()
+{
+  int i;
+  long number;
+  number=90*1024*1024;
+  char * str;
+
+  str = new char[number];
+  for(i=0; i<number; i++)
+     str[i] = 1;
+
+  str = new char[number];
+  for(i=0; i<number; i++)
+     str[i] = 1;
+
+  cin>>i;
+
+  return 0;
+}
+
+root@be5d4ed8a770:/tmp# pmap -x $(ps -ef | grep a.out | head -n 1 | awk -F' ' '{print $2}')
+print $2}')
+218:   ./a.out
+Address           Kbytes     RSS   Dirty Mode   Mapping
+0000000000400000       4       4       0 r-x--  a.out
+0000000000600000       4       4       0 r----  a.out
+0000000000601000       4       4       4 rw---  a.out
+00007f3b92ca9000  163848  100000  100000 rw---    [ anon ]
+00007f3b9ccab000    1004      64       0 r-x--  libm-2.15.so
+00007f3b9cda6000    2044       0       0 -----  libm-2.15.so
+00007f3b9cfa5000       4       0       0 r----  libm-2.15.so
+00007f3b9cfa6000       4       0       0 rw---  libm-2.15.so
+00007f3b9cfa7000    1748     284       0 r-x--  libc-2.15.so
+00007f3b9d15c000    2044       0       0 -----  libc-2.15.so
+00007f3b9d35b000      16       4       0 r----  libc-2.15.so
+00007f3b9d35f000       8       4       4 rw---  libc-2.15.so
+00007f3b9d361000      20       4       4 rw---    [ anon ]
+00007f3b9d366000      84      12       0 r-x--  libgcc_s.so.1
+00007f3b9d37b000    2044       0       0 -----  libgcc_s.so.1
+00007f3b9d57a000       4       4       0 r----  libgcc_s.so.1
+00007f3b9d57b000       4       0       0 rw---  libgcc_s.so.1
+00007f3b9d57c000     916     448       0 r-x--  libstdc++.so.6.0.17
+00007f3b9d661000    2044       0       0 -----  libstdc++.so.6.0.17
+00007f3b9d860000      32      12       0 r----  libstdc++.so.6.0.17
+00007f3b9d868000       8       8       8 rw---  libstdc++.so.6.0.17
+00007f3b9d86a000      84       4       0 rw---    [ anon ]
+00007f3b9d87f000     136     108       0 r-x--  ld-2.15.so
+00007f3b9da97000      20      12       4 rw---    [ anon ]
+00007f3b9da9e000      12       4       0 rw---    [ anon ]
+00007f3b9daa1000       4       4       0 r----  ld-2.15.so
+00007f3b9daa2000       8       8       4 rw---  ld-2.15.so
+00007fff2e251000      84       4       4 rw---    [ stack ]
+00007fff2e2da000       4       4       0 r-x--    [ anon ]
+ffffffffff600000       4       0       0 r-x--    [ anon ]
+----------------  ------  ------  ------
+total kB          176244  101004  100032
+root@be5d4ed8a770:/tmp#
+#+end_example
+*** TODO How to deal with persistent storage (e.g. databases) in docker
+http://stackoverflow.com/questions/18496940/how-to-deal-with-persistent-storage-e-g-databases-in-docker
+*** docker run -link redis:db -i -t ubuntu:12.10 /bin/bash
+docker start be5d4ed8a770
+ls -lt /var/lib/docker/containers
+cat /var/lib/docker/containers/be5d4ed8a770*/config.lxc
+
+docker attach -sig-proxy=false be5d4ed8a770
+*** docker use as much as result in the hosting OS
+**** memory in container
+#+begin_example
+root@d5b41e1981df:/# cat /proc/meminfo
+cat /proc/meminfo
+MemTotal:        5985200 kB
+MemFree:          293432 kB
+Buffers:          333504 kB
+Cached:          4334064 kB
+SwapCached:            0 kB
+Active:          2648444 kB
+Inactive:        2243752 kB
+Active(anon):     110420 kB
+Inactive(anon):   122744 kB
+Active(file):    2538024 kB
+Inactive(file):  2121008 kB
+Unevictable:        8424 kB
+Mlocked:            8424 kB
+SwapTotal:       6127608 kB
+SwapFree:        6127608 kB
+Dirty:               360 kB
+Writeback:             0 kB
+AnonPages:        232892 kB
+Mapped:            37532 kB
+Shmem:              1320 kB
+Slab:             659948 kB
+SReclaimable:     488088 kB
+SUnreclaim:       171860 kB
+KernelStack:        8616 kB
+PageTables:         9128 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     9120208 kB
+Committed_AS:    1639724 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:      210804 kB
+VmallocChunk:   34359474912 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:     63488 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:       10240 kB
+DirectMap2M:     6281216 kB
+root@d5b41e1981df:/# free -ml
+free -ml
+             total       used       free     shared    buffers     cached
+Mem:          5844       5558        286          0        325       4232
+Low:          5844       5558        286
+High:            0          0          0
+-/+ buffers/cache:       1000       4844
+Swap:         5983          0       5983
+root@d5b41e1981df:/#
+#+end_example
+**** memory in hosting OS
+#+begin_example
+[root@compute docker]# cat /proc/meminfo
+cat /proc/meminfo
+MemTotal:        5985200 kB
+MemFree:          293416 kB
+Buffers:          333504 kB
+Cached:          4334068 kB
+SwapCached:            0 kB
+Active:          2648380 kB
+Inactive:        2243720 kB
+Active(anon):     110320 kB
+Inactive(anon):   122744 kB
+Active(file):    2538060 kB
+Inactive(file):  2120976 kB
+Unevictable:        8424 kB
+Mlocked:            8424 kB
+SwapTotal:       6127608 kB
+SwapFree:        6127608 kB
+Dirty:               368 kB
+Writeback:             0 kB
+AnonPages:        232748 kB
+Mapped:            37532 kB
+Shmem:              1320 kB
+Slab:             659972 kB
+SReclaimable:     488088 kB
+SUnreclaim:       171884 kB
+KernelStack:        8616 kB
+PageTables:         9128 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     9120208 kB
+Committed_AS:    1639720 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:      210804 kB
+VmallocChunk:   34359474912 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:     63488 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:       10240 kB
+DirectMap2M:     6281216 kB
+[root@compute docker]# free -ml
+free -ml
+             total       used       free     shared    buffers     cached
+Mem:          5844       5558        286          0        325       4232
+Low:          5844       5558        286
+High:            0          0          0
+-/+ buffers/cache:       1000       4844
+Swap:         5983          0       5983
+[root@compute docker]#
+#+end_example
+*** web page: Gathering LXC and Docker containers metrics | Docker Blog
+http://blog.docker.io/2013/10/gathering-lxc-docker-containers-metrics/
+**** webcontent                                                    :noexport:
+#+begin_example
+Location: http://blog.docker.io/2013/10/gathering-lxc-docker-containers-metrics/
+[docker-top]
+Toggle navigation
+
+  * Home
+  * Learn More
+  * Getting started
+  * Community
+  * Documentation
+  * Blog
+  * INDEX [external-l]
+
+October 8, 2013
+
+Gathering LXC and Docker containers metrics
+
+Linux Containers rely on control groups which not only track groups of processes, but also expose a
+lot of metrics about CPU, memory, and block I/O usage. We will see how to access those metrics, and
+how to obtain network usage metrics as well. This is relevant for "pure" LXC containers, as well as
+for Docker containers.
+
+Locate your control groups
+
+Control groups are exposed through a pseudo-filesystem. In recent distros, you should find this
+filesystem under /sys/fs/cgroup. Under that directory, you will see multiple sub-directories,
+called devices, freezer, blkio, etc.; each sub-directory actually corresponds to a different cgroup
+hierarchy.
+
+On older systems, the control groups might be mounted on /cgroup, without distinct hierarchies. In
+that case, instead of seeing the sub-directories, you will see a bunch of files in that directory,
+and possibly some directories corresponding to existing containers.
+
+To figure out where your control groups are mounted, you can run:
+
+[grep cgroup /proc/mo]
+
+1 grep cgroup /proc/mounts
+
+Control groups hierarchies
+
+The fact that different control groups can be in different hierarchies mean that you can use
+completely different groups (and policies) for e.g. CPU allocation and memory allocation. Let's
+make up a completely imaginary example: you have a 2-CPU system running Python webapps with
+Gunicorn, a PostgreSQL database, and accepting SSH logins. You can put each webapp and each SSH
+session in their own memory control group (to make sure that a single app or user doesn't use up
+the memory of the whole system), and at the same time, stick the webapps and database on a CPU, and
+the SSH logins on another CPU.
+
+Of course, if you run LXC containers, each hierarchy will have one group per container, and all
+hierarchies will look the same.
+
+Merging or splitting hierarchies is achieved by using special options when mounting the cgroup
+pseudo-filesystems. Note that if you want to change that, you will have to remove all existing
+cgroups in the hierarchies that you want to split or merge.
+
+Enumerating our cgroups
+
+You can look into /proc/cgroups to see the different control group subsystems known to the system,
+the hierarchy they belong to, and how many groups they contain.
+
+You can also look at /proc/<pid>/cgroup to see which control groups a process belongs to. The
+control group will be shown as a path relative to the root of the hierarchy mountpoint; e.g. /
+means "this process has not been assigned into a particular group", while /lxc/pumpkin means that
+the process is likely to be a member of a container named pumpkin.
+
+Finding the cgroup for a given container
+
+For each container, one cgroup will be created in each hierarchy. On older systems with older
+versions of the LXC userland tools, the name of the cgroup will be the name of the container. With
+more recent versions of the LXC tools, the cgroup will be lxc/<container_name>.
+
+Additional note for Docker users: the container name will be the full ID or long ID of the
+container. If a container shows up as ae836c95b4c3 in docker ps, its long ID might be something
+like ae836c95b4c3c9e9179e0e91015512da89fdec91612f63cebae57df9a5444c79. You can look it up with
+docker inspect or docker ps -notrunc.
+
+Putting everything together: on my system, if I want to look at the memory metrics for a Docker
+container, I have to look at /sys/fs/cgroup/memory/lxc/<longid>/.
+
+Collecting memory, CPU, block I/O metrics
+
+For each subsystem, we will find one pseudo-file (in some cases, multiple) containing statistics
+about used memory, accumulated CPU cycles, or number of I/O completed. Those files are easy to
+parse, as we will see.
+
+Memory metrics
+
+Those will be found in the memory cgroup (duh!). Note that the memory control group adds a little
+overhead, because it does very fine-grained accounting of the memory usage on your system.
+Therefore, many distros chose to not enable it by default. Generally, to enable it, all you have to
+do is to add some kernel command-line parameters: cgroup_enable=memory swapaccount=1.
+
+The metrics are in the pseudo-file memory.stat. Here is what it will look like:
+
+[cache 11492564992   ]
+
+1  cache 11492564992
+2  rss 1930993664
+3  mapped_file 306728960
+4  pgpgin 406632648
+5  pgpgout 403355412
+6  swap 0
+7  pgfault 728281223
+8  pgmajfault 1724
+9  inactive_anon 46608384
+10 active_anon 1884520448
+11 inactive_file 7003344896
+12 active_file 4489052160
+13 unevictable 32768
+14 hierarchical_memory_limit 9223372036854775807
+15 hierarchical_memsw_limit 9223372036854775807
+16 total_cache 11492564992
+17 total_rss 1930993664
+18 total_mapped_file 306728960
+19 total_pgpgin 406632648
+20 total_pgpgout 403355412
+21 total_swap 0
+22 total_pgfault 728281223
+23 total_pgmajfault 1724
+24 total_inactive_anon 46608384
+25 total_active_anon 1884520448
+26 total_inactive_file 7003344896
+27 total_active_file 4489052160
+28 total_unevictable 32768
+
+The first half (without the total_ prefix) contains statistics relevant to the processes within the
+cgroup, excluding sub-cgroups. The second half (with the total_ prefix) includes sub-cgroups as
+well.
+
+Some metrics are "gauges", i.e. values that can increase or decrease (e.g. swap, the amount of swap
+space used by the members of the cgroup). Some others are "counters", i.e. values that can only go
+up, because they represent occurrences of a specific event (e.g. pgfault, which indicates the
+number of page faults which happened since the creation of the cgroup; this number can never
+decrease).
+
+Let's see what those metrics stand for. All memory amounts are in bytes (except for event
+counters).
+
+  * cache is the amount of memory used by the processes of this control group that can be
+    associated precisely with a block on a block device. When you read and write files from and to
+    disk, this amount will increase. This will be the case if you use "conventional" I/O (open,
+    read, write syscalls) as well as mapped files (with mmap). It also accounts for the memory used
+    by tmpfs mounts. I don't know exactly why; it might be because tmpfs filesystems work directly
+    with the page cache.
+  * rss is the amount of memory that doesn't correspond to anything on disk: stacks, heaps, and
+    anonymous memory maps.
+  * mapped_file indicates the amount of memory mapped by the processes in the control group. In my
+    humble opinion, it doesn't give you an information about how much memory is used; it rather
+    tells you how it is used.
+  * pgpgin and pgpgout are a bit tricky. If you are used to vmstat, you might think that they
+    indicate the number of times that a page had to be read and written (respectively) by a process
+    of the cgroup, and that they should reflect both file I/O and swap activity. Wrong! In fact,
+    they correspond to charging events. Each time a page is "charged" (=added to the accounting) to
+    a cgroup, pgpgin increases. When a page is "uncharged" (=no longer "billed" to a cgroup),
+    pgpgout increases.
+  * pgfault and pgmajfault indicate the number of times that a process of the cgroup triggered a
+    "page fault" and a "major fault", respectively. A page fault happens when a process accesses a
+    part of its virtual memory space which is inexistent or protected. The former can happen if the
+    process is buggy and tries to access an invalid address (it will then be sent a SIGSEGV signal,
+    typically killing it with the famous Segmentation fault message). The latter can happen when
+    the process reads from a memory zone which has been swapped out, or which corresponds to a
+    mapped file: in that case, the kernel will load the page from disk, and let the CPU complete
+    the memory access. It can also happen when the process writes to a copy-on-write memory zone:
+    likewise, the kernel will preempt the process, duplicate the memory page, and resume the write
+    operation on the process' own copy of the page. "Major" faults happen when the kernel actually
+    has to read the data from disk. When it just has to duplicate an existing page, or allocate an
+    empty page, it's a regular (or "minor") fault.
+  * swap is (as expected) the amount of swap currently used by the processes in this cgroup.
+  * active_anon and inactive_anon is the amount of anonymous memory that has been identified has
+    respectively active and inactive by the kernel. "Anonymous" memory is the memory that is not
+    linked to disk pages. In other words, that's the equivalent of the rss counter described above.
+    In fact, the very definition of the rss counter is active_anon+**inactive_anon**-**tmpfs**
+    (where tmpfs is the amount of memory used up by tmpfs filesystems mounted by this control
+    group). Now, what's the difference between "active" and "inactive"? Pages are initially
+    "active"; and at regular intervals, the kernel sweeps over the memory, and tags some pages as
+    "inactive". Whenever they are accessed again, they are immediately retagged "active". When the
+    kernel is almost out of memory, and time comes to swap out to disk, the kernel will swap
+    "inactive" pages.
+  * Likewise, the cache memory is broken down into active_file and inactive_file. The exact formula
+    is cache=**active_file**+**inactive_file**+**tmpfs**. The exact rules used by the kernel to
+    move memory pages between active and inactive sets are different from the ones used for
+    anonymous memory, but the general principle is the same. Note that when the kernel needs to
+    reclaim memory, it is cheaper to reclaim a clean (=non modified) page from this pool, since it
+    can be reclaimed immediately (while anonymous pages and dirty/modified pages have to be written
+    to disk first).
+  * unevictable is the amount of memory that cannot be reclaimed; generally, it will account for
+    memory that has been "locked" with mlock. It is often used by crypto frameworks to make sure
+    that secret keys and other sensitive material never gets swapped out to disk.
+  * Last but not least, the memory and memsw limits are not really metrics, but a reminder of the
+    limits applied to this cgroup. The first one indicates the maximum amount of physical memory
+    that can be used by the processes of this control group; the second one indicates the maximum
+    amount of RAM+swap.
+
+Accounting for memory in the page cache is very complex. If two processes in different control
+groups both read the same file (ultimately relying on the same blocks on disk), the corresponding
+memory charge will be split between the control groups. It's nice, but it also means that when a
+cgroup is terminated, it could increase the memory usage of another cgroup, because they are not
+splitting the cost anymore for those memory pages.
+
+CPU metrics
+
+Now that we've covered memory metrics, everything else will look very simple in comparison. CPU
+metrics will be found in the cpuacct controller.
+
+For each container, you will find a pseudo-file cpuacct.stat, containing the CPU usage accumulated
+by the processes of the container, broken down between user and system time. If you're not familiar
+with the distinction, user is the time during which the processes were in direct control of the CPU
+(i.e. executing process code), and system is the time during which the CPU was executing system
+calls on behalf of those processes.
+
+Those times are expressed in ticks of 1/100th of second. (Actually, they are expressed in "user
+jiffies". There are USER_HZ "jiffies" per second, and on x86 systems, USER_HZ is 100. This used to
+map exactly to the number of scheduler "ticks" per second; but with the advent of higher frequency
+scheduling, as well as tickless kernels, the number of kernel ticks wasn't relevant anymore. It
+stuck around anyway, mainly for legacy and compatibility reasons.)
+
+Block I/O metrics
+
+Block I/O is accounted in the blkio controller. Different metrics are scattered across different
+files. While you can find in-depth details in the blkio-controller file in the kernel
+documentation, here is a short list of the most relevant ones:
+
+  * blkio.sectors contains the number of 512-bytes sectors read and written by the processes member
+    of the cgroup, device by device. Reads and writes are merged in a single counter.
+  * blkio.io_service_bytes indicates the number of bytes read and written by the cgroup. It has 4
+    counters per device, because for each device, it differentiates between synchronous vs.
+    asynchronous I/O, and reads vs. writes.
+  * blkio.io_serviced is similar, but instead of showing byte counters, it will show the number of
+    I/O operations performed, regardless of their size. It also has 4 counters per device.
+  * blkio.io_queued indicates the number of I/O operations currently queued for this cgroup. In
+    other words, if the cgroup isn't doing any I/O, this will be zero. Note that the opposite is
+    not true. In other words, if there is no I/O queued, it does not mean that the cgroup is idle
+    (I/O-wise). It could be doing purely synchronous reads on an otherwise quiescent device, which
+    is therefore able to handle them immediately, without queuing. Also, while it is helpful to
+    figure out which cgroup is putting stress on the I/O subsystem, keep in mind that is is a
+    relative quantity. Even if a process group does not perform more I/O, its queue size can
+    increase just because the device load increases because of other devices.
+
+For each file, there is a _recursive variant, that aggregates the metrics of the control group and
+all its sub-cgroups.
+
+Also, it's worth mentioning that in most cases, if the processes of a control group have not done
+any I/O on a given block device, the block device will not appear in the pseudo-files. In other
+words, you have to be careful each time you parse one of those files, because new entries might
+have appeared since the previous time.
+
+Collecting network metrics
+
+Interestingly, network metrics are not exposed directly by control groups. There is a good
+explanation for that: network interfaces exist within the context of network namespaces. The kernel
+could probably accumulate metrics about packets and bytes sent and received by a group of
+processes, but those metrics wouldn't be very useful. You want (at least!) per-interface metrics
+(because traffic happening on the local lo interface doesn't really count). But since processes in
+a single cgroup can belong to multiple network namespaces, those metrics would be harder to
+interpret: multiple network namespaces means multiple lo interfaces, potentially multiple eth0
+interfaces, etc.; so this is why there is no easy way to gather network metrics with control
+groups.
+
+So what shall we do? Well, we have multiple options.
+
+Iptables
+
+When people think about iptables, they usually think about firewalling, and maybe NAT scenarios.
+But iptables (or rather, the netfilter framework for which iptables is just an interface) can also
+do some serious accounting.
+
+For instance, you can setup a rule to account for the outbound HTTP traffic on a web server:
+
+[iptables -I OUTPUT -]
+
+1 iptables -I OUTPUT -p tcp --sport 80
+
+There is no -j or -g flag, so the rule will just count matched packets and go to the following
+rule.
+
+Later, you can check the values of the counters, with:
+
+[iptables -nxvL OUTPU]
+
+1 iptables -nxvL OUTPUT
+
+(Technically, -n is not required, but it will prevent iptables from doing DNS reverse lookups,
+which are probably useless in this scenario.)
+
+Counters include packets and bytes. If you want to setup metrics for container traffic like this,
+you could execute a for loop to add two iptables rules per container IP address (one in each
+direction), in the FORWARD chain. This will only meter traffic going through the NAT layer; you
+will also have to add traffic going through the userland proxy.
+
+Then, you will need to check those counters on a regular basis. If you happen to use collectd,
+there is a nice plugin to automate iptables counters collection.
+
+Interface-level counters
+
+Since each container has a virtual Ethernet interface, you might want to check directly the TX and
+RX counters of this interface. However, this is not as easy as it sounds. If you use Docker (as of
+current version 0.6) or lxc-start, then you will notice that each container is associated to a
+virtual Ethernet interface in your host, with a name like vethKk8Zqi. Figuring out which interface
+corresponds to which container is, unfortunately, difficult. (If you know an easy way, let me
+know.)
+
+In the long run, Docker will probably take over the setup of those virtual interfaces. It will keep
+track of their names, and make sure that it can easily associate containers with their respective
+interfaces.
+
+But for now, the best way is to check the metrics from within the containers. I'm not talking about
+running a special agent in the container, or anything like that. We are going to run an executable
+from the host environment, but within the network namespace of a container.
+
+ip-netns magic
+
+To do that, we will use the ip netns exec command. This command will let you execute any program
+(present in the host system) within any network namespace visible to the current process. This
+means that your host will be able to enter the network namespace of your containers, but your
+containers won't be able to access the host, nor their sibling containers. Containers will be able
+to "see" and affect their sub-containers, though.
+
+The exact format of the command is:
+
+[ip netns exec <nsnam]
+
+1 ip netns exec <nsname> <command...>
+
+For instance:
+
+[ip netns exec mycont]
+
+1 ip netns exec mycontainer netstat -i
+
+How does the naming system work? How does ip netns find mycontainer? Answer: by using the
+namespaces pseudo-files. Each process belongs to one network namespace, one PID namespace, one mnt
+namespace, etc.; and those namespaces are materialized under /proc/<pid>/ns/. For instance, the
+network namespace of PID 42 is materialized by the pseudo-file /proc/42/ns/net.
+
+When you run ip netns exec mycontainer ..., it expects /var/run/netns/mycontainer to be one of
+those pseudo-files. (Symlinks are accepted.)
+
+In other words, to execute a command within the network namespace of a container, we need to:
+
+  * find out the PID of any process within the container that we want to investigate;
+  * create a symlink from /var/run/netns/<somename> to /proc/<thepid>/ns/net;
+  * execute ip netns exec <somename> ....
+
+Now, we need to figure out a way to find the PID of a process (any process!) running in the
+container that we want to investigate. This is actually very easy. You have to locate one of the
+control groups corresponding to the container. We explained how to locate those cgroups in the
+beginning of this post, so we won't cover that again.
+
+On my machine, a control group will typically be located in /sys/fs/cgroup/devices/lxc/
+<containerid>. Within that directory, you will find a pseudo-file called tasks. It contains the
+list of the PIDs that are in the control group, i.e., in the container. We can take any of them; so
+the first one will do.
+
+Putting everything together, if the "short ID" of a container is held in the environment variable
+$CID, here is a small shell snippet to put everything together:
+
+[TASKS=/sys/fs/cgroup]
+
+1 TASKS=/sys/fs/cgroup/devices/$CID*/tasks
+2 PID=$(head -n 1 $TASKS)
+3 mkdir -p /var/run/netns
+4 ln -sf /proc/$PID/ns/net /var/run/netns/$CID
+5 ip netns exec $CID netstat -i
+
+The same mechanism is used in Pipework to setup network interfaces within containers from outside
+the containers.
+
+Tips for high-performance metric collection
+
+Note that running a new process each time you want to update metrics is (relatively) expensive. If
+you want to collect metrics at high resolutions, and/or over a large number of containers (think
+1000 containers on a single host), you do not want to fork a new process each time.
+
+Here is how to collect metrics from a single process. You will have to write your metric collector
+in C (or any language that lets you do low-level system calls). You need to use a special system
+call, setns(), which lets the current process enter any arbitrary namespace. It requires, however,
+an open file descriptor to the namespace pseudo-file (remember: that's the pseudo-file in /proc/
+<pid>/ns/net).
+
+However, there is a catch: you must not keep this file descriptor open. If you do, when the last
+process of the control group exits, the namespace will not be destroyed, and its network resources
+(like the virtual interface of the container) will stay around for ever (or until you close that
+file descriptor).
+
+The right approach would be to keep track of the first PID of each container, and re-open the
+namespace pseudo-file each time.
+
+Collecting metrics when a container exits
+
+Sometimes, you do not care about real time metric collection, but when a container exits, you want
+to know how much CPU, memory, etc. it has used.
+
+The current implementation of Docker (as of 0.6) makes this particularly challenging, because it
+relies on lxc-start, and when a container stops, lxc-start carefully cleans up behind it. If you
+really want to collect the metrics anyway, here is how. For each container, start a collection
+process, and move it to the control groups that you want to monitor by writing its PID to the tasks
+file of the cgroup. The collection process should periodically re-read the tasks file to check if
+it's the last process of the control group. (If you also want to collect network statistics as
+explained in the previous section, you should also move the process to the appropriate network
+namespace.)
+
+When the container exits, lxc-start will try to delete the control groups. It will fail, since the
+control group is still in use; but that's fine. You process should now detect that it is the only
+one remaining in the group. Now is the right time to collect all the metrics you need!
+
+Finally, your process should move itself back to the root control group, and remove the container
+control group. To remove a control group, just rmdir its directory. It's counter-intuitive to rmdir
+a directory as it still contains files; but remember that this is a pseudo-filesystem, so usual
+rules don't apply. After the cleanup is done, the collection process can exit safely.
+
+As you can see, collecting metrics when a container exits can be tricky; for this reason, it is
+usually easier to collect metrics at regular intervals (e.g. every minute, with the collectd LXC
+plugin) and rely on that instead.
+
+Wrapping it up
+
+To recap, we covered:
+
+  * how to locate the control groups for containers;
+  * reading and interpreting compute metrics for containers;
+  * different ways to obtain network metrics for containers;
+  * a technique to gather overall metrics when a container exits.
+
+As we have seen, metrics collection is not insanely difficult, but still involves many complicated
+steps, with special cases like those for the network subsystem. Docker will take care of this, or
+at least expose hooks to make it more straightforward. It is one of the reasons why we repeat over
+and over "Docker is not production ready yet": it's fine to skip metrics for development,
+continuous testing, or staging environments, but it's definitely not fine to run production
+services without metrics!
+
+Last but not least, note that even with all that information, you will still need a storage and
+graphing system for those metrics. There are many such systems out there. If you want something
+that you can deploy on your own, you can check e.g. collectd or Graphite. There are also
+"-as-a-Service" offerings. Those services will store your metrics and let you query them in various
+ways, for a given price. Some examples include Librato, AWS CloudWatch, New Relic Server Monitoring
+, and many more.
+
+About Jerôme Petazzoni
+
+sam
+
+Jerôme is a senior engineer at dotCloud, where he rotates between Ops, Support and Evangelist
+duties and has earned the nickname of "master Yoda". In a previous life he built and operated large
+scale Xen hosting back when EC2 was just the name of a plane, supervized the deployment of fiber
+interconnects through the French subway, built a specialized GIS to visualize fiber infrastructure,
+specialized in commando deployments of large-scale computer systems in bandwidth-constrained
+environments such as conference centers, and various other feats of technical wizardry. He cares
+for the servers powering dotCloud, helps our users feel at home on the platform, and documents the
+many ways to use dotCloud in articles, tutorials and sample applications. He's also an avid
+dotCloud power user who has deployed just about anything on dotCloud – look for one of his many
+custom services on our Github repository.
+
+Connect with Jerôme on Twitter! @jpetazzo
+
+EmailFacebookTwitter
+By Jerome Petazzoni - Posted in Demos, Tutorials - Tagged with cgroups, containers, docker, lxc,
+metrics
+
+One Response to "Gathering LXC and Docker containers metrics"
+
+ 1. [54a757]
+
+    chenyf
+
+    October 12, 2013
+
+    This article is very useful , nice job!
+
+Comments are closed.
+
+Search
+
+Search
+Sign up for Docker Weekly
+
+[                  ]
+ Subscribe
+Jobs
+
+we're hiring
+
+Pages
+
+  * Docker Weekly Archives
+
+Categories
+
+  * Baidu
+  * Community
+  * Demos
+  * Design
+  * Docker releases
+  * Dockerization
+  * Features
+  * Guest blog posts
+  * Hackday
+  * Index
+  * Installation
+  * Meetups
+  * News
+  * OpenStack
+  * PaaS
+  * RedHat
+  * Registry
+  * RHEL
+  * Security
+  * Survey
+  * Talks & presentations
+  * Team
+  * Tutorials
+  * Uncategorized
+  * Yandex
+
+Docker is an open source project, sponsored by dotCloud, under the apache 2.0 licence
+Twitter GitHub
+
+#+end_example
+** TODO docker start container with fixed ip
+** #  --8<-------------------------- separator ------------------------>8-- :noexport:
 ** DONE ubuntu install docker
    CLOSED: [2015-04-19 Sun 10:25]
 https://docs.docker.com/installation/ubuntulinux/
@@ -190,23 +1358,6 @@ wget -qO- https://get.docker.com/ | sh
 # Ubuntu 14.04
 
 wget -qO- https://get.docker.com/ | sh
-** DONE [#A] docker start sshd
-  CLOSED: [2015-03-08 Sun 03:59]
-http://docs.docker.com/examples/running_ssh_service/
-https://github.com/phusion/baseimage-docker#readme
-
-docker pull denny/sshd:latest
-
-docker run -t -i denny/sshd:latest /bin/bash
-
-apt-get install -y openssh-server
-
-passwd #change password
-
-sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-#  SSH login fix. Otherwise user is kicked off after login
-sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
-service ssh restart
 ** DONE [#A] docker storage driver plugin: aufs VS devicemapper   :IMPORTANT:
   CLOSED: [2015-03-08 Sun 20:56]
 - Prior to 0.7.0, Docker relied upon AUFS as its only storage driver.
@@ -324,38 +1475,6 @@ INFO[0000] WARNING: You are running linux kernel version 2.6.32-431.17.1.el6.x86
 INFO[0000] Listening for HTTP on unix (/var/run/docker.sock)
 /usr/bin/docker: relocation error: /usr/bin/docker: symbol dm_task_get_info_with_deferred_remove, version Base not defined in file libdevmapper.so.1.02 with link time reference
 #+END_EXAMPLE
-** #  --8<-------------------------- separator ------------------------>8--
-** CANCELED
-*** CANCELED docker container get docker ip
-  CLOSED: [2015-05-29 Fri 00:06]
-http://blog.michaelhamrah.com/2014/06/accessing-the-docker-host-server-within-a-container/
-docker run -d -t --privileged --name mdm-all-in-one-test -p 7022:22 -e DOCKER_IP=10.0.42.1 XXX/mdm:latest /usr/sbin/sshd -D
-
-repo_server="`env | grep SSH_CLIENT | awk -F'=' '{print $2}' | awk -F' ' '{print $1}'`:18000"
-*** CANCELED Dckerfile define a common function: no supported, we can define a script
-  CLOSED: [2016-08-25 Thu 21:42]
-https://groups.google.com/forum/#!topic/docker-user/17ndLnsLznw
-
-http://stackoverflow.com/questions/32707839/how-to-run-bash-function-in-dockerfile
-
-I have a shell script to run some initial steps for environment setup.
-When I try to build a image using DockerFile, I do not known how to run a function like in shell.
-
-As far as I know there is no way to run function with DockerFile.
-You can write them in a shell script and run that shell script.
-
-Use an ADD command in your Dockerfile in order to push your script into your container, and then, use a RUN command in order to execute it during the build:
-
-ADD myscript /tmp/
-RUN chmod u+x /tmp/myscript
-RUN /tmp/myscript
-** TODO How large disk does docker use?
-https://docs.docker.com/userguide/dockervolumes/
-
-Two primary ways you can manage data in Docker: Data volumes, and Data volume containers.
-
-- Data volumes are designed to persist data, independent of the container's life cycle.
-** TODO [#A] how to set port forwarding onfly: looks like it doesn't support this
 ** DONE [#A] commit customized docker images to supermarket
    CLOSED: [2015-02-26 Thu 09:01]
 https://docs.docker.com/userguide/dockerimages/#push-an-image-to-docker-hub
@@ -840,83 +1959,6 @@ root@aio-ubuntu-1404:~# docker run -d -v /root/vagrant:/root/vagrant -p 2200:22 
 FATA[0000] Error response from daemon: Error running DeviceCreate (createSnapDevice) dm_task_run failed
 root@aio-ubuntu-1404:~#
 #+END_EXAMPLE
-** TODO Why my docker image is >600 MB, while ubuntu 14.04 is 188 MB
-#+BEGIN_EXAMPLE
-macs-air:sandbox-test mac$ docker images
-docker images
-REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
-<none>              <none>              8118ced6048d        3 minutes ago       642.4 MB
-<none>              <none>              9801d16e6777        33 minutes ago      410.1 MB
-XXX/mdm       v2                  1095634005de        About an hour ago   621.5 MB
-XXX/mdm       v1                  3e2418a2e608        30 hours ago        417 MB
-ubuntu              14.04               2d24f826cb16        2 weeks ago         188.3 MB
-macs-air:sandbox-test mac$ docker images -a
-docker images -a
-REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
-<none>              <none>              8118ced6048d        3 minutes ago       642.4 MB
-<none>              <none>              6c33d3f87edf        3 minutes ago       642.4 MB
-<none>              <none>              0cf12fca34f2        3 minutes ago       642.4 MB
-<none>              <none>              103af91cd39f        3 minutes ago       642.4 MB
-<none>              <none>              6f319238a116        3 minutes ago       642.1 MB
-<none>              <none>              ce40acdab604        3 minutes ago       642.1 MB
-<none>              <none>              c91fc2e9d563        4 minutes ago       621.5 MB
-<none>              <none>              ac6f52a9123a        4 minutes ago       621.5 MB
-<none>              <none>              a7cae9dbe74e        4 minutes ago       621.5 MB
-<none>              <none>              9801d16e6777        33 minutes ago      410.1 MB
-<none>              <none>              37c48e0cf08b        36 minutes ago      255.4 MB
-<none>              <none>              230d29b0c491        36 minutes ago      255.4 MB
-<none>              <none>              6a32d937179e        37 minutes ago      255.4 MB
-<none>              <none>              f73c1ad275cf        37 minutes ago      255.4 MB
-<none>              <none>              cd17661eee48        37 minutes ago      255.1 MB
-<none>              <none>              a40862d66601        38 minutes ago      208.9 MB
-<none>              <none>              23fdfd795f42        40 minutes ago      188.3 MB
-<none>              <none>              5c83290fadd8        40 minutes ago      188.3 MB
-<none>              <none>              62613585bbb7        40 minutes ago      188.3 MB
-XXX/mdm       v2                  1095634005de        About an hour ago   621.5 MB
-<none>              <none>              c4931b5b9b19        About an hour ago   621.5 MB
-<none>              <none>              783586e31bf8        About an hour ago   621.5 MB
-<none>              <none>              7464cae37e74        About an hour ago   444.5 MB
-<none>              <none>              b8c63120077f        About an hour ago   423.9 MB
-<none>              <none>              bd9d07ddaedb        About an hour ago   423.9 MB
-<none>              <none>              2f1c4927f244        About an hour ago   413.4 MB
-<none>              <none>              46bce28312c9        About an hour ago   413.4 MB
-<none>              <none>              cf7c4229feb4        About an hour ago   413.4 MB
-<none>              <none>              6d350b163e56        About an hour ago   413.4 MB
-<none>              <none>              639768c629a2        About an hour ago   413.4 MB
-<none>              <none>              592ce84c9821        About an hour ago   413.4 MB
-<none>              <none>              e363f9241135        11 hours ago        413.4 MB
-<none>              <none>              1ead0ee488f8        11 hours ago        413.4 MB
-<none>              <none>              771faf7c579a        11 hours ago        413.4 MB
-<none>              <none>              c94ba7c29f21        11 hours ago        413.4 MB
-<none>              <none>              141d9606510d        11 hours ago        413.4 MB
-<none>              <none>              ffdfb69480e1        11 hours ago        413.4 MB
-<none>              <none>              127e86022743        11 hours ago        374.8 MB
-<none>              <none>              b69103f1b7a6        11 hours ago        220.3 MB
-<none>              <none>              b750f0b5b1df        11 hours ago        208.9 MB
-<none>              <none>              fb44a8a71885        11 hours ago        188.3 MB
-XXX/mdm       v1                  3e2418a2e608        30 hours ago        417 MB
-<none>              <none>              71d449bc0252        32 hours ago        417 MB
-<none>              <none>              6271cc67a45f        32 hours ago        235.7 MB
-<none>              <none>              f7c8c8c92180        32 hours ago        215.1 MB
-<none>              <none>              32d35259ec14        32 hours ago        215.1 MB
-<none>              <none>              679c4ce72e12        32 hours ago        204.6 MB
-<none>              <none>              65a05ff6ff98        32 hours ago        204.6 MB
-<none>              <none>              a81d5a840c5e        32 hours ago        204.6 MB
-<none>              <none>              da3dc9aa88ea        32 hours ago        204.6 MB
-<none>              <none>              849953a4d24a        32 hours ago        204.6 MB
-<none>              <none>              ffe4981287bc        32 hours ago        204.6 MB
-<none>              <none>              83cec26d130b        32 hours ago        204.5 MB
-<none>              <none>              bd30865240be        32 hours ago        204.5 MB
-<none>              <none>              763e9222a24f        32 hours ago        204.5 MB
-<none>              <none>              f1c759c3a4b5        5 days ago          165.9 MB
-<none>              <none>              54085386062b        5 days ago          11.42 MB
-ubuntu              14.04               2d24f826cb16        2 weeks ago         188.3 MB
-<none>              <none>              117ee323aaa9        2 weeks ago         188.3 MB
-<none>              <none>              1c8294cc5160        2 weeks ago         188.3 MB
-<none>              <none>              fa4fd76b09ce        2 weeks ago         188.1 MB
-<none>              <none>              511136ea3c5a        21 months ago       0 B
-macs-air:sandbox-test mac$
-#+END_EXAMPLE
 ** DONE [#A] docker run help
   CLOSED: [2015-03-13 Fri 22:19]
 #+BEGIN_EXAMPLE
@@ -1040,14 +2082,6 @@ f0dde87450ec        5 days ago          /bin/sh -c #(nop) ADD file:a2d97c73fb08b
 ** DONE Optimizing Docker Images
   CLOSED: [2015-03-19 Thu 11:07]
 http://www.centurylinklabs.com/optimizing-docker-images/
-** TODO What does -P means for docker: docker run -d -P training/webapp python app.py
- sudo docker run -d -P training/webapp python app.py
-Let's review what our command did. We've specified two flags: -d and -P. We've already seen the -d flag which tells Docker to run the container in the background. The -P flag is new and tells Docker to map any required network ports inside our container to our host. This lets us view our web application.
-
-We've specified an image: training/webapp. This image is a pre-built image we've created that contains a simple Python Flask web application.
-
-Lastly, we've specified a command for our container to run: python app.py. This launches our web application.
-https://docs.docker.com/userguide/usingdocker/
 ** DONE docker sysctl change fail
   CLOSED: [2015-04-18 Sat 08:15]
 http://stackoverflow.com/questions/23840737/how-to-remount-the-proc-filesystem-in-a-docker-as-a-r-w-system
@@ -1835,833 +2869,6 @@ b02d20eda076        70bc3690bca8:latest   "/usr/sbin/sshd -D -   11 seconds ago 
 0f4b41488636        70bc3690bca8:latest   "/usr/sbin/sshd -D -   5 minutes ago       Up 5 minutes        0.0.0.0:32784->22/tcp                                                      all-in-one-jenkins
 4840a264a7f8        denny/sshd:v1         "/usr/sbin/sshd -D"    2 weeks ago         Up 12 hours         0.0.0.0:18000->18000/tcp, 0.0.0.0:4022->22/tcp, 0.0.0.0:48080->18080/tcp   clever_yonath
 #+END_EXAMPLE
-** TODO [#A] Run docker container in docker server: no more loopback devices available.
-for i in {0..30}
-do
-    mknod -m0660 /dev/loop$i b 7 $i
-done
-
-http://stackoverflow.com/questions/26239116/run-docker-inside-a-docker-container
-
-https://github.com/openshift/origin/issues/101
-http://schnell18.iteye.com/blog/2203452
-https://github.com/docker/docker/issues/7058
-https://github.com/docker/docker/issues/10880
-
-有人碰到过类似的问题, https://github.com/jpetazzo/dind/issues/19 .这
-个thread很长,但是大意是容器中的loop device回环设备用尽了,需要手工再
-创建一些.
-
-#+BEGIN_EXAMPLE
-root@5c26c93f7c1f:~# docker -d
-INFO[0000] +job serveapi(unix:///var/run/docker.sock)
-INFO[0000] Listening for HTTP on unix (/var/run/docker.sock)
-WARN[0000] Udev sync is not supported. This will lead to unexpected behavior, data loss and errors
-ERRO[0000] There are no more loopback devices available.
-FATA[0000] Shutting down daemon due to errors: error intializing graphdriver: loopback mounting failed
-#+END_EXAMPLE
-
-#+BEGIN_EXAMPLE
-root@5c26c93f7c1f:~# service docker start
- * Starting Docker: docker
-   ...done.
-root@5c26c93f7c1f:~# tail /var/log/docker.log
-time="2015-05-20T17:53:17Z" level=info msg="Listening for HTTP on unix (/var/run/docker.sock)"
-time="2015-05-20T17:53:17Z" level=warning msg="Udev sync is not supported. This will lead to unexpected behavior, data loss and errors"
-time="2015-05-20T17:53:17Z" level=error msg="There are no more loopback devices available."
-time="2015-05-20T17:53:17Z" level=fatal msg="Shutting down daemon due to errors: error intializing graphdriver: loopback mounting failed"
-Warning: '--restart' is deprecated, it will be removed soon. See usage.
-time="2015-05-20T18:00:28Z" level=info msg="+job serveapi(unix:///var/run/docker.sock)"
-time="2015-05-20T18:00:28Z" level=info msg="Listening for HTTP on unix (/var/run/docker.sock)"
-time="2015-05-20T18:00:28Z" level=warning msg="Udev sync is not supported. This will lead to unexpected behavior, data loss and errors"
-time="2015-05-20T18:00:28Z" level=error msg="There are no more loopback devices available."
-time="2015-05-20T18:00:28Z" level=fatal msg="Shutting down daemon due to errors: error intializing graphdriver: loopback mounting failed"
-#+END_EXAMPLE
-*** web page: docker in docker
-http://schnell18.iteye.com/blog/2203452
-**** webcontent                                                    :noexport:
-#+begin_example
-准备做个jenkins的CI服务器,用docker包装,然后在其中嵌套运行docker容器作为构建的环境.
-在docker中嵌套运行docker碰到一下错误:
-Bash代码  收藏代码
-[root@0538345e7d9f /]# INFO[0000] +job serveapi(unix:///var/run/docker.sock)
-WARN[0000] WARNING: Udev sync is not supported. This will lead to unexpected behavior, data loss and errors
-ERRO[0000] There are no more loopback devices available.
-FATA[0000] loopback mounting failed
-有人碰到过类似的问题, https://github.com/jpetazzo/dind/issues/19  .这个thread很长,但是大意是容器中的loop device回环设备用尽了,需要手工再创建一些.示例代码如下:
-Bash代码  收藏代码
-#!/bin/bash
-ensure_loop(){
-  num="$1"
-  dev="/dev/loop$num"
-  if test -b "$dev"; then
-    echo "$dev is a usable loop device."
-    return 0
-  fi
-
-  echo "Attempting to create $dev for docker ..."
-  if ! mknod -m660 $dev b 7 $num; then
-    echo "Failed to create $dev!" 1>&2
-    return 3
-  fi
-
-  return 0
-}
-
-LOOP_A=$(losetup -f)
-LOOP_A=${LOOP_A#/dev/loop}
-LOOP_B=$(expr $LOOP_A + 1)
-
-ensure_loop $LOOP_A
-ensure_loop $LOOP_B
-
-在启动docker后台进程之前,加上上述代码后,又报如下错误:
-Bash代码  收藏代码
-[root@0538345e7d9f /]# sh start_docker_daemon.sh
-Attempting to create /dev/loop4 for docker ...
-Attempting to create /dev/loop5 for docker ...
-[root@0538345e7d9f /]# INFO[0000] +job serveapi(unix:///var/run/docker.sock)
-WARN[0000] WARNING: Udev sync is not supported. This will lead to unexpected behavior, data loss and errors
-FATA[0000] exec: "mkfs.ext4": executable file not found in $PATH
-
- 这个问题比较简单,是因为这个容器里没有装mkfs.ext4这个工具,它包含在e2fsprogs这个RPM包中.更正这个错误只要在Dockerfile中安装RPM包时多加一个e2fsprogs.
-完整Dockerfile如下:
-Dockerfile代码  收藏代码
-FROM centos:7
-MAINTAINER schnell_18@yahoo.com
-ENV REFRESHED_AT 2015-04-14
-
-# e2fsprogs contains mkfs.ext4
-RUN yum install -y git curl docker java-1.6.0-openjdk e2fsprogs
-
-ENV JENKINS_HOME /opt/jenkins/data
-ENV JENKINS_MIRROR http://mirrors.jenkins-ci.org
-
-RUN mkdir -p $JENKINS_HOME/plugins
-RUN curl -sf -o /opt/jenkins/jenkins.war -L $JENKINS_MIRROR/war-stable/latest/jenkins.war
-
-RUN for plugin in chucknorris greenballs scm-api git-client git ws-cleanup ;\
-    do                                                                      \
-        curl -sf -o $JENKINS_HOME/plugins/${plugin}.hpi                     \
-             -L $JENKINS_MIRROR/plugins/${plugin}/latest/${plugin}.hpi ;    \
-    done
-
-ADD ./dockerjenkins.sh /usr/local/bin/dockerjenkins.sh
-RUN chmod +x /usr/local/bin/dockerjenkins.sh
-
-VOLUME /var/lib/docker
-
-EXPOSE 8080
-
-ENTRYPOINT [ "/usr/local/bin/dockerjenkins.sh" ]
-#+end_example
-** docker
-#+begin_example
-root@be5d4ed8a770:/tmp# cat ./test.cpp
-cat ./test.cpp
-#include <iostream>
-using namespace std;
-int main()
-{
-  int i;
-  long number;
-  number=90*1024*1024;
-  char * str;
-
-  str = new char[number];
-  for(i=0; i<number; i++)
-     str[i] = 1;
-
-  str = new char[number];
-  for(i=0; i<number; i++)
-     str[i] = 1;
-
-  cin>>i;
-
-  return 0;
-}
-
-root@be5d4ed8a770:/tmp# pmap -x $(ps -ef | grep a.out | head -n 1 | awk -F' ' '{print $2}')
-print $2}')
-218:   ./a.out
-Address           Kbytes     RSS   Dirty Mode   Mapping
-0000000000400000       4       4       0 r-x--  a.out
-0000000000600000       4       4       0 r----  a.out
-0000000000601000       4       4       4 rw---  a.out
-00007f3b92ca9000  163848  100000  100000 rw---    [ anon ]
-00007f3b9ccab000    1004      64       0 r-x--  libm-2.15.so
-00007f3b9cda6000    2044       0       0 -----  libm-2.15.so
-00007f3b9cfa5000       4       0       0 r----  libm-2.15.so
-00007f3b9cfa6000       4       0       0 rw---  libm-2.15.so
-00007f3b9cfa7000    1748     284       0 r-x--  libc-2.15.so
-00007f3b9d15c000    2044       0       0 -----  libc-2.15.so
-00007f3b9d35b000      16       4       0 r----  libc-2.15.so
-00007f3b9d35f000       8       4       4 rw---  libc-2.15.so
-00007f3b9d361000      20       4       4 rw---    [ anon ]
-00007f3b9d366000      84      12       0 r-x--  libgcc_s.so.1
-00007f3b9d37b000    2044       0       0 -----  libgcc_s.so.1
-00007f3b9d57a000       4       4       0 r----  libgcc_s.so.1
-00007f3b9d57b000       4       0       0 rw---  libgcc_s.so.1
-00007f3b9d57c000     916     448       0 r-x--  libstdc++.so.6.0.17
-00007f3b9d661000    2044       0       0 -----  libstdc++.so.6.0.17
-00007f3b9d860000      32      12       0 r----  libstdc++.so.6.0.17
-00007f3b9d868000       8       8       8 rw---  libstdc++.so.6.0.17
-00007f3b9d86a000      84       4       0 rw---    [ anon ]
-00007f3b9d87f000     136     108       0 r-x--  ld-2.15.so
-00007f3b9da97000      20      12       4 rw---    [ anon ]
-00007f3b9da9e000      12       4       0 rw---    [ anon ]
-00007f3b9daa1000       4       4       0 r----  ld-2.15.so
-00007f3b9daa2000       8       8       4 rw---  ld-2.15.so
-00007fff2e251000      84       4       4 rw---    [ stack ]
-00007fff2e2da000       4       4       0 r-x--    [ anon ]
-ffffffffff600000       4       0       0 r-x--    [ anon ]
-----------------  ------  ------  ------
-total kB          176244  101004  100032
-root@be5d4ed8a770:/tmp#
-#+end_example
-*** TODO How to deal with persistent storage (e.g. databases) in docker
-http://stackoverflow.com/questions/18496940/how-to-deal-with-persistent-storage-e-g-databases-in-docker
-*** docker run -link redis:db -i -t ubuntu:12.10 /bin/bash
-docker start be5d4ed8a770
-ls -lt /var/lib/docker/containers
-cat /var/lib/docker/containers/be5d4ed8a770*/config.lxc
-
-docker attach -sig-proxy=false be5d4ed8a770
-*** docker use as much as result in the hosting OS
-**** memory in container
-#+begin_example
-root@d5b41e1981df:/# cat /proc/meminfo
-cat /proc/meminfo
-MemTotal:        5985200 kB
-MemFree:          293432 kB
-Buffers:          333504 kB
-Cached:          4334064 kB
-SwapCached:            0 kB
-Active:          2648444 kB
-Inactive:        2243752 kB
-Active(anon):     110420 kB
-Inactive(anon):   122744 kB
-Active(file):    2538024 kB
-Inactive(file):  2121008 kB
-Unevictable:        8424 kB
-Mlocked:            8424 kB
-SwapTotal:       6127608 kB
-SwapFree:        6127608 kB
-Dirty:               360 kB
-Writeback:             0 kB
-AnonPages:        232892 kB
-Mapped:            37532 kB
-Shmem:              1320 kB
-Slab:             659948 kB
-SReclaimable:     488088 kB
-SUnreclaim:       171860 kB
-KernelStack:        8616 kB
-PageTables:         9128 kB
-NFS_Unstable:          0 kB
-Bounce:                0 kB
-WritebackTmp:          0 kB
-CommitLimit:     9120208 kB
-Committed_AS:    1639724 kB
-VmallocTotal:   34359738367 kB
-VmallocUsed:      210804 kB
-VmallocChunk:   34359474912 kB
-HardwareCorrupted:     0 kB
-AnonHugePages:     63488 kB
-HugePages_Total:       0
-HugePages_Free:        0
-HugePages_Rsvd:        0
-HugePages_Surp:        0
-Hugepagesize:       2048 kB
-DirectMap4k:       10240 kB
-DirectMap2M:     6281216 kB
-root@d5b41e1981df:/# free -ml
-free -ml
-             total       used       free     shared    buffers     cached
-Mem:          5844       5558        286          0        325       4232
-Low:          5844       5558        286
-High:            0          0          0
--/+ buffers/cache:       1000       4844
-Swap:         5983          0       5983
-root@d5b41e1981df:/#
-#+end_example
-**** memory in hosting OS
-#+begin_example
-[root@compute docker]# cat /proc/meminfo
-cat /proc/meminfo
-MemTotal:        5985200 kB
-MemFree:          293416 kB
-Buffers:          333504 kB
-Cached:          4334068 kB
-SwapCached:            0 kB
-Active:          2648380 kB
-Inactive:        2243720 kB
-Active(anon):     110320 kB
-Inactive(anon):   122744 kB
-Active(file):    2538060 kB
-Inactive(file):  2120976 kB
-Unevictable:        8424 kB
-Mlocked:            8424 kB
-SwapTotal:       6127608 kB
-SwapFree:        6127608 kB
-Dirty:               368 kB
-Writeback:             0 kB
-AnonPages:        232748 kB
-Mapped:            37532 kB
-Shmem:              1320 kB
-Slab:             659972 kB
-SReclaimable:     488088 kB
-SUnreclaim:       171884 kB
-KernelStack:        8616 kB
-PageTables:         9128 kB
-NFS_Unstable:          0 kB
-Bounce:                0 kB
-WritebackTmp:          0 kB
-CommitLimit:     9120208 kB
-Committed_AS:    1639720 kB
-VmallocTotal:   34359738367 kB
-VmallocUsed:      210804 kB
-VmallocChunk:   34359474912 kB
-HardwareCorrupted:     0 kB
-AnonHugePages:     63488 kB
-HugePages_Total:       0
-HugePages_Free:        0
-HugePages_Rsvd:        0
-HugePages_Surp:        0
-Hugepagesize:       2048 kB
-DirectMap4k:       10240 kB
-DirectMap2M:     6281216 kB
-[root@compute docker]# free -ml
-free -ml
-             total       used       free     shared    buffers     cached
-Mem:          5844       5558        286          0        325       4232
-Low:          5844       5558        286
-High:            0          0          0
--/+ buffers/cache:       1000       4844
-Swap:         5983          0       5983
-[root@compute docker]#
-#+end_example
-*** web page: Gathering LXC and Docker containers metrics | Docker Blog
-http://blog.docker.io/2013/10/gathering-lxc-docker-containers-metrics/
-**** webcontent                                                    :noexport:
-#+begin_example
-Location: http://blog.docker.io/2013/10/gathering-lxc-docker-containers-metrics/
-[docker-top]
-Toggle navigation
-
-  * Home
-  * Learn More
-  * Getting started
-  * Community
-  * Documentation
-  * Blog
-  * INDEX [external-l]
-
-October 8, 2013
-
-Gathering LXC and Docker containers metrics
-
-Linux Containers rely on control groups which not only track groups of processes, but also expose a
-lot of metrics about CPU, memory, and block I/O usage. We will see how to access those metrics, and
-how to obtain network usage metrics as well. This is relevant for "pure" LXC containers, as well as
-for Docker containers.
-
-Locate your control groups
-
-Control groups are exposed through a pseudo-filesystem. In recent distros, you should find this
-filesystem under /sys/fs/cgroup. Under that directory, you will see multiple sub-directories,
-called devices, freezer, blkio, etc.; each sub-directory actually corresponds to a different cgroup
-hierarchy.
-
-On older systems, the control groups might be mounted on /cgroup, without distinct hierarchies. In
-that case, instead of seeing the sub-directories, you will see a bunch of files in that directory,
-and possibly some directories corresponding to existing containers.
-
-To figure out where your control groups are mounted, you can run:
-
-[grep cgroup /proc/mo]
-
-1 grep cgroup /proc/mounts
-
-Control groups hierarchies
-
-The fact that different control groups can be in different hierarchies mean that you can use
-completely different groups (and policies) for e.g. CPU allocation and memory allocation. Let's
-make up a completely imaginary example: you have a 2-CPU system running Python webapps with
-Gunicorn, a PostgreSQL database, and accepting SSH logins. You can put each webapp and each SSH
-session in their own memory control group (to make sure that a single app or user doesn't use up
-the memory of the whole system), and at the same time, stick the webapps and database on a CPU, and
-the SSH logins on another CPU.
-
-Of course, if you run LXC containers, each hierarchy will have one group per container, and all
-hierarchies will look the same.
-
-Merging or splitting hierarchies is achieved by using special options when mounting the cgroup
-pseudo-filesystems. Note that if you want to change that, you will have to remove all existing
-cgroups in the hierarchies that you want to split or merge.
-
-Enumerating our cgroups
-
-You can look into /proc/cgroups to see the different control group subsystems known to the system,
-the hierarchy they belong to, and how many groups they contain.
-
-You can also look at /proc/<pid>/cgroup to see which control groups a process belongs to. The
-control group will be shown as a path relative to the root of the hierarchy mountpoint; e.g. /
-means "this process has not been assigned into a particular group", while /lxc/pumpkin means that
-the process is likely to be a member of a container named pumpkin.
-
-Finding the cgroup for a given container
-
-For each container, one cgroup will be created in each hierarchy. On older systems with older
-versions of the LXC userland tools, the name of the cgroup will be the name of the container. With
-more recent versions of the LXC tools, the cgroup will be lxc/<container_name>.
-
-Additional note for Docker users: the container name will be the full ID or long ID of the
-container. If a container shows up as ae836c95b4c3 in docker ps, its long ID might be something
-like ae836c95b4c3c9e9179e0e91015512da89fdec91612f63cebae57df9a5444c79. You can look it up with
-docker inspect or docker ps -notrunc.
-
-Putting everything together: on my system, if I want to look at the memory metrics for a Docker
-container, I have to look at /sys/fs/cgroup/memory/lxc/<longid>/.
-
-Collecting memory, CPU, block I/O metrics
-
-For each subsystem, we will find one pseudo-file (in some cases, multiple) containing statistics
-about used memory, accumulated CPU cycles, or number of I/O completed. Those files are easy to
-parse, as we will see.
-
-Memory metrics
-
-Those will be found in the memory cgroup (duh!). Note that the memory control group adds a little
-overhead, because it does very fine-grained accounting of the memory usage on your system.
-Therefore, many distros chose to not enable it by default. Generally, to enable it, all you have to
-do is to add some kernel command-line parameters: cgroup_enable=memory swapaccount=1.
-
-The metrics are in the pseudo-file memory.stat. Here is what it will look like:
-
-[cache 11492564992   ]
-
-1  cache 11492564992
-2  rss 1930993664
-3  mapped_file 306728960
-4  pgpgin 406632648
-5  pgpgout 403355412
-6  swap 0
-7  pgfault 728281223
-8  pgmajfault 1724
-9  inactive_anon 46608384
-10 active_anon 1884520448
-11 inactive_file 7003344896
-12 active_file 4489052160
-13 unevictable 32768
-14 hierarchical_memory_limit 9223372036854775807
-15 hierarchical_memsw_limit 9223372036854775807
-16 total_cache 11492564992
-17 total_rss 1930993664
-18 total_mapped_file 306728960
-19 total_pgpgin 406632648
-20 total_pgpgout 403355412
-21 total_swap 0
-22 total_pgfault 728281223
-23 total_pgmajfault 1724
-24 total_inactive_anon 46608384
-25 total_active_anon 1884520448
-26 total_inactive_file 7003344896
-27 total_active_file 4489052160
-28 total_unevictable 32768
-
-The first half (without the total_ prefix) contains statistics relevant to the processes within the
-cgroup, excluding sub-cgroups. The second half (with the total_ prefix) includes sub-cgroups as
-well.
-
-Some metrics are "gauges", i.e. values that can increase or decrease (e.g. swap, the amount of swap
-space used by the members of the cgroup). Some others are "counters", i.e. values that can only go
-up, because they represent occurrences of a specific event (e.g. pgfault, which indicates the
-number of page faults which happened since the creation of the cgroup; this number can never
-decrease).
-
-Let's see what those metrics stand for. All memory amounts are in bytes (except for event
-counters).
-
-  * cache is the amount of memory used by the processes of this control group that can be
-    associated precisely with a block on a block device. When you read and write files from and to
-    disk, this amount will increase. This will be the case if you use "conventional" I/O (open,
-    read, write syscalls) as well as mapped files (with mmap). It also accounts for the memory used
-    by tmpfs mounts. I don't know exactly why; it might be because tmpfs filesystems work directly
-    with the page cache.
-  * rss is the amount of memory that doesn't correspond to anything on disk: stacks, heaps, and
-    anonymous memory maps.
-  * mapped_file indicates the amount of memory mapped by the processes in the control group. In my
-    humble opinion, it doesn't give you an information about how much memory is used; it rather
-    tells you how it is used.
-  * pgpgin and pgpgout are a bit tricky. If you are used to vmstat, you might think that they
-    indicate the number of times that a page had to be read and written (respectively) by a process
-    of the cgroup, and that they should reflect both file I/O and swap activity. Wrong! In fact,
-    they correspond to charging events. Each time a page is "charged" (=added to the accounting) to
-    a cgroup, pgpgin increases. When a page is "uncharged" (=no longer "billed" to a cgroup),
-    pgpgout increases.
-  * pgfault and pgmajfault indicate the number of times that a process of the cgroup triggered a
-    "page fault" and a "major fault", respectively. A page fault happens when a process accesses a
-    part of its virtual memory space which is inexistent or protected. The former can happen if the
-    process is buggy and tries to access an invalid address (it will then be sent a SIGSEGV signal,
-    typically killing it with the famous Segmentation fault message). The latter can happen when
-    the process reads from a memory zone which has been swapped out, or which corresponds to a
-    mapped file: in that case, the kernel will load the page from disk, and let the CPU complete
-    the memory access. It can also happen when the process writes to a copy-on-write memory zone:
-    likewise, the kernel will preempt the process, duplicate the memory page, and resume the write
-    operation on the process' own copy of the page. "Major" faults happen when the kernel actually
-    has to read the data from disk. When it just has to duplicate an existing page, or allocate an
-    empty page, it's a regular (or "minor") fault.
-  * swap is (as expected) the amount of swap currently used by the processes in this cgroup.
-  * active_anon and inactive_anon is the amount of anonymous memory that has been identified has
-    respectively active and inactive by the kernel. "Anonymous" memory is the memory that is not
-    linked to disk pages. In other words, that's the equivalent of the rss counter described above.
-    In fact, the very definition of the rss counter is active_anon+**inactive_anon**-**tmpfs**
-    (where tmpfs is the amount of memory used up by tmpfs filesystems mounted by this control
-    group). Now, what's the difference between "active" and "inactive"? Pages are initially
-    "active"; and at regular intervals, the kernel sweeps over the memory, and tags some pages as
-    "inactive". Whenever they are accessed again, they are immediately retagged "active". When the
-    kernel is almost out of memory, and time comes to swap out to disk, the kernel will swap
-    "inactive" pages.
-  * Likewise, the cache memory is broken down into active_file and inactive_file. The exact formula
-    is cache=**active_file**+**inactive_file**+**tmpfs**. The exact rules used by the kernel to
-    move memory pages between active and inactive sets are different from the ones used for
-    anonymous memory, but the general principle is the same. Note that when the kernel needs to
-    reclaim memory, it is cheaper to reclaim a clean (=non modified) page from this pool, since it
-    can be reclaimed immediately (while anonymous pages and dirty/modified pages have to be written
-    to disk first).
-  * unevictable is the amount of memory that cannot be reclaimed; generally, it will account for
-    memory that has been "locked" with mlock. It is often used by crypto frameworks to make sure
-    that secret keys and other sensitive material never gets swapped out to disk.
-  * Last but not least, the memory and memsw limits are not really metrics, but a reminder of the
-    limits applied to this cgroup. The first one indicates the maximum amount of physical memory
-    that can be used by the processes of this control group; the second one indicates the maximum
-    amount of RAM+swap.
-
-Accounting for memory in the page cache is very complex. If two processes in different control
-groups both read the same file (ultimately relying on the same blocks on disk), the corresponding
-memory charge will be split between the control groups. It's nice, but it also means that when a
-cgroup is terminated, it could increase the memory usage of another cgroup, because they are not
-splitting the cost anymore for those memory pages.
-
-CPU metrics
-
-Now that we've covered memory metrics, everything else will look very simple in comparison. CPU
-metrics will be found in the cpuacct controller.
-
-For each container, you will find a pseudo-file cpuacct.stat, containing the CPU usage accumulated
-by the processes of the container, broken down between user and system time. If you're not familiar
-with the distinction, user is the time during which the processes were in direct control of the CPU
-(i.e. executing process code), and system is the time during which the CPU was executing system
-calls on behalf of those processes.
-
-Those times are expressed in ticks of 1/100th of second. (Actually, they are expressed in "user
-jiffies". There are USER_HZ "jiffies" per second, and on x86 systems, USER_HZ is 100. This used to
-map exactly to the number of scheduler "ticks" per second; but with the advent of higher frequency
-scheduling, as well as tickless kernels, the number of kernel ticks wasn't relevant anymore. It
-stuck around anyway, mainly for legacy and compatibility reasons.)
-
-Block I/O metrics
-
-Block I/O is accounted in the blkio controller. Different metrics are scattered across different
-files. While you can find in-depth details in the blkio-controller file in the kernel
-documentation, here is a short list of the most relevant ones:
-
-  * blkio.sectors contains the number of 512-bytes sectors read and written by the processes member
-    of the cgroup, device by device. Reads and writes are merged in a single counter.
-  * blkio.io_service_bytes indicates the number of bytes read and written by the cgroup. It has 4
-    counters per device, because for each device, it differentiates between synchronous vs.
-    asynchronous I/O, and reads vs. writes.
-  * blkio.io_serviced is similar, but instead of showing byte counters, it will show the number of
-    I/O operations performed, regardless of their size. It also has 4 counters per device.
-  * blkio.io_queued indicates the number of I/O operations currently queued for this cgroup. In
-    other words, if the cgroup isn't doing any I/O, this will be zero. Note that the opposite is
-    not true. In other words, if there is no I/O queued, it does not mean that the cgroup is idle
-    (I/O-wise). It could be doing purely synchronous reads on an otherwise quiescent device, which
-    is therefore able to handle them immediately, without queuing. Also, while it is helpful to
-    figure out which cgroup is putting stress on the I/O subsystem, keep in mind that is is a
-    relative quantity. Even if a process group does not perform more I/O, its queue size can
-    increase just because the device load increases because of other devices.
-
-For each file, there is a _recursive variant, that aggregates the metrics of the control group and
-all its sub-cgroups.
-
-Also, it's worth mentioning that in most cases, if the processes of a control group have not done
-any I/O on a given block device, the block device will not appear in the pseudo-files. In other
-words, you have to be careful each time you parse one of those files, because new entries might
-have appeared since the previous time.
-
-Collecting network metrics
-
-Interestingly, network metrics are not exposed directly by control groups. There is a good
-explanation for that: network interfaces exist within the context of network namespaces. The kernel
-could probably accumulate metrics about packets and bytes sent and received by a group of
-processes, but those metrics wouldn't be very useful. You want (at least!) per-interface metrics
-(because traffic happening on the local lo interface doesn't really count). But since processes in
-a single cgroup can belong to multiple network namespaces, those metrics would be harder to
-interpret: multiple network namespaces means multiple lo interfaces, potentially multiple eth0
-interfaces, etc.; so this is why there is no easy way to gather network metrics with control
-groups.
-
-So what shall we do? Well, we have multiple options.
-
-Iptables
-
-When people think about iptables, they usually think about firewalling, and maybe NAT scenarios.
-But iptables (or rather, the netfilter framework for which iptables is just an interface) can also
-do some serious accounting.
-
-For instance, you can setup a rule to account for the outbound HTTP traffic on a web server:
-
-[iptables -I OUTPUT -]
-
-1 iptables -I OUTPUT -p tcp --sport 80
-
-There is no -j or -g flag, so the rule will just count matched packets and go to the following
-rule.
-
-Later, you can check the values of the counters, with:
-
-[iptables -nxvL OUTPU]
-
-1 iptables -nxvL OUTPUT
-
-(Technically, -n is not required, but it will prevent iptables from doing DNS reverse lookups,
-which are probably useless in this scenario.)
-
-Counters include packets and bytes. If you want to setup metrics for container traffic like this,
-you could execute a for loop to add two iptables rules per container IP address (one in each
-direction), in the FORWARD chain. This will only meter traffic going through the NAT layer; you
-will also have to add traffic going through the userland proxy.
-
-Then, you will need to check those counters on a regular basis. If you happen to use collectd,
-there is a nice plugin to automate iptables counters collection.
-
-Interface-level counters
-
-Since each container has a virtual Ethernet interface, you might want to check directly the TX and
-RX counters of this interface. However, this is not as easy as it sounds. If you use Docker (as of
-current version 0.6) or lxc-start, then you will notice that each container is associated to a
-virtual Ethernet interface in your host, with a name like vethKk8Zqi. Figuring out which interface
-corresponds to which container is, unfortunately, difficult. (If you know an easy way, let me
-know.)
-
-In the long run, Docker will probably take over the setup of those virtual interfaces. It will keep
-track of their names, and make sure that it can easily associate containers with their respective
-interfaces.
-
-But for now, the best way is to check the metrics from within the containers. I'm not talking about
-running a special agent in the container, or anything like that. We are going to run an executable
-from the host environment, but within the network namespace of a container.
-
-ip-netns magic
-
-To do that, we will use the ip netns exec command. This command will let you execute any program
-(present in the host system) within any network namespace visible to the current process. This
-means that your host will be able to enter the network namespace of your containers, but your
-containers won't be able to access the host, nor their sibling containers. Containers will be able
-to "see" and affect their sub-containers, though.
-
-The exact format of the command is:
-
-[ip netns exec <nsnam]
-
-1 ip netns exec <nsname> <command...>
-
-For instance:
-
-[ip netns exec mycont]
-
-1 ip netns exec mycontainer netstat -i
-
-How does the naming system work? How does ip netns find mycontainer? Answer: by using the
-namespaces pseudo-files. Each process belongs to one network namespace, one PID namespace, one mnt
-namespace, etc.; and those namespaces are materialized under /proc/<pid>/ns/. For instance, the
-network namespace of PID 42 is materialized by the pseudo-file /proc/42/ns/net.
-
-When you run ip netns exec mycontainer ..., it expects /var/run/netns/mycontainer to be one of
-those pseudo-files. (Symlinks are accepted.)
-
-In other words, to execute a command within the network namespace of a container, we need to:
-
-  * find out the PID of any process within the container that we want to investigate;
-  * create a symlink from /var/run/netns/<somename> to /proc/<thepid>/ns/net;
-  * execute ip netns exec <somename> ....
-
-Now, we need to figure out a way to find the PID of a process (any process!) running in the
-container that we want to investigate. This is actually very easy. You have to locate one of the
-control groups corresponding to the container. We explained how to locate those cgroups in the
-beginning of this post, so we won't cover that again.
-
-On my machine, a control group will typically be located in /sys/fs/cgroup/devices/lxc/
-<containerid>. Within that directory, you will find a pseudo-file called tasks. It contains the
-list of the PIDs that are in the control group, i.e., in the container. We can take any of them; so
-the first one will do.
-
-Putting everything together, if the "short ID" of a container is held in the environment variable
-$CID, here is a small shell snippet to put everything together:
-
-[TASKS=/sys/fs/cgroup]
-
-1 TASKS=/sys/fs/cgroup/devices/$CID*/tasks
-2 PID=$(head -n 1 $TASKS)
-3 mkdir -p /var/run/netns
-4 ln -sf /proc/$PID/ns/net /var/run/netns/$CID
-5 ip netns exec $CID netstat -i
-
-The same mechanism is used in Pipework to setup network interfaces within containers from outside
-the containers.
-
-Tips for high-performance metric collection
-
-Note that running a new process each time you want to update metrics is (relatively) expensive. If
-you want to collect metrics at high resolutions, and/or over a large number of containers (think
-1000 containers on a single host), you do not want to fork a new process each time.
-
-Here is how to collect metrics from a single process. You will have to write your metric collector
-in C (or any language that lets you do low-level system calls). You need to use a special system
-call, setns(), which lets the current process enter any arbitrary namespace. It requires, however,
-an open file descriptor to the namespace pseudo-file (remember: that's the pseudo-file in /proc/
-<pid>/ns/net).
-
-However, there is a catch: you must not keep this file descriptor open. If you do, when the last
-process of the control group exits, the namespace will not be destroyed, and its network resources
-(like the virtual interface of the container) will stay around for ever (or until you close that
-file descriptor).
-
-The right approach would be to keep track of the first PID of each container, and re-open the
-namespace pseudo-file each time.
-
-Collecting metrics when a container exits
-
-Sometimes, you do not care about real time metric collection, but when a container exits, you want
-to know how much CPU, memory, etc. it has used.
-
-The current implementation of Docker (as of 0.6) makes this particularly challenging, because it
-relies on lxc-start, and when a container stops, lxc-start carefully cleans up behind it. If you
-really want to collect the metrics anyway, here is how. For each container, start a collection
-process, and move it to the control groups that you want to monitor by writing its PID to the tasks
-file of the cgroup. The collection process should periodically re-read the tasks file to check if
-it's the last process of the control group. (If you also want to collect network statistics as
-explained in the previous section, you should also move the process to the appropriate network
-namespace.)
-
-When the container exits, lxc-start will try to delete the control groups. It will fail, since the
-control group is still in use; but that's fine. You process should now detect that it is the only
-one remaining in the group. Now is the right time to collect all the metrics you need!
-
-Finally, your process should move itself back to the root control group, and remove the container
-control group. To remove a control group, just rmdir its directory. It's counter-intuitive to rmdir
-a directory as it still contains files; but remember that this is a pseudo-filesystem, so usual
-rules don't apply. After the cleanup is done, the collection process can exit safely.
-
-As you can see, collecting metrics when a container exits can be tricky; for this reason, it is
-usually easier to collect metrics at regular intervals (e.g. every minute, with the collectd LXC
-plugin) and rely on that instead.
-
-Wrapping it up
-
-To recap, we covered:
-
-  * how to locate the control groups for containers;
-  * reading and interpreting compute metrics for containers;
-  * different ways to obtain network metrics for containers;
-  * a technique to gather overall metrics when a container exits.
-
-As we have seen, metrics collection is not insanely difficult, but still involves many complicated
-steps, with special cases like those for the network subsystem. Docker will take care of this, or
-at least expose hooks to make it more straightforward. It is one of the reasons why we repeat over
-and over "Docker is not production ready yet": it's fine to skip metrics for development,
-continuous testing, or staging environments, but it's definitely not fine to run production
-services without metrics!
-
-Last but not least, note that even with all that information, you will still need a storage and
-graphing system for those metrics. There are many such systems out there. If you want something
-that you can deploy on your own, you can check e.g. collectd or Graphite. There are also
-"-as-a-Service" offerings. Those services will store your metrics and let you query them in various
-ways, for a given price. Some examples include Librato, AWS CloudWatch, New Relic Server Monitoring
-, and many more.
-
-About Jerôme Petazzoni
-
-sam
-
-Jerôme is a senior engineer at dotCloud, where he rotates between Ops, Support and Evangelist
-duties and has earned the nickname of "master Yoda". In a previous life he built and operated large
-scale Xen hosting back when EC2 was just the name of a plane, supervized the deployment of fiber
-interconnects through the French subway, built a specialized GIS to visualize fiber infrastructure,
-specialized in commando deployments of large-scale computer systems in bandwidth-constrained
-environments such as conference centers, and various other feats of technical wizardry. He cares
-for the servers powering dotCloud, helps our users feel at home on the platform, and documents the
-many ways to use dotCloud in articles, tutorials and sample applications. He's also an avid
-dotCloud power user who has deployed just about anything on dotCloud – look for one of his many
-custom services on our Github repository.
-
-Connect with Jerôme on Twitter! @jpetazzo
-
-EmailFacebookTwitter
-By Jerome Petazzoni - Posted in Demos, Tutorials - Tagged with cgroups, containers, docker, lxc,
-metrics
-
-One Response to "Gathering LXC and Docker containers metrics"
-
- 1. [54a757]
-
-    chenyf
-
-    October 12, 2013
-
-    This article is very useful , nice job!
-
-Comments are closed.
-
-Search
-
-Search
-Sign up for Docker Weekly
-
-[                  ]
- Subscribe
-Jobs
-
-we're hiring
-
-Pages
-
-  * Docker Weekly Archives
-
-Categories
-
-  * Baidu
-  * Community
-  * Demos
-  * Design
-  * Docker releases
-  * Dockerization
-  * Features
-  * Guest blog posts
-  * Hackday
-  * Index
-  * Installation
-  * Meetups
-  * News
-  * OpenStack
-  * PaaS
-  * RedHat
-  * Registry
-  * RHEL
-  * Security
-  * Survey
-  * Talks & presentations
-  * Team
-  * Tutorials
-  * Uncategorized
-  * Yandex
-
-Docker is an open source project, sponsored by dotCloud, under the apache 2.0 licence
-Twitter GitHub
-
-#+end_example
-** TODO docker start container with fixed ip
 ** DONE when start docker container, run some commands: docker exec <container_id> echo "Hello from container!"
   CLOSED: [2015-05-28 Thu 13:48]
 In October 2014 Docker team introduced docker exec command: https://docs.docker.com/reference/commandline/cli/#exec
@@ -2726,192 +2933,6 @@ In the case of salt-minion, on ubuntu the packaging uses an upstart job and no c
 And this one says:
 
 Because Docker replaces the default /sbin/init with its own, there's no way to run the Upstart init inside a Docker container.
-#+END_EXAMPLE
-** TODO when docker build image: how to enable --privileged
-*** DONE Update latest docker image fail at tomcat7: docker need use --privileged
-  CLOSED: [2015-07-19 Sun 13:05]
-
-tmux to docker server of osc
-
-touch /var/run/tomcat7.pid
-chown tomcat7 /var/run/tomcat7.pid /var/lib/tomcat7/logs/catalina.out
-start-stop-daemon --start -b -u tomcat7 -g tomcat7 -c tomcat7 -d /tmp/tomcat7-tmp -p /var/run/tomcat7.pid -x /bin/bash -- -c ' set -a; JAVA_HOME="/usr/lib/jvm/java-8-oracle-amd64"; source "/etc/default/tomcat7";              CATALINA_HOME="/usr/share/tomcat7";             CATALINA_BASE="/var/lib/tomcat7";               JAVA_OPTS="-Xmx128M -Djava.awt.headless=true -XX:+UseConcMarkSweepGC";             CATALINA_PID="/var/run/tomcat7.pid";            CATALINA_TMPDIR="/tmp/tomcat7-tmp";             LANG="en_US.UTF-8"; JSSE_HOME="/usr/lib/jvm/java-8-oracle-amd64/jre/";             cd "/var/lib/tomcat7";          "/usr/share/tomcat7/bin/catalina.sh" start'
-
-+ status=0
-+ set +a -e
-+ return 0
-+ sleep 5
-+ start-stop-daemon --test --start --pidfile /var/run/tomcat7.pid --user tomcat7 --exec /usr/lib/jvm/java-8-oracle-amd64/bin/java
-
-#+BEGIN_EXAMPLE
-root@2c29845463d0:/# ps -ef | grep tomcat
-root      5960     1  0 04:08 ?        00:00:00 grep --color=auto tomcat
-root@2c29845463d0:/# start-stop-daemon --test --start --pidfile /var/run/tomcat7.pid --user tomcat7 --exec /usr/lib/jvm/java-8-oracle-amd64/bin/java
-Would start /usr/lib/jvm/java-8-oracle-amd64/bin/java .
-
-root@2c29845463d0:/# bash -xe /etc/init.d/tomcat7 start
-+ set -e
-+ PATH=/bin:/usr/bin:/sbin:/usr/sbin
-+ NAME=tomcat7
-+ DESC='Tomcat servlet engine'
-+ DEFAULT=/etc/default/tomcat7
-+ JVM_TMP=/tmp/tomcat7-tomcat7-tmp
-++ id -u
-+ '[' 0 -ne 0 ']'
-+ '[' -r /etc/default/locale ']'
-+ . /etc/default/locale
-++ LANG=en_US.UTF-8
-++ LC_ALL=en_US.UTF-8
-+ export LANG
-+ . /lib/lsb/init-functions
-+++ run-parts --lsbsysinit --list /lib/lsb/init-functions.d
-++ for hook in '$(run-parts --lsbsysinit --list /lib/lsb/init-functions.d 2>/dev/null)'
-++ '[' -r /lib/lsb/init-functions.d/20-left-info-blocks ']'
-++ . /lib/lsb/init-functions.d/20-left-info-blocks
-++ for hook in '$(run-parts --lsbsysinit --list /lib/lsb/init-functions.d 2>/dev/null)'
-++ '[' -r /lib/lsb/init-functions.d/50-ubuntu-logging ']'
-++ . /lib/lsb/init-functions.d/50-ubuntu-logging
-+++ LOG_DAEMON_MSG=
-++ FANCYTTY=
-++ '[' -e /etc/lsb-base-logging.sh ']'
-++ true
-+ '[' -r /etc/default/rcS ']'
-+ . /etc/default/rcS
-++ UTC=yes
-+ TOMCAT7_USER=tomcat7
-+ TOMCAT7_GROUP=tomcat7
-+ OPENJDKS=
-+ find_openjdks
-+ for jvmdir in '/usr/lib/jvm/java-7-openjdk-*'
-+ '[' -d /usr/lib/jvm/java-7-openjdk-amd64 -a /usr/lib/jvm/java-7-openjdk-amd64 '!=' /usr/lib/jvm/java-7-openjdk-common ']'
-+ OPENJDKS=/usr/lib/jvm/java-7-openjdk-amd64
-+ for jvmdir in '/usr/lib/jvm/java-6-openjdk-*'
-+ '[' -d '/usr/lib/jvm/java-6-openjdk-*' -a '/usr/lib/jvm/java-6-openjdk-*' '!=' /usr/lib/jvm/java-6-openjdk-common ']'
-+ JDK_DIRS='/usr/lib/jvm/default-java /usr/lib/jvm/java-7-openjdk-amd64 /usr/lib/jvm/java-6-openjdk /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-7-oracle'
-+ for jdir in '$JDK_DIRS'
-+ '[' -r /usr/lib/jvm/default-java/bin/java -a -z '' ']'
-+ JAVA_HOME=/usr/lib/jvm/default-java
-+ for jdir in '$JDK_DIRS'
-+ '[' -r /usr/lib/jvm/java-7-openjdk-amd64/bin/java -a -z /usr/lib/jvm/default-java ']'
-+ for jdir in '$JDK_DIRS'
-+ '[' -r /usr/lib/jvm/java-6-openjdk/bin/java -a -z /usr/lib/jvm/default-java ']'
-+ for jdir in '$JDK_DIRS'
-+ '[' -r /usr/lib/jvm/java-6-sun/bin/java -a -z /usr/lib/jvm/default-java ']'
-+ for jdir in '$JDK_DIRS'
-+ '[' -r /usr/lib/jvm/java-7-oracle/bin/java -a -z /usr/lib/jvm/default-java ']'
-+ export JAVA_HOME
-+ CATALINA_HOME=/usr/share/tomcat7
-+ CATALINA_BASE=/var/lib/tomcat7
-+ TOMCAT7_SECURITY=no
-+ '[' -z '' ']'
-+ JAVA_OPTS='-Djava.awt.headless=true -Xmx128M'
-+ '[' -f /etc/default/tomcat7 ']'
-+ . /etc/default/tomcat7
-++ TOMCAT7_USER=tomcat7
-++ TOMCAT7_GROUP=tomcat7
-++ JAVA_HOME=/usr/lib/jvm/java-8-oracle-amd64
-++ CATALINA_HOME=/usr/share/tomcat7
-++ CATALINA_BASE=/var/lib/tomcat7
-++ JAVA_OPTS='-Xmx128M -Djava.awt.headless=true'
-++ JAVA_OPTS='-Xmx128M -Djava.awt.headless=true -XX:+UseConcMarkSweepGC'
-++ TOMCAT7_SECURITY=no
-++ JVM_TMP=/tmp/tomcat7-tmp
-++ AUTHBIND=no
-++ CATALINA_OPTS=
-++ JAVA_ENDORSED_DIRS=/usr/share/tomcat6/lib/endorsed
-+ '[' '!' -f /usr/share/tomcat7/bin/bootstrap.jar ']'
-+ POLICY_CACHE=/var/lib/tomcat7/work/catalina.policy
-+ '[' -z '' ']'
-+ CATALINA_TMPDIR=/tmp/tomcat7-tmp
-+ '[' -n '' ']'
-+ SECURITY=
-+ '[' no = yes ']'
-+ CATALINA_PID=/var/run/tomcat7.pid
-+ CATALINA_SH=/usr/share/tomcat7/bin/catalina.sh
-+ '[' -z '' -a -r /usr/lib/jvm/java-8-oracle-amd64/jre/lib/jsse.jar ']'
-+ JSSE_HOME=/usr/lib/jvm/java-8-oracle-amd64/jre/
-+ case "$1" in
-+ '[' -z /usr/lib/jvm/java-8-oracle-amd64 ']'
-+ '[' '!' -d /var/lib/tomcat7/conf ']'
-+ log_daemon_msg 'Starting Tomcat servlet engine' tomcat7
-+ '[' -z 'Starting Tomcat servlet engine' ']'
-+ log_use_fancy_output
-+ TPUT=/usr/bin/tput
-+ EXPR=/usr/bin/expr
-+ '[' -t 1 ']'
-+ '[' xxterm '!=' x ']'
-+ '[' xxterm '!=' xdumb ']'
-+ '[' -x /usr/bin/tput ']'
-+ '[' -x /usr/bin/expr ']'
-+ /usr/bin/tput hpa 60
-+ /usr/bin/tput setaf 1
-+ '[' -z ']'
-+ FANCYTTY=1
-+ case "$FANCYTTY" in
-+ true
-+ /usr/bin/tput xenl
-++ /usr/bin/tput cols
-+ COLS=179
-+ '[' 179 ']'
-+ '[' 179 -gt 6 ']'
-++ /usr/bin/expr 179 - 7
-+ COL=172
-+ log_use_plymouth
-+ '[' n = y ']'
-+ plymouth --ping
-+ printf ' * Starting Tomcat servlet engine tomcat7       '
- * Starting Tomcat servlet engine tomcat7       ++ /usr/bin/expr 179 - 1
-+ /usr/bin/tput hpa 178
-                                                                                                                                                                                  $
- printf ' '
- + start-stop-daemon --test --start --pidfile /var/run/tomcat7.pid --user tomcat7 --exec /usr/lib/jvm/java-8-oracle-amd64/bin/java
-+ umask 022
-+ echo '// AUTO-GENERATED FILE from /etc/tomcat7/policy.d/'
-+ echo ''
-+ cat /var/lib/tomcat7/conf/policy.d/01system.policy /var/lib/tomcat7/conf/policy.d/02debian.policy /var/lib/tomcat7/conf/policy.d/03catalina.policy /var/lib/tomcat7/conf/policy.d
-/04webapps.policy /var/lib/tomcat7/conf/policy.d/50local.policy
-+ rm -rf /tmp/tomcat7-tmp
-+ mkdir -p /tmp/tomcat7-tmp
-+ chown tomcat7 /tmp/tomcat7-tmp
-+ catalina_sh start
-++ echo -Xmx128M -Djava.awt.headless=true -XX:+UseConcMarkSweepGC
-++ sed 's/\"/\\\"/g'
-+ JAVA_OPTS='-Xmx128M -Djava.awt.headless=true -XX:+UseConcMarkSweepGC'
-+ AUTHBIND_COMMAND=
-+ '[' no = yes -a start = start ']'
-+ TOMCAT_SH='set -a; JAVA_HOME="/usr/lib/jvm/java-8-oracle-amd64"; source "/etc/default/tomcat7";               CATALINA_HOME="/usr/share/tomcat7";             CATALINA_BASE="/var/lib/tomcat7";          JAVA_OPTS="-Xmx128M -Djava.awt.headless=true -XX:+UseConcMarkSweepGC";          CATALINA_PID="/var/run/tomcat7.pid";            CATALINA_TMPDIR="/tmp/tomcat7-tmp";                LANG="en_US.UTF-8"; JSSE_HOME="/usr/lib/jvm/java-8-oracle-amd64/jre/";          cd "/var/lib/tomcat7";          "/usr/share/tomcat7/bin/catalina.sh" start'
-+ '[' no = yes -a start = start ']'
-+ set +e
-+ touch /var/run/tomcat7.pid /var/lib/tomcat7/logs/catalina.out
-+ chown tomcat7 /var/run/tomcat7.pid /var/lib/tomcat7/logs/catalina.out
-+ start-stop-daemon --start -b -u tomcat7 -g tomcat7 -c tomcat7 -d /tmp/tomcat7-tmp -p /var/run/tomcat7.pid -x /bin/bash -- -c ' set -a; JAVA_HOME="/usr/lib/jvm/java-8-oracle-amd64"; source "/etc/default/tomcat7";              CATALINA_HOME="/usr/share/tomcat7";             CATALINA_BASE="/var/lib/tomcat7";               JAVA_OPTS="-Xmx128M -Djava.awt.headless=true -XX:+UseConcMarkSweepGC";             CATALINA_PID="/var/run/tomcat7.pid";            CATALINA_TMPDIR="/tmp/tomcat7-tmp";             LANG="en_US.UTF-8"; JSSE_HOME="/usr/lib/jvm/java-8-oracle-amd64/jre/";             cd "/var/lib/tomcat7";          "/usr/share/tomcat7/bin/catalina.sh" start'
-+ status=0
-+ set +a -e
-+ return 0
-+ sleep 5
-+ start-stop-daemon --test --start --pidfile /var/run/tomcat7.pid --user tomcat7 --exec /usr/lib/jvm/java-8-oracle-amd64/bin/java
-+ '[' -f /var/run/tomcat7.pid ']'
-+ rm -f /var/run/tomcat7.pid
-+ log_end_msg 1
-+ '[' -z 1 ']'
-+ '[' 172 ']'
-+ '[' -x /usr/bin/tput ']'
-+ log_use_plymouth
-+ '[' n = y ']'
-+ plymouth --ping
-+ printf '\r'
-+ /usr/bin/tput hpa 172
-                                                                                                                                                                            + '[' 1 -eq 0 ']'
-+ printf '['
-[+ /usr/bin/tput setaf 1
-+ printf fail
-fail+ /usr/bin/tput op
-+ echo ']'
-]
-+ return 1
-root@2c29845463d0:/# ps -ef | grep tomcat
-tomcat7   5997     1 99 04:09 ?        00:00:07 /usr/lib/jvm/java-8-oracle-amd64/bin/java -Djava.util.logging.config.file=/var/lib/tomcat7/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Xmx128M -Djava.awt.headless=true -XX:+UseConcMarkSweepGC -Djava.endorsed.dirs=/usr/share/tomcat6/lib/endorsed -classpath /usr/share/tomcat7/bin/bootstrap.jar:/usr/share/tomcat7/bin/tomcat-juli.jar -Dcatalina.base=/var/lib/tomcat7 -Dcatalina.home=/usr/share/tomcat7 -Djava.io.tmpdir=/tmp/tomcat7-tmp org.apache.catalina.startup.Bootstrap start
-root      6038     1  0 04:09 ?        00:00:00 grep --color=auto tomcat
 #+END_EXAMPLE
 ** DONE docker get current Docker registry server: /root/.docker/config.json, /root/.dockercfg
   CLOSED: [2015-07-19 Sun 08:26]
@@ -3180,57 +3201,6 @@ none            3.9G  2.7M  3.9G   1% /run/shm
 none            100M     0  100M   0% /run/user
 /dev/xvdb        30G   28G  490M  99% /data
 #+END_EXAMPLE
-** TODO [#A] docker whether to use multiple container image
-#+BEGIN_EXAMPLE
-[7/12/15, 11:56:33 AM] jacobzeng-曾瑞林ruiling: 求分散的image
-[7/12/15, 11:57:49 AM] denny: 什么叫作分散的image?
-[7/12/15, 12:02:39 PM] denny: 我的思路是:
-1.  搭一个private docker hub registration server
-     分别部署在美国和中国.这样都可以就近去取这个2,3G的文件,而不是从docker官网去拿
-2. sandbox solution中会自动起一个squid反向代理,这样大文件的下载就可以快不少.
-
-我初步估计,应该可以把整体测试时间缩短到之前的1/3或1/2
-[7/12/15, 12:03:22 PM] jacobzeng-曾瑞林ruiling: 就是非all in one
-[7/12/15, 12:03:30 PM] jacobzeng-曾瑞林ruiling: 嗯
-[7/12/15, 12:03:49 PM] denny: 多个服务多个container, 是这样意思吗？
-[7/12/15, 12:06:18 PM] jacobzeng-曾瑞林ruiling: 嗯,多image,各自是各自的image,好维护,好下载,好扩展,不只是开发环境,部署也可以直接用
-[7/12/15, 12:08:10 PM] denny: 这个思路的优缺点是.
-pros:
-1. 每个service有自己的container image, 测试和部署起来简单方便
-2. 每个service被隔离开来,逻辑清楚简单.
-
-Cons:
-1. 每个image都是2到3G左右,下载起来会比较慢
-2. 每个image的制作和维护需要花费不少时间
-3. 每个container之间应用层通讯,需要做端口映射.从目前技术来看,多半需要人工改iptable
-[7/12/15, 12:09:07 PM] denny: 这个问题,之前与Chenxue讨论过.
-
-基于上面的论证,我倾向,一个image + chef脚本的思路.
-[7/12/15, 12:09:16 PM] denny: 你怎么看
-[7/12/15, 12:11:09 PM] jacobzeng-曾瑞林ruiling: 1.是问题,2我觉得是我们可以花时间的事情3的话可以预先配置,也可以走container之间内部通信
-[7/12/15, 12:11:19 PM] denny: 或者,我们做个折衷:
-- 线上用image + chef
-- 线下用多个image
-[7/12/15, 12:11:48 PM] denny: 1的问题,可以通过自己搭建一个docker registration来做
-[7/12/15, 12:12:01 PM] denny: 可能时间会短一些.
-[7/12/15, 12:12:22 PM] jacobzeng-曾瑞林ruiling: 只是提个思路,我是觉得可以多尝试
-[7/12/15, 12:13:27 PM] jacobzeng-曾瑞林ruiling: 现在这样用感觉没有利用到docker轻量级的优势
-[7/12/15, 12:13:35 PM] jacobzeng-曾瑞林ruiling: 离开下
-[7/12/15, 12:13:36 PM] denny: 第2点,可以通过一些自动化脚本来做.当然会孽缘不少时间.
-
-我主要担心的是第3点.
-[7/12/15, 12:18:01 PM] denny: 目前对docker的使用,主要是看重它多快速复制相同的env,避免各种奇怪的环境问题.
-
-可以选一个项目做下POC
-#+END_EXAMPLE
-** TODO docker fail rm aufs directory
-http://stackoverflow.com/questions/30984569/error-error-creating-aufs-mount-to-when-building-dockerfile
-#+BEGIN_EXAMPLE
-root@docker-server:/tmp# mv /var/lib/docker/aufs /tmp/
-mv: cannot move '/var/lib/docker/aufs' to '/tmp/aufs': Device or resource busy
-root@docker-server:/tmp# rm -rf /var/lib/docker/aufs
-rm: cannot remove '/var/lib/docker/aufs': Device or resource busy
-#+END_EXAMPLE
 ** DONE docker rename container: docker rename OLD_NAME NEW_NAME
   CLOSED: [2015-11-10 Tue 18:42]
 https://docs.docker.com/reference/commandline/rename/
@@ -3252,29 +3222,6 @@ root@docker-server:~#
 #+END_EXAMPLE
 ** DONE docker container fail to remove port: docker already hold it, even it we change iptables
    CLOSED: [2015-11-10 Tue 23:31]
-** TODO [#B] docker: How to resolve docker pull fails, if we can't restart docker server
-https://github.com/docker/docker/issues/3115
-
-#+BEGIN_EXAMPLE
-5089df36ca81: Downloading 522.8 MB
-5089df36ca81: Download complete
-96f92ffea108: Download complete
-709ece14260e: Downloading 189.8 MB
-709ece14260e: Download complete
-598ad0443ad3: Error downloading dependent layers
-Error pulling image (latest) from docker.io/denny/osc, Untar re-exec error: exit status 1: output: unexpected EOF
-root@localhost:~#
-root@localhost:~#
-root@localhost:~# docker ps
-CONTAINER ID        IMAGE               COMMAND               CREATED             STATUS              PORTS                                                                                              NAMES
-0d8215343ca0        denny/osc:latest    "/usr/sbin/sshd -D"   2 days ago          Up 2 days           0.0.0.0:3128->3128/tcp, 0.0.0.0:28000->28000/tcp, 0.0.0.0:28080->28080/tcp, 0.0.0.0:4022->22/tcp   docker-jenkins
-b238788f275c        denny/osc:latest    "/usr/sbin/sshd -D"   4 days ago          Up 4 days           0.0.0.0:9022->22/tcp, 0.0.0.0:11001->10001/tcp                                                     frontend
-573193f277ae        denny/osc:latest    "/usr/sbin/sshd -D"   4 days ago          Up 4 days           0.0.0.0:8022->22/tcp                                                                               backend
-848e8b95ae8b        denny/osc:latest    "/usr/sbin/sshd -D"   4 days ago          Up 4 days           0.0.0.0:7022->22/tcp                                                                               database
-cd851ef5c567        denny/osc:latest    "/usr/sbin/sshd -D"   4 days ago          Up 4 days           0.0.0.0:8080->8080/tcp, 0.0.0.0:5022->22/tcp                                                       iam-registry
-root@localhost:~# docker pull denny/osc:latest
-Repository docker.io/denny/osc already being pulled by another client. Waiting.
-#+END_EXAMPLE
 ** DONE docker fail to enable iptables: missing kernel package for iptables6; disable iptables6
   CLOSED: [2015-11-13 Fri 05:17]
 http://askubuntu.com/questions/459296/could-not-open-moddep-file-lib-modules-3-xx-generic-modules-dep-bin-when-mo
@@ -4146,7 +4093,6 @@ bridge 模式是 Docker 默认的网络设置,此模式会为每一个容器分�
 #+END_EXAMPLE
 ** [#A] remove intermediate container by build docker image
 docker ps -a | grep -v CONTAINER | grep /bin/sh | awk -F' ' '{print $1}' | xargs docker rm
-** TODO [#A] docker disable people: docker exec -it docker-jenkins bash
 ** DONE docker tag: docker tag 8656b532008b XXX/mdm_jenkins:latest
   CLOSED: [2016-04-06 Wed 15:58]
 http://blog.tmtk.net/post/2013-09-16-how_to_remove_tag_on_docker/
@@ -7025,18 +6971,12 @@ Kubernetes - Local Testing
 https://www.youtube.com/watch?v=R-3dfURb2hA
 The Illustrated Children's Guide to Kubernetes
 * Dockerize Serivces                                               :noexport:
-** DONE Use Docker to start Jenkins env
-   CLOSED: [2017-07-11 Tue 11:38]
-*** start jenkins via docker
-docker run -p 8080:8080 -p 50000:50000 denny/jenkins:1.0
-
-http://injenkins.carol.ai:8080/
-*** start jenkins via docker-compose
+** start jenkins via docker-compose
 docker-compose up -d
 
 cd /var/lib/docker/volumes/
 chmod 777 -R *_volume_backup *_volume_jobs *_volume_workspace
-**** > ./docker-compose.yml && vim docker-compose.yml
+*** > ./docker-compose.yml && vim docker-compose.yml
 #+BEGIN_EXAMPLE
 version: '2'
 services:
@@ -7096,34 +7036,6 @@ mysql:
 docker run --name some-wordpress --link some-mysql:mysql -d wordpress
 ** DONE Use Docker to setup a ftp server: support people to transfer big files
    CLOSED: [2017-03-21 Tue 13:53]
-*** DONE Use docker to setup the server
-   CLOSED: [2017-03-21 Tue 12:23]
-https://hub.docker.com/r/bluefoxicy/proftpd/~/dockerfile/
-https://hub.docker.com/r/andrewvos/docker-proftpd/
-https://hub.docker.com/r/aexea/proftpd/~/dockerfile/
-https://hub.docker.com/r/hauptmedia/proftpd/~/dockerfile/
-https://hub.docker.com/r/vipconsult/proftpd/
-
-docker push denny/proftproftpd:v1
-
-mkdir -p /root/docker/proftpd
-cd  /root/docker/proftpd
-
-rm /data
-
-# mount disk
-
-mkdir -p /data/proftpd
-
-docker pull denny/proftproftpd:v1
-export username="ftp_XXX"
-export password="XXX123ChangeMe"
-
-docker stop proftpd; docker rm proftpd
-docker run -t -d -p 21:21 -p 20:20 -e USERNAME=${username} -e PASSWORD=${password} --name proftpd -h proftpd -v /data/proftpd/ftp:/ftp denny/proftproftpd:v1
-
-ufw allow 21/tcp
-ufw allow 20/tcp
 *** TODO support unicode: Chinese characters
 *** TODO [#A] Enhance the data security: different users can't view others' sharing.
 http://www.proftpd.org/docs/howto/AuthFiles.html
@@ -7154,18 +7066,8 @@ Re-type password:
 
 ftpasswd: entry created
 #+END_EXAMPLE
-*** DONE try ftp in mac
-   CLOSED: [2017-03-21 Tue 13:53]
-ftp -p ftp.carol.ai 21
-
-ftp -p localhost 21
-Name (0.0.0.0:andrew): username
-Password:
-ftp> ls
 *** TODO Common mointor: disk usage, download link, dns setting
 curl -u ftp_XXX:XXX123ChangeMe ftp://ftp.carol.ai:21/hosts
-* DONE docker auto build: https://docs.docker.com/docker-hub/builds/#build-statuses-explained :noexport:
-  CLOSED: [2018-07-10 Tue 10:18]
 * DONE [#A] docker multi-stage builds: https://docs.docker.com/develop/develop-images/multistage-build/#before-multi-stage-builds :noexport:
   CLOSED: [2018-07-11 Wed 23:15]
 * DONE How docker --squash works?                                  :noexport:
@@ -7189,11 +7091,7 @@ This can simplify the process of creating minimal container images, but may resu
 
 Please note this feature squashes all the newly built layers into a single layer, it is not squashing to scratch.
 #+END_EXAMPLE
-* TODO simplify docker add                                         :noexport:
-RUN wget -qO- https://github.com/cloudfoundry-incubator/credhub-cli/releases/download/1.5.3/credhub-linux-1.5.3.tgz | tar xvz && \
-    mv credhub /usr/bin
-* more content                                                     :noexport:
-** docker
+* docker                                                           :noexport:
 # Start docker daemon
 docker -d
 
@@ -7217,15 +7115,6 @@ docker inspect --format='{{json .Volumes}}' <container_id> | python -mjson.tool
 
 # Copy files/folders between a container and your host
 docker cp foo.txt mycontainer:/foo.txt
-
-# list currently running containers
-docker ps
-
-# list all containers
-docker ps -a
-
-# list all images
-docker images
 * [#A] docker-compose                                              :noexport:
 * Dockerfile                                                       :noexport:
 ** DONE dockerfile define multiple line command
@@ -7904,3 +7793,7 @@ if docker images | grep none | tee; then
    docker rmi $(docker images | grep "<none>"  | awk -F' ' '{print $3}') | tee
 fi
 #+END_EXAMPLE
+* TODO simplify docker add                                         :noexport:
+RUN wget -qO- https://github.com/cloudfoundry-incubator/credhub-cli/releases/download/1.5.3/credhub-linux-1.5.3.tgz | tar xvz && \
+    mv credhub /usr/bin
+
