@@ -26,7 +26,8 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 |-------------------------+------------------------------------------------------------------------------------------------------------|
 | Start a ubuntu test env | =docker run ubuntu:16.04 /bin/echo hello world=                                                            |
 | Start a centos test env | =docker run centos:centos6 /bin/echo hello world=                                                          |
-| Start nginx             | =docker run -t -d -p 8080:80 --name nginx-test nginx=                                                      |
+| Start a nexus server    | =docker run -d -p 8082:8081 --name nexus -v /data/nexus-data:/nexus-data sonatype/docker-nexus3=           |
+| Start a nginx server    | =docker run -t -d -p 8080:80 --name nginx-test nginx=                                                      |
 | Start a sshd server     | =docker run -t -d --privileged -p 5022:22 denny/sshd:latest /usr/sbin/sshd -D=                             |
 | Start a jenkins server  | =docker run -p 8080:8080 denny/jenkins:1.0=                                                                |
 | Start a ftp server      | =docker run -t -d -p 21:21 -p 20:20 -e USERNAME=${username} -e PASSWORD=${password} denny/proftproftpd:v1= |
@@ -50,13 +51,15 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 <a href="https://www.dennyzhang.com"><img align="right" width="185" height="37" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/dns_small.png"></a>
 #+END_HTML
 ** Docker Images
-| Name                               | Summary                                |
-|------------------------------------+----------------------------------------|
-| List all images                    | =docker images=, =docker images -a=    |
-| Tag <image>                        | =docker tag <image> username/repo:tag= |
-| Docker push a tagged image to repo | =docker push username/repo:tag=        |
-| Create docker image                | =docker build -t denny/image:test .=   |
-| Show the history of an image       | =docker history username/repo:tag=     |
+| Name                               | Summary                                 |
+|------------------------------------+-----------------------------------------|
+| List all images                    | =docker images=, =docker images -a=     |
+| Create docker image                | =docker build -t denny/image:test .=    |
+| Docker push a tagged image to repo | =docker push username/repo:tag=         |
+| Show the history of an image       | =docker history <image_name>=           |
+| Export image to file               | =docker save <image_name> > my_img.tar= |
+| Load image to local registry       | =docker load -i my_img.tar=             |
+| Tag <image>                        | =docker tag <image> username/repo:tag=  |
 ** Docker Cleanup
 | Name                           | Summary                                                  |
 |--------------------------------+----------------------------------------------------------|
@@ -64,6 +67,10 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | Remove all docker images       | =docker rmi $(docker images -q)=                         |
 | Remove orphaned docker volumes | =docker volume rm $(docker volume ls -qf dangling=true)= |
 | Remove dead containers         | =docker rm $(docker ps --filter status=dead -qa)=        |
+| Remove exited containers       | =docker rm $(docker ps --filter status=exited -qa)=      |
+| Delete all containers          | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-all-containers.sh][delete-all-containers.sh]]                                 |
+| Remove unused docker images    | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-unused-images.sh][delete-unused-images.sh]]                                  |
+
 ** Ubuntu docker: Install missing packages
 | Name                     | Summary                                          |
 |--------------------------+--------------------------------------------------|
@@ -7752,13 +7759,6 @@ docker build -t gcr.io/<MY_REPO>/<MY_IMAGE>:<MY_TAG> .
 gcloud docker -- push gcr.io/<MY_REPO>/<MY_IMAGE>:<MY_TAG>
 #+END_EXAMPLE
 
-- Delete all containers
-
-[[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-all-containers.sh][delete-all-containers.sh]]
-#+BEGIN_EXAMPLE
-curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/delete-all-containers.sh | bash
-#+END_EXAMPLE
-
 - Install test kit
 
 [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/container-install-devkit.sh][container-install-devkit.sh]]
@@ -7767,19 +7767,6 @@ apt-get -y update
 apt-get install -y curl netcat
 
 curl -L https://raw.githubusercontent.com/dennyzhang/cheatsheet-docker-A4/master/container-install-devkit.sh | bash
-#+END_EXAMPLE
-
-- Clean up Disk
-
-Remove All Useless Resources.
-
-#+BEGIN_EXAMPLE
-docker ps --filter status=exited -aq | xargs -r docker rm -v
-#+END_EXAMPLE
-
-Remove unused docker images
-#+BEGIN_EXAMPLE
-docker rmi $(docker images | grep "<none>"  | awk -F' ' '{print $3}')
 #+END_EXAMPLE
 
 Remove intermediate containers generated during docker build
@@ -7797,4 +7784,3 @@ fi
 * TODO simplify docker add                                         :noexport:
 RUN wget -qO- https://github.com/cloudfoundry-incubator/credhub-cli/releases/download/1.5.3/credhub-linux-1.5.3.tgz | tar xvz && \
     mv credhub /usr/bin
-

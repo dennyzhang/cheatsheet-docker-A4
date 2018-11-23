@@ -5,10 +5,10 @@
 ##
 ## File: container_install_devkit.sh
 ## Author : Denny <https://www.dennyzhang.com/contact>
-## Description :
+## Description : https://cheatsheet.dennyzhang.com/cheatsheet-docker-A4
 ## --
 ## Created : <2018-07-10>
-## Updated: Time-stamp: <2018-07-17 19:08:21>
+## Updated: Time-stamp: <2018-11-23 21:39:12>
 ##-------------------------------------------------------------------
 set -ex
 

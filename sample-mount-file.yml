@@ -1,3 +1,4 @@
+# https://cheatsheet.dennyzhang.com/cheatsheet-docker-A4
 version: '2'
 services:
   ci_repo:
