@@ -30,17 +30,33 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | Start a sshd server     | =docker run -t -d --privileged -p 5022:22 denny/sshd:latest /usr/sbin/sshd -D=                             |
 | Start a jenkins server  | =docker run -p 8080:8080 denny/jenkins:1.0=                                                                |
 | Start a ftp server      | =docker run -t -d -p 21:21 -p 20:20 -e USERNAME=${username} -e PASSWORD=${password} denny/proftproftpd:v1= |
-** Docker Check Status
-| Name                               | Summary                                                       |
-|------------------------------------+---------------------------------------------------------------|
-| Tail container logs                | =docker logs --tail 5 $container_name=                        |
-| Check container healthcheck status | =docker inspect --format '{{.State.Health}}' $container_name= |
-| List all containers                | =docker ps=, =docker ps -a=                                   |
-| List containers by labels          | =docker ps --filter "label=org.label-schema.group"=           |
-| List all images                    | =docker images=, =docker images -a=                           |
+** Docker Containers
+| Name                                    | Summary                                                       |
+|-----------------------------------------+---------------------------------------------------------------|
+| Start docker container                  | =docker run -p 4000:80 imgname=                               |
+| Start docker container in detached mode | =docker run -d -p 4000:80 imgname=                            |
+| Enter a running container               | =docker exec -it [container-id] sh=                           |
+| Stop container                          | =docker stop <hash>=                                          |
+| Remove container                        | =docker rm <hash>=                                            |
+| Remove all containers                   | =docker rm $(docker ps -a -q)=                                |
+| Force shutdown of one given container   | =docker kill <hash>=                                          |
+| Login to docker hub                     | =docker login=                                                |
+| Run image from a given tag              | =docker run username/repo:tag=                                |
+| Tail container logs                     | =docker logs --tail 5 $container_name=                        |
+| Check container healthcheck status      | =docker inspect --format '{{.State.Health}}' $container_name= |
+| List all containers                     | =docker ps=, =docker ps -a=                                   |
+| List containers by labels               | =docker ps --filter "label=org.label-schema.group"=           |
 #+BEGIN_HTML
 <a href="https://www.dennyzhang.com"><img align="right" width="185" height="37" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/dns_small.png"></a>
 #+END_HTML
+** Docker Images
+| Name                               | Summary                                |
+|------------------------------------+----------------------------------------|
+| List all images                    | =docker images=, =docker images -a=    |
+| Tag <image>                        | =docker tag <image> username/repo:tag= |
+| Docker push a tagged image to repo | =docker push username/repo:tag=        |
+| Create docker image                | =docker build -t denny/image:test .=   |
+| Show the history of an image       | =docker history username/repo:tag=     |
 ** Docker Cleanup
 | Name                           | Summary                                                  |
 |--------------------------------+----------------------------------------------------------|
@@ -48,31 +64,6 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | Remove all docker images       | =docker rmi $(docker images -q)=                         |
 | Remove orphaned docker volumes | =docker volume rm $(docker volume ls -qf dangling=true)= |
 | Remove dead containers         | =docker rm $(docker ps --filter status=dead -qa)=        |
-** Container Basic
-| Name                                    | Summary                                               |
-|-----------------------------------------+-------------------------------------------------------|
-| Start docker container                  | =docker run -p 4000:80 imgname=                       |
-| Start docker container in detached mode | =docker run -d -p 4000:80 imgname=                    |
-| Enter a running container               | =docker exec -it [container-id] sh=                   |
-| Stop container                          | =docker stop <hash>=                                  |
-| Remove container                        | =docker rm <hash>=                                    |
-| Remove all containers                   | =docker rm $(docker ps -a -q)=                        |
-| Force shutdown of one given container   | =docker kill <hash>=                                  |
-| Login to docker hub                     | =docker login=                                        |
-| Tag <image>                             | =docker tag <image> username/repo:tag=                |
-| Docker push a tagged image to repo      | =docker push username/repo:tag=                       |
-| Run image from a given tag              | =docker run username/repo:tag=                        |
-| Create docker image                     | =docker build -t denny/image:test .=                  |
-| Docker files                            | =/var/lib/docker=, =/var/lib/docker/devicemapper/mnt= |
-** Docker Compose
-| Name                             | Summary                                                                             |
-|----------------------------------+-------------------------------------------------------------------------------------|
-| Change entrypoint to run nothing | =entrypoint: ["tail", "-f", "/dev/null"]=                                           |
-| Change restart policy            | =restart: always=, [[https://docs.docker.com/compose/compose-file/#restart_policy][Link: Compose file version 3 reference]]                           |
-| Mount file as volume             | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/sample-mount-file.yml][sample-mount-file.yml]] |
-| Start compose env                | =docker-compose up=, =docker-compose up -d=                                         |
-| Stop compose env                 | =docker-compose down=, =docker-compose down -v=                                     |
-| Check logs                       | =docker-compose logs=                                                               |
 ** Ubuntu docker: Install missing packages
 | Name                     | Summary                                          |
 |--------------------------+--------------------------------------------------|
@@ -84,13 +75,22 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | Name                               | Summary                                                                                                                                               |
 |------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Links                              | [[https://docs.docker.com/develop/sdk/][Link: Develop with Docker Engine SDKs and API]]                                                                                                         |
-| Run container mounting socket file | =docker run -v /var/run/docker.sock:/var/run/docker.sock -ti alpine sh=                                                                               |
+| Run container mounting socket file | =docker run -v /var/run/docker.sock:/var/run/docker.sock -it alpine sh=                                                                               |
 | A different docker socket file     | =export DOCKER_HOST=unix:///my/docker.sock=                                                                                                           |
 | List containers                    | =curl -XGET --unix-socket /var/run/docker.sock http://localhost/containers/json=                                                                      |
 | Stop container                     | =curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/<container_id>/stop=                                                      |
 | Start container                    | =curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/<container_id>/start=                                                     |
 | List events                        | =curl --unix-socket /var/run/docker.sock http://localhost/events=                                                                                     |
 | Create container                   | =curl -XPOST --unix-socket /var/run/docker.sock -d '{"Image":"nginx:alpine"}' -H 'Content-Type: application/json' http://localhost/containers/create= |
+** Docker Compose
+| Name                             | Summary                                                                             |
+|----------------------------------+-------------------------------------------------------------------------------------|
+| Change entrypoint to run nothing | =entrypoint: ["tail", "-f", "/dev/null"]=                                           |
+| Change restart policy            | =restart: always=, [[https://docs.docker.com/compose/compose-file/#restart_policy][Link: Compose file version 3 reference]]                           |
+| Mount file as volume             | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/sample-mount-file.yml][sample-mount-file.yml]] |
+| Start compose env                | =docker-compose up=, =docker-compose up -d=                                         |
+| Stop compose env                 | =docker-compose down=, =docker-compose down -v=                                     |
+| Check logs                       | =docker-compose logs=                                                               |
 ** Container Runtime
 | Name    | Summary                                                                                  |
 |---------+------------------------------------------------------------------------------------------|
@@ -103,6 +103,7 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | Docker SDK            | https://docs.docker.com/develop/sdk/examples/                       |
 | Docker REST API       | https://docs.docker.com/engine/api/v1.27/#tag/Container             |
 | Docker Hub auto build | https://docs.docker.com/docker-hub/builds/#build-statuses-explained |
+| Docker files          | =/var/lib/docker=, =/var/lib/docker/devicemapper/mnt=               |
 ** More Resources
 
 License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_license.txt][MIT License]].
@@ -7736,7 +7737,7 @@ COMMIT
 ** [#A] [question] Docker to deploy distributed application
 https://github.com/hectcastro/docker-riak
 http://docs.docker.io/en/latest/examples/running_riak_service/
-** [#B] [question] Docker倾向于为每个application, 创建一个containerr image, 但这个OS的image却又是一个阉割版，之后后悔了，那怎么办呢？
+** [#B] [question] Docker倾向于为每个application, 创建一个containerr image, 但这个OS的image却又是一个阉割版,之后后悔了,那怎么办呢？
 * #  --8<-------------------------- separator ------------------------>8-- :noexport:
 * TODO Check https://github.com/wsargent/docker-cheat-sheet        :noexport:
 * Scripts                                                          :noexport:
