@@ -26,27 +26,27 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 |-------------------------+------------------------------------------------------------------------------------------------------------|
 | Start a ubuntu test env | =docker run ubuntu:16.04 /bin/echo hello world=                                                            |
 | Start a centos test env | =docker run centos:centos6 /bin/echo hello world=                                                          |
-| Start a nexus server    | =docker run -d -p 8082:8081 --name nexus -v /data/nexus-data:/nexus-data sonatype/docker-nexus3=           |
 | Start a nginx server    | =docker run -t -d -p 8080:80 --name nginx-test nginx=                                                      |
-| Start a sshd server     | =docker run -t -d --privileged -p 5022:22 denny/sshd:latest /usr/sbin/sshd -D=                             |
 | Start a jenkins server  | =docker run -p 8080:8080 denny/jenkins:1.0=                                                                |
+| Start a nexus server    | =docker run -d -p 8082:8081 --name nexus -v /data/nexus-data:/nexus-data sonatype/docker-nexus3=           |
+| Start a sshd server     | =docker run -t -d --privileged -p 5022:22 denny/sshd:latest /usr/sbin/sshd -D=                             |
 | Start a ftp server      | =docker run -t -d -p 21:21 -p 20:20 -e USERNAME=${username} -e PASSWORD=${password} denny/proftproftpd:v1= |
 ** Docker Containers
-| Name                                    | Summary                                                       |
-|-----------------------------------------+---------------------------------------------------------------|
-| Start docker container                  | =docker run -p 4000:80 imgname=                               |
-| Start docker container in detached mode | =docker run -d -p 4000:80 imgname=                            |
-| Enter a running container               | =docker exec -it [container-id] sh=                           |
-| Stop container                          | =docker stop <hash>=                                          |
-| Remove container                        | =docker rm <hash>=                                            |
-| Remove all containers                   | =docker rm $(docker ps -a -q)=                                |
-| Force shutdown of one given container   | =docker kill <hash>=                                          |
-| Login to docker hub                     | =docker login=                                                |
-| Run image from a given tag              | =docker run username/repo:tag=                                |
-| Tail container logs                     | =docker logs --tail 5 $container_name=                        |
-| Check container healthcheck status      | =docker inspect --format '{{.State.Health}}' $container_name= |
-| List all containers                     | =docker ps=, =docker ps -a=                                   |
-| List containers by labels               | =docker ps --filter "label=org.label-schema.group"=           |
+| Name                                        | Summary                                                       |
+|---------------------------------------------+---------------------------------------------------------------|
+| Start docker container                      | =docker run -p 4000:80 <imgname>=                             |
+| Start docker container in detached mode     | =docker run -d -p 4000:80 imgname=                            |
+| Start docker container and remove when exit | =docker run -rm -it <imgname> sh=                             |
+| Enter a running container                   | =docker exec -it [container-id] sh=                           |
+| Stop container                              | =docker stop <hash>=                                          |
+| List all containers                         | =docker ps=, =docker ps -a=                                   |
+| Remove container                            | =docker rm <hash>=, =docker rm $(docker ps -a -q)=            |
+| Force shutdown of one given container       | =docker kill <hash>=                                          |
+| Login to docker hub                         | =docker login=                                                |
+| Run image from a given tag                  | =docker run username/repo:tag=                                |
+| Tail container logs                         | =docker logs --tail 5 $container_name=                        |
+| Check container healthcheck status          | =docker inspect --format '{{.State.Health}}' $container_name= |
+| List containers by labels                   | =docker ps --filter "label=org.label-schema.group"=           |
 #+BEGIN_HTML
 <a href="https://www.dennyzhang.com"><img align="right" width="185" height="37" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/dns_small.png"></a>
 #+END_HTML
@@ -60,6 +60,11 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | Export image to file               | =docker save <image_name> > my_img.tar= |
 | Load image to local registry       | =docker load -i my_img.tar=             |
 | Tag <image>                        | =docker tag <image> username/repo:tag=  |
+** Docker Conf
+| Name           | Summary                                               |
+|----------------+-------------------------------------------------------|
+| Docker files   | =/var/lib/docker=, =/var/lib/docker/devicemapper/mnt= |
+| Docker for Mac | =~/Library/Containers/com.docker.docker/Data/=        |
 ** Docker Cleanup
 | Name                           | Summary                                                  |
 |--------------------------------+----------------------------------------------------------|
@@ -70,7 +75,6 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | Remove exited containers       | =docker rm $(docker ps --filter status=exited -qa)=      |
 | Delete all containers          | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-all-containers.sh][delete-all-containers.sh]]                                 |
 | Remove unused docker images    | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-unused-images.sh][delete-unused-images.sh]]                                  |
-
 ** Ubuntu docker: Install missing packages
 | Name                     | Summary                                          |
 |--------------------------+--------------------------------------------------|
@@ -81,7 +85,6 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 ** Docker Socket file
 | Name                               | Summary                                                                                                                                               |
 |------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Links                              | [[https://docs.docker.com/develop/sdk/][Link: Develop with Docker Engine SDKs and API]]                                                                                                         |
 | Run container mounting socket file | =docker run -v /var/run/docker.sock:/var/run/docker.sock -it alpine sh=                                                                               |
 | A different docker socket file     | =export DOCKER_HOST=unix:///my/docker.sock=                                                                                                           |
 | List containers                    | =curl -XGET --unix-socket /var/run/docker.sock http://localhost/containers/json=                                                                      |
@@ -89,6 +92,7 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | Start container                    | =curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/<container_id>/start=                                                     |
 | List events                        | =curl --unix-socket /var/run/docker.sock http://localhost/events=                                                                                     |
 | Create container                   | =curl -XPOST --unix-socket /var/run/docker.sock -d '{"Image":"nginx:alpine"}' -H 'Content-Type: application/json' http://localhost/containers/create= |
+| Links                              | [[https://docs.docker.com/develop/sdk/][Link: Develop with Docker Engine SDKs and API]]                                                                                                         |
 ** Docker Compose
 | Name                             | Summary                                                                             |
 |----------------------------------+-------------------------------------------------------------------------------------|
@@ -110,7 +114,6 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | Docker SDK            | https://docs.docker.com/develop/sdk/examples/                       |
 | Docker REST API       | https://docs.docker.com/engine/api/v1.27/#tag/Container             |
 | Docker Hub auto build | https://docs.docker.com/docker-hub/builds/#build-statuses-explained |
-| Docker files          | =/var/lib/docker=, =/var/lib/docker/devicemapper/mnt=               |
 ** More Resources
 
 License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_license.txt][MIT License]].
@@ -6789,195 +6792,6 @@ make
 make install
 
 docker-machine create -d linode --linode-api-key="rVwhQwj28Z1LozLQeiVPDg70q192YlDdvwKYEo2JUWEVwagzQErUi93TkUGSU9LT" --linode-root-pass "DevOpsChangeMeDenny1"
-* [#A] Google Kubernetes                                 :noexport:IMPORTANT:
-No.2 Kubernetes
-
-Kubernetes是一个编排（orchestration）工具,类似运行于Apache Mesos之上的Marathon,但是它是专门为Docker容器而创建的.
-
-Kubernetes is an open-source platform for automating deployment, scaling, and operations of application containers across clusters of hosts, providing container-centric infrastructure
-
-Kubernetes来自Google,除了能在他们自己的Google Container Engine上工作之外,还支持VMware vSphere, Mesos, or Mesosphere DCOS,以及很多公有云,包括Amazon Web Services等.
-
-Kubernetes 具备完善的集群管理能力,包括多层次的安全防护和准入机制`多租户应用支撑能力`透明的服务注册和服务发现机制`内建负载均衡器`故障发现和自我修复能力`服务滚动升级和在线扩容`可扩展的资源自动调度机制`多粒度的资源配额管理能力.
-
-Kubernetes 还提供完善的管理工具,涵盖开发`部署测试`运维监控等各个环节.
-
-每个API对象都有3大类属性:元数据metadata`规范spec和状态status
-
-- Concepts: Pod, Service, Labels和单Pod单IP
-** Installing and Setting Up kubectl
-https://kubernetes.io/docs/tasks/tools/install-kubectl/
-
-curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-** kubectl --help
-kubectl controls the Kubernetes cluster manager.
-
-Find more information at https://github.com/kubernetes/kubernetes.
-
-Basic Commands (Beginner):
-  create         Create a resource by filename or stdin
-  expose         Take a replication controller, service, deployment or pod and expose it as a new Kubernetes Service
-  run            Run a particular image on the cluster
-  set            Set specific features on objects
-
-Basic Commands (Intermediate):
-  get            Display one or many resources
-  explain        Documentation of resources
-  edit           Edit a resource on the server
-  delete         Delete resources by filenames, stdin, resources and names, or by resources and label selector
-
-Deploy Commands:
-  rollout        Manage a deployment rollout
-  rolling-update Perform a rolling update of the given ReplicationController
-  scale          Set a new size for a Deployment, ReplicaSet, Replication Controller, or Job
-  autoscale      Auto-scale a Deployment, ReplicaSet, or ReplicationController
-
-Cluster Management Commands:
-  certificate    Modify certificate resources.
-  cluster-info   Display cluster info
-  top            Display Resource (CPU/Memory/Storage) usage.
-  cordon         Mark node as unschedulable
-  uncordon       Mark node as schedulable
-  drain          Drain node in preparation for maintenance
-  taint          Update the taints on one or more nodes
-
-Troubleshooting and Debugging Commands:
-  describe       Show details of a specific resource or group of resources
-  logs           Print the logs for a container in a pod
-  attach         Attach to a running container
-  exec           Execute a command in a container
-  port-forward   Forward one or more local ports to a pod
-  proxy          Run a proxy to the Kubernetes API server
-  cp             Copy files and directories to and from containers.
-  auth           Inspect authorization
-Advanced Commands:
-  apply          Apply a configuration to a resource by filename or stdin
-  patch          Update field(s) of a resource using strategic merge patch
-  replace        Replace a resource by filename or stdin
-  convert        Convert config files between different API versions
-
-Settings Commands:
-  label          Update the labels on a resource
-  annotate       Update the annotations on a resource
-  completion     Output shell completion code for the specified shell (bash or zsh)
-
-Other Commands:
-  api-versions   Print the supported API versions on the server, in the form of "group/version"
-  config         Modify kubeconfig files
-  help           Help about any command
-  version        Print the client and server version information
-
-Use "kubectl <command> --help" for more information about a given command.
-Use "kubectl options" for a list of global command-line options (applies to all commands).
-** kubernetes: The connection to the server localhost:8080 was refused - did you specify the right host or port?
-https://github.com/kubernetes/kubernetes/issues/23092
-** Layers
-- Nucleus: API And Execution
-- Application layer: deployment and running
-- Govermance layer: automation and policy enforcement
-- Interface layer: client libraries and tools
-- Ecosystem
-** healthcheck: LivenessProbe, ReadinessProbe
-** 核心组件
-Kubernetes主要由以下几个核心组件组成:
-- etcd保存了整个集群的状态;
-- apiserver提供了资源操作的唯一入口,并提供认证`授权`访问控制`API注册和发现等机制;
-- controller manager负责维护集群的状态,比如故障检测`自动扩展`滚动更新等;
-- scheduler负责资源的调度,按照预定的调度策略将Pod调度到相应的机器上;
-- kubelet负责维护容器的生命周期,同时也负责Volume（CVI）和网络（CNI）的管理;
-- Container runtime负责镜像管理以及Pod和容器的真正运行（CRI）;
-- kube-proxy负责为Service提供cluster内部的服务发现和负载均衡
-** helloworld
-https://kubernetes.io/docs/tutorials/stateless-application/hello-minikube/
-** useful link
-https://kubernetes.io
-https://www.reddit.com/r/devops/comments/51ra9q/moving_from_docker_to_rkt/
-http://blog.dataman-inc.com/67/
-http://jpadilla.com/post/161144157937/update-kubernetes-deployment-after-pushing-image
-
-http://www.oschina.net/news/70140/infoworlds-2016-technology-of-the-year-award-winners?p=3#comments
-** DONE Principle: API的操作复杂度不能超过O(N)
-   CLOSED: [2017-06-10 Sat 15:24]
-https://kubernetes.feisky.xyz/architecture/concepts.html
-API操作复杂度与对象数量成正比.这一条主要是从系统性能角度考虑,要保证整个系统随着系统规模的扩大,性能不会迅速变慢到无法使用,那么最低的限定就是API的操作复杂度不能超过O(N),N是对象的数量,否则系统就不具备水平伸缩性了.
-** Principle: API对象状态不能依赖于网络连接状态
-https://kubernetes.feisky.xyz/architecture/concepts.html
-** #  --8<-------------------------- separator ------------------------>8--
-** TODO [#A] fail to start minikube: "VBoxManage not found. Make sure VirtualBox is installed and VBoxManage is in the path".
-root@totvsjenkins:/tmp# minikube start
-Starting local Kubernetes v1.6.4 cluster...
-Starting VM...
-E0610 20:14:57.518198   27907 start.go:127] Error starting host: Error creating host: Error with pre-create check: "VBoxManage not found. Make sure VirtualBox is installed and VBoxManage is in the path".
-
- Retrying.
-E0610 20:14:57.519201   27907 start.go:133] Error starting host:  Error creating host: Error with pre-create check: "VBoxManage not found. Make sure VirtualBox is installed and VBoxManage is in the path"
-** TODO how kubernetes use etcd
-** TODO how healthcheck is implemented
-** TODO What about alerting and reporting
-** TODO what's fluentd
-** #  --8<-------------------------- separator ------------------------>8--
-** TODO [#A] k8s support rolling deployment                       :IMPORTANT:
-https://www.youtube.com/watch?v=7TOWLerX0Ps
-Kubernetes: zero downtime update at 1 million requests per second
-https://www.youtube.com/watch?v=9C6YeyyUUmI
-Kubernetes: zero downtime update at 10 million QPS
-** TODO [#A] How to scale Pods with volumes configured            :IMPORTANT:
-** What is Kubernetes
-https://www.youtube.com/watch?v=R-3dfURb2hA
-What is Kubernetes
-
-Deployment, Scaling, Monitoring
-** DONE Kubernetes hellworld
-  CLOSED: [2017-07-11 Tue 08:42]
-https://kubernetes.io/docs/tutorials/stateless-application/hello-minikube/#create-a-minikube-cluster
-
-# build image
-docker build -t hello-node:v1 .
-
-# create deployment
-kubectl run hello-node --image=hello-node:v1 --port=8080
-
-# View the Deployment
-kubectl get deployments
-
-# Create service
-kubectl expose deployment hello-node --type=LoadBalancer
-** TODO [#A] Install minikube in headless Ubuntu server           :IMPORTANT:
-| Name            | Summary |
-|-----------------+---------|
-| minikube status |         |
-** DONE [#A] Ubuntu install kubernetes for all-in-one POC: minikube
-  CLOSED: [2017-07-11 Tue 08:43]
-https://blog.jetstack.io/blog/k8s-getting-started-part2/
-https://github.com/kubernetes/minikube
-https://stackoverflow.com/questions/38528762/kubernetes-on-ubuntu-16-04
-https://hxquangnhat.com/2016/12/21/tutorial-deploy-a-kubernetes-cluster-on-ubuntu-16-04/
-*** TODO minikube fail to start
-#+BEGIN_EXAMPLE
-root@totvsjenkins:/home/denny/minikube# ./minikube start --vm-driver=none --use-vendored-driver
-Starting local Kubernetes v1.6.4 cluster...
-Starting VM...
-Moving files into cluster...
-
-Setting up certs...
-Starting cluster components...
-Connecting to cluster...
-Setting up kubeconfig...
-Kubectl is now configured to use the cluster.
-===================
-WARNING: IT IS RECOMMENDED NOT TO RUN THE NONE DRIVER ON PERSONAL WORKSTATIONS
-        The 'none' driver will run an insecure kubernetes apiserver as root that may leave the host vulnerable to CSRF attacks
-#+END_EXAMPLE
-*** useful link
-https://www.youtube.com/watch?v=PH-2FfFD2PU
-Kubernetes in 5 mins
-https://www.youtube.com/watch?v=DC7NECq3Ghs
-Setting up and using a single node Kubernetes cluster.
-https://www.youtube.com/watch?v=BDrcUjOczsE
-Kubernetes - Local Testing
-
-https://www.youtube.com/watch?v=R-3dfURb2hA
-The Illustrated Children's Guide to Kubernetes
 * Dockerize Serivces                                               :noexport:
 ** start jenkins via docker-compose
 docker-compose up -d
@@ -7124,159 +6938,6 @@ docker inspect --format='{{json .Volumes}}' <container_id> | python -mjson.tool
 # Copy files/folders between a container and your host
 docker cp foo.txt mycontainer:/foo.txt
 * [#A] docker-compose                                              :noexport:
-* Dockerfile                                                       :noexport:
-** DONE dockerfile define multiple line command
-  CLOSED: [2015-03-09 Mon 00:38]
-https://github.com/docker/docker/issues/1799
-#+BEGIN_EXAMPLE
-Anyone know how to use heredoc with this syntax? Docker wants to bunch it onto a single line and causes a bash syntax error:
-
-RUN cat > /etc/example.conf <<'EOF' \
-This is one multiple lines \
-and should stay that way \
-EOF
-#+END_EXAMPLE
-** DONE docker entrypoint: entrypoint: ["tail", "-f", "/dev/null"]
-   CLOSED: [2018-04-06 Fri 15:08]
-** DONE Dockerfile entrypoint VS CMD
-  CLOSED: [2017-03-15 Wed 16:40]
-http://www.projectatomic.io/docs/docker-image-author-guidance/
-- CMD simply sets a command to run in the image if no arguments are passed to docker run,
-- ENTRYPOINT is meant to make your image behave like a binary.
-
-CMD ["ls", "/" ]
-
-ENTRYPOINT $HOME/docker-entrypoint.sh
-
-Be careful with using ENTRYPOINT; it will make it more difficult to get a shell inside your image.
-** dockerfile example
-#+BEGIN_EXAMPLE
-########## How To Build Docker Image #############
-##
-##  Build image from Dockerfile. docker build -t XXX/mdm:v2 --rm=false .
-##  Run docker intermediate container: docker run -t -i XXX/mdm:v2 /bin/bash
-##  Commit local image: docker commit -m "Initial version" -a "Denny Zhang<denny.zhang@totvs.com>" 9187d029f904 XXX/mdm:v2
-##  Remove intermediate container: docker stop $(docker ps -a -q); docker rm $(docker ps -a -q)
-##  Release to docker hub: docker push XXX/mdm:v2
-##
-##################################################
-
-########## How To Use Docker Image ###############
-##
-##  Install docker utility
-##  Download docker image: docker pull XXX/mdm:v2
-##  Boot docker container: docker run -t -P -d XXX/mdm:v2 /bin/bash
-##
-##################################################
-
-FROM ubuntu:14.04
-MAINTAINER TOTVS Labs <denny.zhang@totvs.com>
-RUN apt-get -yqq update
-
-########################################################################################
-# Enable Chef
-
-RUN apt-get -yqq install curl lsb-release
-RUN curl -L https://getchef.com/chef/install.sh | bash
-
-########################################################################################
-#  Start sshd: http://docs.docker.com/examples/running_ssh_service/
-RUN apt-get install -y openssh-server
-RUN mkdir /var/run/sshd
-RUN echo 'root:TOTVSFoobar1!' | chpasswd
-RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-
-# SSH login fix. Otherwise user is kicked off after login
-RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
-
-RUN mkdir -p /root/.ssh
-RUN echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGVkT4Ka/Pt6M/xREwYWatYyBqaBgDVS1bCy7CViZ5VGr1z+sNwI2cBoRwWxqHwvOgfAm+Wbzwqs+WNvXW6GDZ1kjayh2YnBN5UBYZjpNQK9tmO8KHQwX29UvOaOJ6HIEWOJB9ylyUoWL+WwNf71arpXULBW6skx9fp9F5rHuB0UmQ+omhJGs6+PRSLAEzWaQvtxmm7CuZ7LgslNKskkqx/6CHlQPq2qchRVN5xvnZPuFWgF6cvWvK7kylAQsv8hQtFGsE9Rw1itjisCBVILzEC2mAjg5SqeEB0i7QwdlRr4jgxaxO5jR9wdKo7PaEl9+bibuZrCIhp6V4Y4eaIzAP denny.zhang@totvs.com' >> /root/.ssh/authorized_keys
-
-ENV NOTVISIBLE "in users profile"
-RUN echo "export VISIBLE=now" >> /etc/profile
-
-# Disable strict host checking for github
-RUN echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-
-EXPOSE 22
-CMD ["/usr/sbin/sshd", "-D"]
-
-########################################################################################
-# Apache
-RUN apt-get -yqq install apache2
-# Jenkins
-RUN sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'
-RUN apt-get -yqq update
-RUN apt-get -yqq --force-yes install jenkins
-
-# Install basic packages.
-RUN apt-get -yqq install git update-notifier-common
-
-# TODO JDK, maven
-########################################################################################
-#+END_EXAMPLE
-** TODO syntax check for dockerfile
-https://access.redhat.com/labsinfo/linterfordockerfile
-http://stackoverflow.com/questions/28182047/is-there-a-way-to-lint-the-dockerfile
-https://github.com/projectatomic/dockerfile_lint
-https://github.com/goern/dockerfile_checker
-** DONE dockerfile go to directory: RUN cd /opt && unzip treeio.zip ...
-  CLOSED: [2015-03-12 Thu 22:19]
-http://stackoverflow.com/questions/20632258/docker-change-directory-command
-
-- every RUN creates a new commit & (currently) an AUFS layer
-
-#+BEGIN_EXAMPLE
-You can run a script, or a more complex parameter to the RUN. Here is an example from a Dockerfile I've downloaded to look at previously:
-
-RUN cd /opt && unzip treeio.zip && mv treeio-master treeio && \
-    rm -f treeio.zip && cd treeio && pip install -r requirements.pip
-Because of the use of '&&', it will only get to the final 'pip install' command if all the previous commands have succeeded.
-
-In fact, since every RUN creates a new commit & (currently) an AUFS layer, if you have too many commands in the Dockerfile, you will use up the limits, so merging the RUNs (when the file is stable) can be a very useful thing to do.
-#+END_EXAMPLE
-** BYPASS Dockerfile fail: echo -e /root/.ssh/config
-  CLOSED: [2015-03-12 Thu 18:26]
-# Disable strict host checking for github
-RUN echo "Host github.com" >> /root/.ssh/config
-RUN echo "  StrictHostKeyChecking no" >> /root/.ssh/config
-RUN echo "  IdentityFile /root/.ssh/mdmdevops_id_rsa" >> /root/.ssh/config
-RUN echo "  User git" >> /root/.ssh/config
-** ubuntu install docker-compose
-https://docs.docker.com/compose/install/
-https://docs.docker.com/install/linux/docker-ee/ubuntu/
-
-sudo apt-get install \
-    linux-image-extra-$(uname -r) \
-    linux-image-extra-virtual
-
-wget -qO- https://get.docker.com/ | sh
-
-sudo curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-
-sudo chmod +x /usr/local/bin/docker-compose
-** DONE docker-compose.yml mem_limit
-  CLOSED: [2018-03-08 Thu 20:14]
-https://docs.docker.com/config/containers/resource_constraints/
-
-1000,000,000
-
-#+BEGIN_EXAMPLE
-  jenkins:
-    container_name: mdm-jenkins
-    hostname: mdm-jenkins
-    # Base Docker image: https://github.com/dennyzhang/devops_docker_image/blob/tag_v7/jenkins/Dockerfile_1_0
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "18080:8080/tcp"
-    # 2.5 GB
-    mem_limit: 2500000000
-    environment:
-      JENKINS_TIMEZONE: "America/Los_Angeles"
-      JAVA_OPTS: -Djenkins.install.runSetupWizard=false
-#+END_EXAMPLE
 * DONE doc: docker compose export udp                              :noexport:
   CLOSED: [2018-07-20 Fri 14:16]
 * TODO opensource improvement: CheatSheet: https://github.com/eon01/DockerCheatSheet :noexport:
@@ -7747,6 +7408,10 @@ http://docs.docker.io/en/latest/examples/running_riak_service/
 ** [#B] [question] Docker倾向于为每个application, 创建一个containerr image, 但这个OS的image却又是一个阉割版,之后后悔了,那怎么办呢？
 * #  --8<-------------------------- separator ------------------------>8-- :noexport:
 * TODO Check https://github.com/wsargent/docker-cheat-sheet        :noexport:
+* TODO simplify docker add                                         :noexport:
+RUN wget -qO- https://github.com/cloudfoundry-incubator/credhub-cli/releases/download/1.5.3/credhub-linux-1.5.3.tgz | tar xvz && \
+    mv credhub /usr/bin
+* #  --8<-------------------------- separator ------------------------>8-- :noexport:
 * Scripts                                                          :noexport:
 - Docker build
 #+BEGIN_SRC sh
@@ -7781,6 +7446,157 @@ if docker images | grep none | tee; then
    docker rmi $(docker images | grep "<none>"  | awk -F' ' '{print $3}') | tee
 fi
 #+END_EXAMPLE
-* TODO simplify docker add                                         :noexport:
-RUN wget -qO- https://github.com/cloudfoundry-incubator/credhub-cli/releases/download/1.5.3/credhub-linux-1.5.3.tgz | tar xvz && \
-    mv credhub /usr/bin
+* [#A] Dockerfile                                                  :noexport:
+** Cheatsheet https://jimmysong.io/cheatsheets/dockerfile
+** DONE dockerfile define multiple line command
+  CLOSED: [2015-03-09 Mon 00:38]
+https://github.com/docker/docker/issues/1799
+#+BEGIN_EXAMPLE
+Anyone know how to use heredoc with this syntax? Docker wants to bunch it onto a single line and causes a bash syntax error:
+
+RUN cat > /etc/example.conf <<'EOF' \
+This is one multiple lines \
+and should stay that way \
+EOF
+#+END_EXAMPLE
+** DONE docker entrypoint: entrypoint: ["tail", "-f", "/dev/null"]
+   CLOSED: [2018-04-06 Fri 15:08]
+** DONE Dockerfile entrypoint VS CMD
+  CLOSED: [2017-03-15 Wed 16:40]
+http://www.projectatomic.io/docs/docker-image-author-guidance/
+- CMD simply sets a command to run in the image if no arguments are passed to docker run,
+- ENTRYPOINT is meant to make your image behave like a binary.
+
+CMD ["ls", "/" ]
+
+ENTRYPOINT $HOME/docker-entrypoint.sh
+
+Be careful with using ENTRYPOINT; it will make it more difficult to get a shell inside your image.
+** dockerfile example
+#+BEGIN_EXAMPLE
+########## How To Build Docker Image #############
+##
+##  Build image from Dockerfile. docker build -t XXX/mdm:v2 --rm=false .
+##  Run docker intermediate container: docker run -t -i XXX/mdm:v2 /bin/bash
+##  Commit local image: docker commit -m "Initial version" -a "Denny Zhang<denny.zhang@totvs.com>" 9187d029f904 XXX/mdm:v2
+##  Remove intermediate container: docker stop $(docker ps -a -q); docker rm $(docker ps -a -q)
+##  Release to docker hub: docker push XXX/mdm:v2
+##
+##################################################
+
+########## How To Use Docker Image ###############
+##
+##  Install docker utility
+##  Download docker image: docker pull XXX/mdm:v2
+##  Boot docker container: docker run -t -P -d XXX/mdm:v2 /bin/bash
+##
+##################################################
+
+FROM ubuntu:14.04
+MAINTAINER TOTVS Labs <denny.zhang@totvs.com>
+RUN apt-get -yqq update
+
+########################################################################################
+# Enable Chef
+
+RUN apt-get -yqq install curl lsb-release
+RUN curl -L https://getchef.com/chef/install.sh | bash
+
+########################################################################################
+#  Start sshd: http://docs.docker.com/examples/running_ssh_service/
+RUN apt-get install -y openssh-server
+RUN mkdir /var/run/sshd
+RUN echo 'root:TOTVSFoobar1!' | chpasswd
+RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+# SSH login fix. Otherwise user is kicked off after login
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+RUN mkdir -p /root/.ssh
+RUN echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGVkT4Ka/Pt6M/xREwYWatYyBqaBgDVS1bCy7CViZ5VGr1z+sNwI2cBoRwWxqHwvOgfAm+Wbzwqs+WNvXW6GDZ1kjayh2YnBN5UBYZjpNQK9tmO8KHQwX29UvOaOJ6HIEWOJB9ylyUoWL+WwNf71arpXULBW6skx9fp9F5rHuB0UmQ+omhJGs6+PRSLAEzWaQvtxmm7CuZ7LgslNKskkqx/6CHlQPq2qchRVN5xvnZPuFWgF6cvWvK7kylAQsv8hQtFGsE9Rw1itjisCBVILzEC2mAjg5SqeEB0i7QwdlRr4jgxaxO5jR9wdKo7PaEl9+bibuZrCIhp6V4Y4eaIzAP denny.zhang@totvs.com' >> /root/.ssh/authorized_keys
+
+ENV NOTVISIBLE "in users profile"
+RUN echo "export VISIBLE=now" >> /etc/profile
+
+# Disable strict host checking for github
+RUN echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"]
+
+########################################################################################
+# Apache
+RUN apt-get -yqq install apache2
+# Jenkins
+RUN sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'
+RUN apt-get -yqq update
+RUN apt-get -yqq --force-yes install jenkins
+
+# Install basic packages.
+RUN apt-get -yqq install git update-notifier-common
+
+# TODO JDK, maven
+########################################################################################
+#+END_EXAMPLE
+** TODO syntax check for dockerfile
+https://access.redhat.com/labsinfo/linterfordockerfile
+http://stackoverflow.com/questions/28182047/is-there-a-way-to-lint-the-dockerfile
+https://github.com/projectatomic/dockerfile_lint
+https://github.com/goern/dockerfile_checker
+** DONE dockerfile go to directory: RUN cd /opt && unzip treeio.zip ...
+  CLOSED: [2015-03-12 Thu 22:19]
+http://stackoverflow.com/questions/20632258/docker-change-directory-command
+
+- every RUN creates a new commit & (currently) an AUFS layer
+
+#+BEGIN_EXAMPLE
+You can run a script, or a more complex parameter to the RUN. Here is an example from a Dockerfile I've downloaded to look at previously:
+
+RUN cd /opt && unzip treeio.zip && mv treeio-master treeio && \
+    rm -f treeio.zip && cd treeio && pip install -r requirements.pip
+Because of the use of '&&', it will only get to the final 'pip install' command if all the previous commands have succeeded.
+
+In fact, since every RUN creates a new commit & (currently) an AUFS layer, if you have too many commands in the Dockerfile, you will use up the limits, so merging the RUNs (when the file is stable) can be a very useful thing to do.
+#+END_EXAMPLE
+** BYPASS Dockerfile fail: echo -e /root/.ssh/config
+  CLOSED: [2015-03-12 Thu 18:26]
+# Disable strict host checking for github
+RUN echo "Host github.com" >> /root/.ssh/config
+RUN echo "  StrictHostKeyChecking no" >> /root/.ssh/config
+RUN echo "  IdentityFile /root/.ssh/mdmdevops_id_rsa" >> /root/.ssh/config
+RUN echo "  User git" >> /root/.ssh/config
+** ubuntu install docker-compose
+https://docs.docker.com/compose/install/
+https://docs.docker.com/install/linux/docker-ee/ubuntu/
+
+sudo apt-get install \
+    linux-image-extra-$(uname -r) \
+    linux-image-extra-virtual
+
+wget -qO- https://get.docker.com/ | sh
+
+sudo curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+
+sudo chmod +x /usr/local/bin/docker-compose
+** DONE docker-compose.yml mem_limit
+  CLOSED: [2018-03-08 Thu 20:14]
+https://docs.docker.com/config/containers/resource_constraints/
+
+1000,000,000
+
+#+BEGIN_EXAMPLE
+  jenkins:
+    container_name: mdm-jenkins
+    hostname: mdm-jenkins
+    # Base Docker image: https://github.com/dennyzhang/devops_docker_image/blob/tag_v7/jenkins/Dockerfile_1_0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "18080:8080/tcp"
+    # 2.5 GB
+    mem_limit: 2500000000
+    environment:
+      JENKINS_TIMEZONE: "America/Los_Angeles"
+      JAVA_OPTS: -Djenkins.install.runSetupWizard=false
+#+END_EXAMPLE
