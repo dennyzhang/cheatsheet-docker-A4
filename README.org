@@ -21,6 +21,7 @@
 - Related posts: [[https://cheatsheet.dennyzhang.com/kubernetes-yaml-templates][Kubernetes Yaml]], [[https://github.com/topics/denny-cheatsheets][#denny-cheatsheets]]
 
 File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or star [[https://github.com/DennyZhang/cheatsheet-docker-A4][this repo]].
+
 ** Docker start service
 | Name                    | Summary                                                                                                    |
 |-------------------------+------------------------------------------------------------------------------------------------------------|
@@ -82,6 +83,43 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | man: command not found   | =apt-get update=, =apt-get install man=          |
 | ping: command not found  | =apt-get update=, =apt-get install iputils-ping= |
 | dig: command not found   | =apt-get install dnsutils=                       |
+
+** Docker Compose
+| Name                             | Summary                                                                              |
+|----------------------------------+--------------------------------------------------------------------------------------|
+| Change entrypoint to run nothing | =entrypoint: ["tail", "-f", "/dev/null"]=                                            |
+| Change restart policy            | =restart: always=, [[https://docs.docker.com/compose/compose-file/#restart_policy][Link: Compose file version 3 reference]]                            |
+| Mount file as volume             | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/samples/mount-file.yml][samples/mount-file.yml]] |
+| Start compose env                | =docker-compose up=, =docker-compose up -d=                                          |
+| Stop compose env                 | =docker-compose down=, =docker-compose down -v=                                      |
+| Check logs                       | =docker-compose logs=                                                                |
+
+** Check Status
+| Name                               | Summary                                                       |
+|------------------------------------+---------------------------------------------------------------|
+| Tail container logs                | =docker logs --tail 5 $container_name=                        |
+| Check container healthcheck status | =docker inspect --format '{{.State.Health}}' $container_name= |
+| List containers                    | =docker ps=                                                   |
+| List all containers                | =docker ps -a=                                                |
+| List containers by labels          | =docker ps --filter "label=org.label-schema.group"=           |
+| List all images                         | =docker images -a=                                  |
+
+** Container Basic
+| Name                                    | Summary                                             |
+|-----------------------------------------+-----------------------------------------------------|
+| Start docker container                  | =docker run -p 4000:80 imgname=                     |
+| Start docker container in detached mode | =docker run -d -p 4000:80 imgname=                  |
+| Enter a running container               | =docker exec -it [container-id] sh=                 |
+| Stop container                          | =docker stop <hash>=                                |
+| Remove container                        | =docker rm <hash>=                                  |
+| Remove all containers                   | =docker rm $(docker ps -a -q)=                      |
+| Force shutdown of one given container   | =docker kill <hash>=                                |
+| Login to docker hub                     | =docker login=                                      |
+| Tag <image>                             | =docker tag <image> username/repo:tag=              |
+| Docker push a tagged image to repo      | =docker push username/repo:tag=                     |
+| Run image from a given tag              | =docker run username/repo:tag=                      |
+| Create docker image                     | =docker build -t denny/image:test .=                |
+
 ** Docker Socket file
 | Name                               | Summary                                                                                                                                               |
 |------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -93,15 +131,6 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | List events                        | =curl --unix-socket /var/run/docker.sock http://localhost/events=                                                                                     |
 | Create container                   | =curl -XPOST --unix-socket /var/run/docker.sock -d '{"Image":"nginx:alpine"}' -H 'Content-Type: application/json' http://localhost/containers/create= |
 | Links                              | [[https://docs.docker.com/develop/sdk/][Link: Develop with Docker Engine SDKs and API]]                                                                                                         |
-** Docker Compose
-| Name                             | Summary                                                                             |
-|----------------------------------+-------------------------------------------------------------------------------------|
-| Change entrypoint to run nothing | =entrypoint: ["tail", "-f", "/dev/null"]=                                           |
-| Change restart policy            | =restart: always=, [[https://docs.docker.com/compose/compose-file/#restart_policy][Link: Compose file version 3 reference]]                           |
-| Mount file as volume             | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/sample-mount-file.yml][sample-mount-file.yml]] |
-| Start compose env                | =docker-compose up=, =docker-compose up -d=                                         |
-| Stop compose env                 | =docker-compose down=, =docker-compose down -v=                                     |
-| Check logs                       | =docker-compose logs=                                                               |
 ** Container Runtime
 | Name    | Summary                                                                                  |
 |---------+------------------------------------------------------------------------------------------|
