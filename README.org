@@ -1,4 +1,4 @@
-* Docker CheatSheet                                              :Kubernetes:
+* Docker CheatSheet                                              :Cloud:
 :PROPERTIES:
 :type:     kubernetes
 :export_file_name: cheatsheet-docker-A4.pdf
@@ -16,7 +16,7 @@
 <a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
 #+END_HTML
 
-- PDF Link: [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/cheatsheet-docker-A4.pdf][cheatsheet-docker-A4.pdf]], Category: [[https://cheatsheet.dennyzhang.com/category/tools/][tools]]
+- PDF Link: [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/cheatsheet-docker-A4.pdf][cheatsheet-docker-A4.pdf]], Category: [[https://cheatsheet.dennyzhang.com/category/cloud/][Cloud]]
 - Blog URL: https://cheatsheet.dennyzhang.com/cheatsheet-docker-A4
 - Related posts: [[https://cheatsheet.dennyzhang.com/kubernetes-yaml-templates][Kubernetes Yaml]], [[https://github.com/topics/denny-cheatsheets][#denny-cheatsheets]]
 
@@ -7629,3 +7629,23 @@ https://docs.docker.com/config/containers/resource_constraints/
       JENKINS_TIMEZONE: "America/Los_Angeles"
       JAVA_OPTS: -Djenkins.install.runSetupWizard=false
 #+END_EXAMPLE
+* TODO docker exec hangs                                           :noexport:
+#+BEGIN_EXAMPLE
+[ec2-user@ip-172-31-22-205 ~]$ docker ps
+CONTAINER ID        IMAGE                            COMMAND                  CREATED             STATUS                  PORTS                                      NAMES
+438d7d70561b        denny/devops-blog:kubernetes     "/bin/sh -c $WORDP..."   2 days ago          Up 2 days (unhealthy)   80/tcp, 0.0.0.0:8087->8087/tcp             ecs-task-denny-blog-kubernetes-2-kubernetes-feeffec39e86ed84dd01
+6d75be4177eb        denny/devops-blog:latest         "/bin/sh -c $WORDP..."   3 days ago          Up 3 days (unhealthy)   80/tcp, 0.0.0.0:8083->8083/tcp             ecs-task-denny-blog-devops-11-blog-devops-feb494ef80e5d4da1000
+fe63a88a229d        denny/devops-blog:cheatsheet     "/bin/sh -c $WORDP..."   5 days ago          Up 5 days (unhealthy)   80/tcp, 0.0.0.0:8084->8084/tcp             ecs-task-denny-blog-cheatsheet-2-cheatsheet-9abe9de79dea9d97af01
+cf6a4f6d7adf        denny/devops-blog:nginx-proxy    "/bin/sh -c /docke..."   8 days ago          Up 8 days (unhealthy)   0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp   ecs-task-denny-proxy-9-nginx-proxy-98e59ab9dcefece71400
+d7d3c2058a44        denny/devops-blog:quiz           "/bin/sh -c $WORDP..."   8 days ago          Up 8 days (unhealthy)   80/tcp, 0.0.0.0:8086->8086/tcp             ecs-task-denny-blog-quiz-2-quiz-f8bee9e9eafde1e67700
+277030bf7270        denny/devops-blog:architect      "/bin/sh -c $WORDP..."   8 days ago          Up 8 days (unhealthy)   80/tcp, 0.0.0.0:8085->8085/tcp             ecs-task-denny-blog-architect-1-architect-9e8be4d2a0f3cf81f701
+a2cb165947d0        denny/devops-blog:pull-git-cdn   "/bin/sh -c 'sh /r..."   8 days ago          Up 8 days                                                          ecs-task-denny-git-pull-3-pull-git-cdn-b2c2e9c9b5b8c2c19a01
+13b0a1738ec5        denny/devops-blog:code           "/bin/sh -c $WORDP..."   8 days ago          Up 8 days (unhealthy)   80/tcp, 0.0.0.0:8082->8082/tcp             ecs-task-denny-blog-code-1-code-ecfad4fcb9b3b0fd8801
+0471ce98d0ce        denny/slackin:latest             "/bin/sh -c './bin..."   8 days ago          Up 8 days               0.0.0.0:3000->3000/tcp                     ecs-task-denny-slackin-2-slackin-d28bf3bf999d93f74e00
+68447aa2fe70        amazon/amazon-ecs-agent:latest   "/agent"                 12 days ago         Up 8 days                                                          ecs-agent
+[ec2-user@ip-172-31-22-205 ~]$ docker exec -it 13b0a1738ec5 sh
+rpc error: code = 2 desc = oci runtime error: exec failed: container_linux.go:247: starting container process caused "process_linux.go:83: executing setns process caused \"exit status 15\""
+#+END_EXAMPLE
+* TODO dockerd vs docker-containerd
+26803 root      10 -10 1249260  17268  13100 S   0.0  0.4   0:42.79 docker-containerd --config /var/run/docker/containerd/containerd.toml
+26298 root      10 -10  623832  68624  31688 S   2.3  1.7   7:43.54 dockerd --debug=false --default-ulimit=nofile=65536 --group vcap --data-root /var/vcap/store/docker/docker --host unix:///var/vcap/sys/run/docker/docker.sock --icc=true+
