@@ -9,7 +9,7 @@
 <div id="the whole thing" style="overflow: hidden;">
 <div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
 <div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
-<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/slack.png" alt="slack"/></a></div>
 </div>
 
 <br/><br/>
@@ -21,17 +21,72 @@
 - Related posts: [[https://cheatsheet.dennyzhang.com/kubernetes-yaml-templates][Kubernetes Yaml]], [[https://github.com/topics/denny-cheatsheets][#denny-cheatsheets]]
 
 File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or star [[https://github.com/DennyZhang/cheatsheet-docker-A4][this repo]].
-
+** Container Runtime
+| Name                | Summary                                                                        |
+|---------------------+--------------------------------------------------------------------------------|
+| dockerd             |                                                                                |
+| containerd          |                                                                                |
+| [[https://cri-o.io/][cri-o]]               | From Redhat                                                                    |
+| [[https://github.com/rkt/rkt][rkt]]                 | a pod-native container engine for Linux.                                       |
+| Amazon ACS          | supports DC/OS, Swarm, Kubernetes                                              |
+| CoreOS Fleet        |                                                                                |
+| Cloud Foundry Diego | Not actively maintained any more                                               |
+| Reference           | [[https://cheatsheet.dennyzhang.com/cheatsheet-docker-A4][CheatSheet: Docker]], [[https://cheatsheet.dennyzhang.com/cheatsheet-crio-A4][CheatSheet: CRI-O]], [[https://cheatsheet.dennyzhang.com/cheatsheet-rkt-A4][CheatSheet: rkt]], [[https://cheatsheet.dennyzhang.com/cheatsheet-containerd-A4][CheatSheet: containerd]] |
 ** Docker start service
 | Name                    | Summary                                                                                                    |
 |-------------------------+------------------------------------------------------------------------------------------------------------|
 | Start a ubuntu test env | =docker run ubuntu:16.04 /bin/echo hello world=                                                            |
 | Start a centos test env | =docker run centos:centos6 /bin/echo hello world=                                                          |
+| [[https://github.com/jenkinsci/docker/blob/master/README.md][Start a jenkins server]]  | =docker run -p 8080:8080 -p 50000:50000 jenkins/jenkins:lts=                                               |
 | Start a nginx server    | =docker run -t -d -p 8080:80 --name nginx-test nginx=                                                      |
-| Start a jenkins server  | =docker run -p 8080:8080 denny/jenkins:1.0=                                                                |
 | Start a nexus server    | =docker run -d -p 8082:8081 --name nexus -v /data/nexus-data:/nexus-data sonatype/docker-nexus3=           |
 | Start a sshd server     | =docker run -t -d --privileged -p 5022:22 denny/sshd:latest /usr/sbin/sshd -D=                             |
 | Start a ftp server      | =docker run -t -d -p 21:21 -p 20:20 -e USERNAME=${username} -e PASSWORD=${password} denny/proftproftpd:v1= |
+** Container Basic
+| Name                                      | Summary                                                 |
+|-------------------------------------------+---------------------------------------------------------|
+| Start docker container                    | =docker run -p 4000:80 imgname=                         |
+| Start docker container in detached mode   | =docker run -d -p 4000:80 imgname=                      |
+| Start container with entrypoint changed   | =docker run -t -d --entrypoint=/bin/sh "$docker_image"= |
+| Enter a running container                 | =docker exec -it <container-id> sh=                     |
+| Upload local file to container filesystem | =docker cp /tmp/foo.txt mycontainer:/foo.txt=           |
+| Download container file local filesystem  | =docker cp mycontainer:/foo.txt /tmp/foo.txt=           |
+| Stop container                            | =docker stop <hash>=                                    |
+| Remove container                          | =docker rm <hash>=                                      |
+| Remove all containers                     | =docker rm $(docker ps -a -q)=                          |
+| Force shutdown of one given container     | =docker kill <hash>=                                    |
+| Login to docker hub                       | =docker login=                                          |
+| Tag <image>                               | =docker tag <image> username/repo:tag=                  |
+| Docker push a tagged image to repo        | =docker push username/repo:tag=                         |
+| Run image from a given tag                | =docker run username/repo:tag=                          |
+| Create docker image                       | =docker build -t denny/image:test .=                    |
+#+BEGIN_HTML
+<a href="https://www.dennyzhang.com"><img align="right" width="185" height="37" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/dns_small.png"></a>
+#+END_HTML
+** Docker Cleanup
+| Name                           | Summary                                                  |
+|--------------------------------+----------------------------------------------------------|
+| Delete all containers          | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-all-containers.sh#L13][delete-all-containers.sh]]                                 |
+| Remove unused docker images    | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-unused-images.sh][delete-unused-images.sh]]                                  |
+| Remove the specified image     | =docker rmi <imagename>=                                 |
+| Remove all docker images       | =docker rmi $(docker images -q)=                         |
+| Remove orphaned docker volumes | =docker volume rm $(docker volume ls -qf dangling=true)= |
+| Remove dead containers         | =docker rm $(docker ps --filter status=dead -qa)=        |
+| Remove exited containers       | =docker rm $(docker ps --filter status=exited -qa)=      |
+** Dockerfile
+| Name                             | Summary                                                                          |
+|----------------------------------+----------------------------------------------------------------------------------|
+| Change entrypoint to run nothing | =entrypoint: ["tail", "-f", "/dev/null"]=                                        |
+| [[https://serverfault.com/questions/683605/docker-container-time-timezone-will-not-reflect-changes/683651#683651][Set timezone in Dockerfile]]       | =RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone= |
+| Define multiple line command     | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/Dockerfile-example-multiline][Dockerfile-example-multiline]]                                                     |
+** Docker Compose
+| Name                             | Summary                                                                              |
+|----------------------------------+--------------------------------------------------------------------------------------|
+| Change restart policy            | =restart: always=, [[https://docs.docker.com/compose/compose-file/#restart_policy][Link: Compose file version 3 reference]]                            |
+| Mount file as volume             | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/samples/mount-file.yml][samples/mount-file.yml]] |
+| Start compose env                | =docker-compose up=, =docker-compose up -d=                                          |
+| Stop compose env                 | =docker-compose down=, =docker-compose down -v=                                      |
+| Check logs                       | =docker-compose logs=                                                                |
 ** Docker Containers
 | Name                                        | Summary                                                       |
 |---------------------------------------------+---------------------------------------------------------------|
@@ -48,78 +103,16 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | Tail container logs                         | =docker logs --tail 5 $container_name=                        |
 | Check container healthcheck status          | =docker inspect --format '{{.State.Health}}' $container_name= |
 | List containers by labels                   | =docker ps --filter "label=org.label-schema.group"=           |
-#+BEGIN_HTML
-<a href="https://www.dennyzhang.com"><img align="right" width="185" height="37" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/dns_small.png"></a>
-#+END_HTML
 ** Docker Images
 | Name                               | Summary                                 |
 |------------------------------------+-----------------------------------------|
 | List all images                    | =docker images=, =docker images -a=     |
-| Create docker image                | =docker build -t denny/image:test .=    |
-| Docker push a tagged image to repo | =docker push username/repo:tag=         |
+| Create docker image                | =docker build -t denny/image:<tag> .=   |
+| Docker push a tagged image to repo | =docker push denny/image:<tag>=         |
 | Show the history of an image       | =docker history <image_name>=           |
 | Export image to file               | =docker save <image_name> > my_img.tar= |
 | Load image to local registry       | =docker load -i my_img.tar=             |
 | Tag <image>                        | =docker tag <image> username/repo:tag=  |
-** Docker Conf
-| Name           | Summary                                               |
-|----------------+-------------------------------------------------------|
-| Docker files   | =/var/lib/docker=, =/var/lib/docker/devicemapper/mnt= |
-| Docker for Mac | =~/Library/Containers/com.docker.docker/Data/=        |
-** Docker Cleanup
-| Name                           | Summary                                                  |
-|--------------------------------+----------------------------------------------------------|
-| Remove the specified image     | =docker rmi <imagename>=                                 |
-| Remove all docker images       | =docker rmi $(docker images -q)=                         |
-| Remove orphaned docker volumes | =docker volume rm $(docker volume ls -qf dangling=true)= |
-| Remove dead containers         | =docker rm $(docker ps --filter status=dead -qa)=        |
-| Remove exited containers       | =docker rm $(docker ps --filter status=exited -qa)=      |
-| Delete all containers          | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-all-containers.sh][delete-all-containers.sh]]                                 |
-| Remove unused docker images    | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-unused-images.sh][delete-unused-images.sh]]                                  |
-** Ubuntu docker: Install missing packages
-| Name                     | Summary                                          |
-|--------------------------+--------------------------------------------------|
-| Pull ubuntu docker image | =docker pull ubuntu=                             |
-| man: command not found   | =apt-get update=, =apt-get install man=          |
-| ping: command not found  | =apt-get update=, =apt-get install iputils-ping= |
-| dig: command not found   | =apt-get install dnsutils=                       |
-
-** Docker Compose
-| Name                             | Summary                                                                              |
-|----------------------------------+--------------------------------------------------------------------------------------|
-| Change entrypoint to run nothing | =entrypoint: ["tail", "-f", "/dev/null"]=                                            |
-| Change restart policy            | =restart: always=, [[https://docs.docker.com/compose/compose-file/#restart_policy][Link: Compose file version 3 reference]]                            |
-| Mount file as volume             | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/samples/mount-file.yml][samples/mount-file.yml]] |
-| Start compose env                | =docker-compose up=, =docker-compose up -d=                                          |
-| Stop compose env                 | =docker-compose down=, =docker-compose down -v=                                      |
-| Check logs                       | =docker-compose logs=                                                                |
-
-** Check Status
-| Name                               | Summary                                                       |
-|------------------------------------+---------------------------------------------------------------|
-| Tail container logs                | =docker logs --tail 5 $container_name=                        |
-| Check container healthcheck status | =docker inspect --format '{{.State.Health}}' $container_name= |
-| List containers                    | =docker ps=                                                   |
-| List all containers                | =docker ps -a=                                                |
-| List containers by labels          | =docker ps --filter "label=org.label-schema.group"=           |
-| List all images                         | =docker images -a=                                  |
-
-** Container Basic
-| Name                                    | Summary                                             |
-|-----------------------------------------+-----------------------------------------------------|
-| Start docker container                  | =docker run -p 4000:80 imgname=                     |
-| Start docker container in detached mode | =docker run -d -p 4000:80 imgname=                  |
-| Enter a running container               | =docker exec -it [container-id] sh=                 |
-| Stop container                          | =docker stop <hash>=                                |
-| Remove container                        | =docker rm <hash>=                                  |
-| Remove all containers                   | =docker rm $(docker ps -a -q)=                      |
-| Force shutdown of one given container   | =docker kill <hash>=                                |
-| Login to docker hub                     | =docker login=                                      |
-| Tag <image>                             | =docker tag <image> username/repo:tag=              |
-| Docker push a tagged image to repo      | =docker push username/repo:tag=                     |
-| Run image from a given tag              | =docker run username/repo:tag=                      |
-| Create docker image                     | =docker build -t denny/image:test .=                |
-
 ** Docker Socket file
 | Name                               | Summary                                                                                                                                               |
 |------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -131,12 +124,30 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | List events                        | =curl --unix-socket /var/run/docker.sock http://localhost/events=                                                                                     |
 | Create container                   | =curl -XPOST --unix-socket /var/run/docker.sock -d '{"Image":"nginx:alpine"}' -H 'Content-Type: application/json' http://localhost/containers/create= |
 | Links                              | [[https://docs.docker.com/develop/sdk/][Link: Develop with Docker Engine SDKs and API]]                                                                                                         |
-** Container Runtime
-| Name    | Summary                                                                                  |
-|---------+------------------------------------------------------------------------------------------|
-| dockerd |                                                                                          |
-| [[https://github.com/rkt/rkt][rkt]]     | a pod-native container engine for Linux.                                                 |
-| [[https://github.com/kubernetes-sigs/cri-o][CRI-O]]   | Open Container Initiative-based implementation of Kubernetes Container Runtime Interface |
+#+BEGIN_HTML
+<a href="https://www.dennyzhang.com"><img align="right" width="185" height="37" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/dns_small.png"></a>
+#+END_HTML
+** Docker Conf
+| Name           | Summary                                               |
+|----------------+-------------------------------------------------------|
+| Docker files   | =/var/lib/docker=, =/var/lib/docker/devicemapper/mnt= |
+| Docker for Mac | =~/Library/Containers/com.docker.docker/Data/=        |
+** Ubuntu docker: Install missing packages
+| Name                     | Summary                                          |
+|--------------------------+--------------------------------------------------|
+| Pull ubuntu docker image | =docker pull ubuntu=                             |
+| man: command not found   | =apt-get update=, =apt-get install man=          |
+| ping: command not found  | =apt-get update=, =apt-get install iputils-ping= |
+| dig: command not found   | =apt-get install dnsutils=                       |
+** Check Status
+| Name                               | Summary                                                       |
+|------------------------------------+---------------------------------------------------------------|
+| Tail container logs                | =docker logs --tail 5 $container_name=                        |
+| Check container healthcheck status | =docker inspect --format '{{.State.Health}}' $container_name= |
+| List containers                    | =docker ps=                                                   |
+| List all containers                | =docker ps -a=                                                |
+| List containers by labels          | =docker ps --filter "label=org.label-schema.group"=           |
+| List all images                         | =docker images -a=                                  |
 ** Resource Reference
 | Name                  | Summary                                                             |
 |-----------------------+---------------------------------------------------------------------|
@@ -152,7 +163,7 @@ License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_lice
 
 <a href="https://www.linkedin.com/in/dennyzhang001"><img align="bottom" src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a>
 <a href="https://github.com/dennyzhang"><img align="bottom"src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a>
-<a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img align="bottom" src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a>
+<a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img align="bottom" src="https://www.dennyzhang.com/wp-content/uploads/sns/slack.png" alt="slack"/></a>
 #+END_HTML
 * org-mode configuration                                           :noexport:
 #+STARTUP: overview customtime noalign logdone showall
@@ -4475,12 +4486,6 @@ root@myatlassian:/# service mysql status
 /usr/sbin/mysqld: error while loading shared libraries: libaio.so.1: cannot open shared object file permission denied
  * MySQL is stopped.
 #+END_EXAMPLE
-** DONE docker cp: docker cp mycontainer:/foo.txt foo.txt
-  CLOSED: [2016-04-11 Mon 12:44]
-https://docs.docker.com/engine/reference/commandline/cp/
-http://stackoverflow.com/questions/22907231/copying-files-from-host-to-docker-container
-docker cp foo.txt mycontainer:/foo.txt
-docker cp mycontainer:/foo.txt foo.txt
 ** DONE docker fail to remove docker image with tag: specify tag name, instead of image id
   CLOSED: [2016-04-12 Tue 18:19]
 https://github.com/docker/docker/issues/1530
@@ -7475,21 +7480,27 @@ if docker images | grep none | tee; then
    docker rmi $(docker images | grep "<none>"  | awk -F' ' '{print $3}') | tee
 fi
 #+END_EXAMPLE
+* TODO docker exec hangs                                           :noexport:
+#+BEGIN_EXAMPLE
+[ec2-user@ip-172-31-22-205 ~]$ docker ps
+CONTAINER ID        IMAGE                            COMMAND                  CREATED             STATUS                  PORTS                                      NAMES
+438d7d70561b        denny/devops-blog:kubernetes     "/bin/sh -c $WORDP..."   2 days ago          Up 2 days (unhealthy)   80/tcp, 0.0.0.0:8087->8087/tcp             ecs-task-denny-blog-kubernetes-2-kubernetes-feeffec39e86ed84dd01
+6d75be4177eb        denny/devops-blog:latest         "/bin/sh -c $WORDP..."   3 days ago          Up 3 days (unhealthy)   80/tcp, 0.0.0.0:8083->8083/tcp             ecs-task-denny-blog-devops-11-blog-devops-feb494ef80e5d4da1000
+fe63a88a229d        denny/devops-blog:cheatsheet     "/bin/sh -c $WORDP..."   5 days ago          Up 5 days (unhealthy)   80/tcp, 0.0.0.0:8084->8084/tcp             ecs-task-denny-blog-cheatsheet-2-cheatsheet-9abe9de79dea9d97af01
+cf6a4f6d7adf        denny/devops-blog:nginx-proxy    "/bin/sh -c /docke..."   8 days ago          Up 8 days (unhealthy)   0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp   ecs-task-denny-proxy-9-nginx-proxy-98e59ab9dcefece71400
+d7d3c2058a44        denny/devops-blog:quiz           "/bin/sh -c $WORDP..."   8 days ago          Up 8 days (unhealthy)   80/tcp, 0.0.0.0:8086->8086/tcp             ecs-task-denny-blog-quiz-2-quiz-f8bee9e9eafde1e67700
+277030bf7270        denny/devops-blog:architect      "/bin/sh -c $WORDP..."   8 days ago          Up 8 days (unhealthy)   80/tcp, 0.0.0.0:8085->8085/tcp             ecs-task-denny-blog-architect-1-architect-9e8be4d2a0f3cf81f701
+a2cb165947d0        denny/devops-blog:pull-git-cdn   "/bin/sh -c 'sh /r..."   8 days ago          Up 8 days                                                          ecs-task-denny-git-pull-3-pull-git-cdn-b2c2e9c9b5b8c2c19a01
+13b0a1738ec5        denny/devops-blog:code           "/bin/sh -c $WORDP..."   8 days ago          Up 8 days (unhealthy)   80/tcp, 0.0.0.0:8082->8082/tcp             ecs-task-denny-blog-code-1-code-ecfad4fcb9b3b0fd8801
+0471ce98d0ce        denny/slackin:latest             "/bin/sh -c './bin..."   8 days ago          Up 8 days               0.0.0.0:3000->3000/tcp                     ecs-task-denny-slackin-2-slackin-d28bf3bf999d93f74e00
+68447aa2fe70        amazon/amazon-ecs-agent:latest   "/agent"                 12 days ago         Up 8 days                                                          ecs-agent
+[ec2-user@ip-172-31-22-205 ~]$ docker exec -it 13b0a1738ec5 sh
+rpc error: code = 2 desc = oci runtime error: exec failed: container_linux.go:247: starting container process caused "process_linux.go:83: executing setns process caused \"exit status 15\""
+#+END_EXAMPLE
+* TODO docker cheatsheet: https://bitbucket.org/devops_sysops/cheatsheetcollection/src/a4b5d9acc0a852254a2eb8719068f9361d99e426/Containers/Docker.md?fileviewer=file-view-default :noexport:
+* #  --8<-------------------------- separator ------------------------>8-- :noexport:
 * [#A] Dockerfile                                                  :noexport:
 ** Cheatsheet https://jimmysong.io/cheatsheets/dockerfile
-** DONE dockerfile define multiple line command
-  CLOSED: [2015-03-09 Mon 00:38]
-https://github.com/docker/docker/issues/1799
-#+BEGIN_EXAMPLE
-Anyone know how to use heredoc with this syntax? Docker wants to bunch it onto a single line and causes a bash syntax error:
-
-RUN cat > /etc/example.conf <<'EOF' \
-This is one multiple lines \
-and should stay that way \
-EOF
-#+END_EXAMPLE
-** DONE docker entrypoint: entrypoint: ["tail", "-f", "/dev/null"]
-   CLOSED: [2018-04-06 Fri 15:08]
 ** DONE Dockerfile entrypoint VS CMD
   CLOSED: [2017-03-15 Wed 16:40]
 http://www.projectatomic.io/docs/docker-image-author-guidance/
@@ -7629,23 +7640,14 @@ https://docs.docker.com/config/containers/resource_constraints/
       JENKINS_TIMEZONE: "America/Los_Angeles"
       JAVA_OPTS: -Djenkins.install.runSetupWizard=false
 #+END_EXAMPLE
-* TODO docker exec hangs                                           :noexport:
-#+BEGIN_EXAMPLE
-[ec2-user@ip-172-31-22-205 ~]$ docker ps
-CONTAINER ID        IMAGE                            COMMAND                  CREATED             STATUS                  PORTS                                      NAMES
-438d7d70561b        denny/devops-blog:kubernetes     "/bin/sh -c $WORDP..."   2 days ago          Up 2 days (unhealthy)   80/tcp, 0.0.0.0:8087->8087/tcp             ecs-task-denny-blog-kubernetes-2-kubernetes-feeffec39e86ed84dd01
-6d75be4177eb        denny/devops-blog:latest         "/bin/sh -c $WORDP..."   3 days ago          Up 3 days (unhealthy)   80/tcp, 0.0.0.0:8083->8083/tcp             ecs-task-denny-blog-devops-11-blog-devops-feb494ef80e5d4da1000
-fe63a88a229d        denny/devops-blog:cheatsheet     "/bin/sh -c $WORDP..."   5 days ago          Up 5 days (unhealthy)   80/tcp, 0.0.0.0:8084->8084/tcp             ecs-task-denny-blog-cheatsheet-2-cheatsheet-9abe9de79dea9d97af01
-cf6a4f6d7adf        denny/devops-blog:nginx-proxy    "/bin/sh -c /docke..."   8 days ago          Up 8 days (unhealthy)   0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp   ecs-task-denny-proxy-9-nginx-proxy-98e59ab9dcefece71400
-d7d3c2058a44        denny/devops-blog:quiz           "/bin/sh -c $WORDP..."   8 days ago          Up 8 days (unhealthy)   80/tcp, 0.0.0.0:8086->8086/tcp             ecs-task-denny-blog-quiz-2-quiz-f8bee9e9eafde1e67700
-277030bf7270        denny/devops-blog:architect      "/bin/sh -c $WORDP..."   8 days ago          Up 8 days (unhealthy)   80/tcp, 0.0.0.0:8085->8085/tcp             ecs-task-denny-blog-architect-1-architect-9e8be4d2a0f3cf81f701
-a2cb165947d0        denny/devops-blog:pull-git-cdn   "/bin/sh -c 'sh /r..."   8 days ago          Up 8 days                                                          ecs-task-denny-git-pull-3-pull-git-cdn-b2c2e9c9b5b8c2c19a01
-13b0a1738ec5        denny/devops-blog:code           "/bin/sh -c $WORDP..."   8 days ago          Up 8 days (unhealthy)   80/tcp, 0.0.0.0:8082->8082/tcp             ecs-task-denny-blog-code-1-code-ecfad4fcb9b3b0fd8801
-0471ce98d0ce        denny/slackin:latest             "/bin/sh -c './bin..."   8 days ago          Up 8 days               0.0.0.0:3000->3000/tcp                     ecs-task-denny-slackin-2-slackin-d28bf3bf999d93f74e00
-68447aa2fe70        amazon/amazon-ecs-agent:latest   "/agent"                 12 days ago         Up 8 days                                                          ecs-agent
-[ec2-user@ip-172-31-22-205 ~]$ docker exec -it 13b0a1738ec5 sh
-rpc error: code = 2 desc = oci runtime error: exec failed: container_linux.go:247: starting container process caused "process_linux.go:83: executing setns process caused \"exit status 15\""
-#+END_EXAMPLE
-* TODO dockerd vs docker-containerd
+* HALF docker mount file                                           :noexport:
+https://serversforhackers.com/c/mounting-files-vs-directories
+https://docs.docker.com/storage/bind-mounts/#configure-mount-consistency-for-macos
+* #  --8<-------------------------- separator ------------------------>8-- :noexport:
+* TODO dockerd vs docker-containerd                                :noexport:
+https://stackoverflow.com/questions/46649592/dockerd-vs-docker-containerd-vs-docker-runc-vs-docker-containerd-ctr-vs-docker-c
 26803 root      10 -10 1249260  17268  13100 S   0.0  0.4   0:42.79 docker-containerd --config /var/run/docker/containerd/containerd.toml
 26298 root      10 -10  623832  68624  31688 S   2.3  1.7   7:43.54 dockerd --debug=false --default-ulimit=nofile=65536 --group vcap --data-root /var/vcap/store/docker/docker --host unix:///var/vcap/sys/run/docker/docker.sock --icc=true+
+* TODO consolidate docker: https://github.com/wsargent/docker-cheat-sheet :noexport:
+* DONE docker scratch image: https://github.com/wavefrontHQ/wavefront-kubernetes-collector/blob/master/deploy/docker/Dockerfile :noexport:
+  CLOSED: [2019-01-07 Mon 21:38]
