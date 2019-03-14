@@ -32,16 +32,22 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | CoreOS Fleet        |                                                                                |
 | Cloud Foundry Diego | Not actively maintained any more                                               |
 | Reference           | [[https://cheatsheet.dennyzhang.com/cheatsheet-docker-A4][CheatSheet: Docker]], [[https://cheatsheet.dennyzhang.com/cheatsheet-crio-A4][CheatSheet: CRI-O]], [[https://cheatsheet.dennyzhang.com/cheatsheet-rkt-A4][CheatSheet: rkt]], [[https://cheatsheet.dennyzhang.com/cheatsheet-containerd-A4][CheatSheet: containerd]] |
+** Docker Basic
+| Name                       | Summary                       |
+|----------------------------+-------------------------------|
+| Install docker on Ubuntu   | =apt-get install docker.io=   |
+| Install old docker version | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/install-old-docker.md.sh][GitHub: install-old-docker.md]] |
 ** Docker start service
-| Name                    | Summary                                                                                                    |
-|-------------------------+------------------------------------------------------------------------------------------------------------|
-| Start a ubuntu test env | =docker run ubuntu:16.04 /bin/echo hello world=                                                            |
-| Start a centos test env | =docker run centos:centos6 /bin/echo hello world=                                                          |
-| [[https://github.com/jenkinsci/docker/blob/master/README.md][Start a jenkins server]]  | =docker run -p 8080:8080 -p 50000:50000 jenkins/jenkins:lts=                                               |
-| Start a nginx server    | =docker run -t -d -p 8080:80 --name nginx-test nginx=                                                      |
-| Start a nexus server    | =docker run -d -p 8082:8081 --name nexus -v /data/nexus-data:/nexus-data sonatype/docker-nexus3=           |
-| Start a sshd server     | =docker run -t -d --privileged -p 5022:22 denny/sshd:latest /usr/sbin/sshd -D=                             |
-| Start a ftp server      | =docker run -t -d -p 21:21 -p 20:20 -e USERNAME=${username} -e PASSWORD=${password} denny/proftproftpd:v1= |
+| Name                          | Summary                                                                                                    |
+|-------------------------------+------------------------------------------------------------------------------------------------------------|
+| Start a ubuntu test env       | =docker run ubuntu:16.04 /bin/echo hello world=                                                            |
+| Start a ubuntu 18.04 test env | =docker run ubuntu:18.04 /bin/echo hello world=                                                            |
+| Start a centos test env       | =docker run centos:centos6 /bin/echo hello world=                                                          |
+| [[https://github.com/jenkinsci/docker/blob/master/README.md][Start a jenkins server]]        | =docker run -p 8080:8080 -p 50000:50000 jenkins/jenkins:lts=                                               |
+| Start a nginx server          | =docker run -t -d -p 8080:80 --name nginx-test nginx=                                                      |
+| Start a nexus server          | =docker run -d -p 8082:8081 --name nexus -v /data/nexus-data:/nexus-data sonatype/docker-nexus3=           |
+| Start a sshd server           | =docker run -t -d --privileged -p 5022:22 denny/sshd:latest /usr/sbin/sshd -D=                             |
+| Start a ftp server            | =docker run -t -d -p 21:21 -p 20:20 -e USERNAME=${username} -e PASSWORD=${password} denny/proftproftpd:v1= |
 ** Container Basic
 | Name                                      | Summary                                                 |
 |-------------------------------------------+---------------------------------------------------------|
