@@ -20,28 +20,40 @@
 - Blog URL: https://cheatsheet.dennyzhang.com/cheatsheet-docker-A4
 - Related posts: [[https://cheatsheet.dennyzhang.com/kubernetes-yaml-templates][Kubernetes Yaml]], [[https://github.com/topics/denny-cheatsheets][#denny-cheatsheets]]
 
-File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or star [[https://github.com/DennyZhang/cheatsheet-docker-A4][this repo]].
+File me [[https://github.com/dennyzhang/cheatsheet.dennyzhang.com/issues][Issues]] or star [[https://github.com/dennyzhang/cheatsheet.dennyzhang.com][this repo]].
 ** Container Runtime
 | Name                | Summary                                                                        |
 |---------------------+--------------------------------------------------------------------------------|
 | dockerd             |                                                                                |
 | containerd          |                                                                                |
 | [[https://cri-o.io/][cri-o]]               | From Redhat                                                                    |
-| [[https://github.com/rkt/rkt][rkt]]                 | a pod-native container engine for Linux.                                       |
+| [[https://github.com/rkt/rkt][rkt]]                 | a pod-native container engine for Linux from CoreOS. Stopped maintainance now  |
 | Amazon ACS          | supports DC/OS, Swarm, Kubernetes                                              |
 | CoreOS Fleet        |                                                                                |
 | Cloud Foundry Diego | Not actively maintained any more                                               |
 | Reference           | [[https://cheatsheet.dennyzhang.com/cheatsheet-docker-A4][CheatSheet: Docker]], [[https://cheatsheet.dennyzhang.com/cheatsheet-crio-A4][CheatSheet: CRI-O]], [[https://cheatsheet.dennyzhang.com/cheatsheet-rkt-A4][CheatSheet: rkt]], [[https://cheatsheet.dennyzhang.com/cheatsheet-containerd-A4][CheatSheet: containerd]] |
+** Docker Trouble Shooting
+| Name                                                   | Summary                                                                                |
+|--------------------------------------------------------+----------------------------------------------------------------------------------------|
+| [[https://www.jfrog.com/jira/browse/RTFACT-9957][Docker push: manifest invalid]]                          | Re-push a new version of the same docker tag may fail, due to permission               |
+| Docker pull: missing signature key                     | Docker push again to resolve the issue                                                 |
+| [[https://stackoverflow.com/questions/45089842/docker-cp-error-response-from-daemon-not-a-directory][Docker cp: Error response from daemon: not a directory]] | container folder is in a symbol link                                                   |
+| Find process id by container name                      | =docker top $container_id=, or =docker top $container_name=                            |
+| Get dockerd storage driver                             | =docker info=, then check =Storage Driver=                                             |
+| [[https://medium.com/techlogs/docker-how-to-check-your-containers-cpu-usage-8121515a3b8][docker-containerd-shim]]                                 | The Docker four components: =Docker engine=, =containerd=, =containerd-shm= and =runC= |
 ** Docker Basic
-| Name                       | Summary                       |
-|----------------------------+-------------------------------|
-| Install docker on Ubuntu   | =apt-get install docker.io=   |
-| Install old docker version | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/install-old-docker.md.sh][GitHub: install-old-docker.md]] |
+| Name                        | Summary                                                                 |
+|-----------------------------+-------------------------------------------------------------------------|
+| Install docker on Ubuntu    | =apt-get install docker.io=                                             |
+| [[https://docs.docker.com/install/linux/docker-ce/centos/][Install docker on CentOS]]    | Use docker repo https://download.docker.com/linux/centos/docker-ce.repo |
+| Install docker in Debian 10 | [[https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-debian-10][Link: How To Install and Use Docker on Debian 10]]                        |
+| Install old docker version  | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/install-old-docker.md.sh][GitHub: install-old-docker.md]]                                           |
 ** Docker start service
 | Name                          | Summary                                                                                                    |
 |-------------------------------+------------------------------------------------------------------------------------------------------------|
 | Start a ubuntu test env       | =docker run ubuntu:16.04 /bin/echo hello world=                                                            |
 | Start a ubuntu 18.04 test env | =docker run ubuntu:18.04 /bin/echo hello world=                                                            |
+| [[https://hub.docker.com/_/debian][Start a debian9 test env]]      | =docker run debian:9 /bin/echo hello world=                                                                |
 | Start a centos test env       | =docker run centos:centos6 /bin/echo hello world=                                                          |
 | [[https://github.com/jenkinsci/docker/blob/master/README.md][Start a jenkins server]]        | =docker run -p 8080:8080 -p 50000:50000 jenkins/jenkins:lts=                                               |
 | Start a nginx server          | =docker run -t -d -p 8080:80 --name nginx-test nginx=                                                      |
@@ -67,13 +79,15 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | Run image from a given tag                | =docker run username/repo:tag=                          |
 | Create docker image                       | =docker build -t denny/image:test .=                    |
 #+BEGIN_HTML
-<a href="https://www.dennyzhang.com"><img align="right" width="185" height="37" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/dns_small.png"></a>
+<a href="https://cheatsheet.dennyzhang.com"><img align="right" width="185" height="37" src="https://raw.githubusercontent.com/dennyzhang/cheatsheet.dennyzhang.com/master/images/cheatsheet_dns.png"></a>
 #+END_HTML
 ** Docker Cleanup
 | Name                           | Summary                                                  |
 |--------------------------------+----------------------------------------------------------|
 | Delete all containers          | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-all-containers.sh#L13][delete-all-containers.sh]]                                 |
-| Remove unused docker images    | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-unused-images.sh][delete-unused-images.sh]]                                  |
+| Remove unused docker images    | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-unused-images.sh#L13][delete-unused-images.sh]]                                  |
+| Docker prune images            | =docker image prune -f=                                  |
+| Docker prune volumes           | =docker volume prune -f=                                 |
 | Remove the specified image     | =docker rmi <imagename>=                                 |
 | Remove all docker images       | =docker rmi $(docker images -q)=                         |
 | Remove orphaned docker volumes | =docker volume rm $(docker volume ls -qf dangling=true)= |
@@ -84,15 +98,15 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 |----------------------------------+----------------------------------------------------------------------------------|
 | Change entrypoint to run nothing | =entrypoint: ["tail", "-f", "/dev/null"]=                                        |
 | [[https://serverfault.com/questions/683605/docker-container-time-timezone-will-not-reflect-changes/683651#683651][Set timezone in Dockerfile]]       | =RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone= |
-| Define multiple line command     | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/Dockerfile-example-multiline][Dockerfile-example-multiline]]                                                     |
+| Define multiple line command     | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/Dockerfile-example-multiline][GitHub: Dockerfile-example-multiline]]                                             |
 ** Docker Compose
-| Name                             | Summary                                                                              |
-|----------------------------------+--------------------------------------------------------------------------------------|
-| Change restart policy            | =restart: always=, [[https://docs.docker.com/compose/compose-file/#restart_policy][Link: Compose file version 3 reference]]                            |
-| Mount file as volume             | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/samples/mount-file.yml][samples/mount-file.yml]] |
-| Start compose env                | =docker-compose up=, =docker-compose up -d=                                          |
-| Stop compose env                 | =docker-compose down=, =docker-compose down -v=                                      |
-| Check logs                       | =docker-compose logs=                                                                |
+| Name                  | Summary                                                                                     |
+|-----------------------+---------------------------------------------------------------------------------------------|
+| Change restart policy | =restart: always=, [[https://docs.docker.com/compose/compose-file/#restart_policy][Link: Compose file version 3 reference]]                                   |
+| Mount file as volume  | =$PWD/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro= [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/sample-mount-file.yml][GitHub: sample-mount-file.yml]] |
+| Start compose env     | =docker-compose up=, =docker-compose up -d=                                                 |
+| Stop compose env      | =docker-compose down=, =docker-compose down -v=                                             |
+| Check logs            | =docker-compose logs=                                                                       |
 ** Docker Containers
 | Name                                        | Summary                                                       |
 |---------------------------------------------+---------------------------------------------------------------|
@@ -131,7 +145,7 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 | Create container                   | =curl -XPOST --unix-socket /var/run/docker.sock -d '{"Image":"nginx:alpine"}' -H 'Content-Type: application/json' http://localhost/containers/create= |
 | Links                              | [[https://docs.docker.com/develop/sdk/][Link: Develop with Docker Engine SDKs and API]]                                                                                                         |
 #+BEGIN_HTML
-<a href="https://www.dennyzhang.com"><img align="right" width="185" height="37" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/dns_small.png"></a>
+<a href="https://cheatsheet.dennyzhang.com"><img align="right" width="185" height="37" src="https://raw.githubusercontent.com/dennyzhang/cheatsheet.dennyzhang.com/master/images/cheatsheet_dns.png"></a>
 #+END_HTML
 ** Docker Conf
 | Name           | Summary                                               |
@@ -164,8 +178,8 @@ File me [[https://github.com/dennyzhang/cheatsheet-docker-A4/issues][Issues]] or
 
 License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_license.txt][MIT License]].
 #+BEGIN_HTML
-<a href="https://www.dennyzhang.com"><img align="right" width="201" height="268" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/denny_201706.png"></a>
-<a href="https://www.dennyzhang.com"><img align="right" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/dns_small.png"></a>
+<a href="https://cheatsheet.dennyzhang.com"><img align="right" width="201" height="268" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/denny_201706.png"></a>
+<a href="https://cheatsheet.dennyzhang.com"><img align="right" src="https://raw.githubusercontent.com/dennyzhang/cheatsheet.dennyzhang.com/master/images/cheatsheet_dns.png"></a>
 
 <a href="https://www.linkedin.com/in/dennyzhang001"><img align="bottom" src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a>
 <a href="https://github.com/dennyzhang"><img align="bottom"src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a>
@@ -6932,6 +6946,9 @@ ftpasswd: entry created
 curl -u ftp_XXX:XXX123ChangeMe ftp://ftp.carol.ai:21/hosts
 * DONE [#A] docker multi-stage builds: https://docs.docker.com/develop/develop-images/multistage-build/#before-multi-stage-builds :noexport:
   CLOSED: [2018-07-11 Wed 23:15]
+https://github.com/JCMais/docker-linux-ci/blob/master/alpine.dockerfile
+* DONE docker scratch image: https://github.com/wavefrontHQ/wavefront-kubernetes-collector/blob/master/deploy/docker/Dockerfile :noexport:
+  CLOSED: [2019-01-07 Mon 21:38]
 * DONE How docker --squash works?                                  :noexport:
   CLOSED: [2018-08-09 Thu 15:55]
 https://stackoverflow.com/questions/41764336/how-does-the-new-docker-squash-work
@@ -7655,5 +7672,403 @@ https://stackoverflow.com/questions/46649592/dockerd-vs-docker-containerd-vs-doc
 26803 root      10 -10 1249260  17268  13100 S   0.0  0.4   0:42.79 docker-containerd --config /var/run/docker/containerd/containerd.toml
 26298 root      10 -10  623832  68624  31688 S   2.3  1.7   7:43.54 dockerd --debug=false --default-ulimit=nofile=65536 --group vcap --data-root /var/vcap/store/docker/docker --host unix:///var/vcap/sys/run/docker/docker.sock --icc=true+
 * TODO consolidate docker: https://github.com/wsargent/docker-cheat-sheet :noexport:
-* DONE docker scratch image: https://github.com/wavefrontHQ/wavefront-kubernetes-collector/blob/master/deploy/docker/Dockerfile :noexport:
-  CLOSED: [2019-01-07 Mon 21:38]
+* TODO docker ARG vs ENV
+https://github.com/JCMais/docker-linux-ci/blob/master/debian.dockerfile#L15-L16
+* TODO docker build mount volume                                   :noexport:
+https://vsupalov.com/cache-docker-build-dependencies-without-volume-mounting/
+* [#A] dockerd hang                                                :noexport:
+** TODO [#A] dockerd hang: when cpu load is over than 3, mark the agent as offline
+** TODO dockerd hang: limit container resource usage
+ https://bobcares.com/blog/docker-high-cpu-usage/
+** TODO dockerd hang: do cleanup to avoid garbage containers, images and volumes
+** TODO dockerd hang: when container start fails, would the container still occupy CPU/RAM resource?
+** TODO docker rm container hang
+** TODO dockerd hang issue
+ 10.78.198.112
+*** DONE restart VM doesn't seem to work: --force --force works
+    CLOSED: [2019-08-30 Fri 10:45]
+ #+BEGIN_EXAMPLE
+ [root@butler-worker log]# reboot
+
+
+
+ Failed to start reboot.target: Connection timed out
+ See system logs and 'systemctl status reboot.target' for details.
+
+ Broadcast message from worker@butler-worker.eng.vmware.com on pts/0 (Fri 2019-08-30 10:42:54 PDT):
+
+ The system is going down for reboot NOW!
+
+ [root@butler-worker log]# systemctl --force reboot
+ Failed to execute operation: Connection timed out
+ [root@butler-worker log]# systemctl --force --force reboot
+ Rebooting.
+ packet_write_wait: Connection to 10.78.198.112 port 22: Broken pipe
+
+ #+END_EXAMPLE
+*** TODO [#A] How to detect whether virtualization issue or process issues inside the VM
+*** TODO switch to root hang
+ #+BEGIN_EXAMPLE
+ [worker@butler-worker ~]$ sudo su -
+ #+END_EXAMPLE
+*** TODO cpu load is 16, but no apparent processes are running with it
+ #+BEGIN_EXAMPLE
+    /Users/zdenny  ssh worker@10.78.198.112                                                                                                                                                                                           ✔ 0
+ Warning: Permanently added '10.78.198.112' (ECDSA) to the list of known hosts.
+ worker@10.78.198.112's password:
+ Last login: Fri Aug 30 10:14:08 2019 from 10.166.68.119
+ [worker@butler-worker ~]$ docker ps
+ Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+ [worker@butler-worker ~]$ top
+ top - 10:16:22 up 17:01,  3 users,  load average: 16.06, 16.12, 15.22
+ Tasks: 263 total,   1 running, 224 sleeping,   0 stopped,  38 zombie
+ %Cpu0  :  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+ %Cpu1  :  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+ %Cpu2  :  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+ %Cpu3  :  0.0 us,  0.3 sy,  0.0 ni, 99.7 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+ KiB Mem :  5946372 total,  2008448 free,   319780 used,  3618144 buff/cache
+ KiB Swap:  4194300 total,  4172024 free,    22276 used.  5241956 avail Mem
+
+   PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+  5217 root      20   0       0      0      0 S   0.3  0.0   0:00.08 kworker/3:0
+ 12151 worker    20   0  162136   2448   1580 R   0.3  0.0   0:00.03 top
+     1 root      20   0  191224   2892   1536 D   0.0  0.0   0:04.76 systemd
+     2 root      20   0       0      0      0 S   0.0  0.0   0:00.02 kthreadd
+     3 root      20   0       0      0      0 S   0.0  0.0   0:02.14 ksoftirqd/0
+     7 root      rt   0       0      0      0 S   0.0  0.0   0:00.63 migration/0
+     8 root      20   0       0      0      0 S   0.0  0.0   0:00.00 rcu_bh
+     9 root      20   0       0      0      0 S   0.0  0.0   0:33.03 rcu_sched
+    10 root      rt   0       0      0      0 S   0.0  0.0   0:00.28 watchdog/0
+    11 root      rt   0       0      0      0 S   0.0  0.0   0:00.34 watchdog/1
+    12 root      rt   0       0      0      0 S   0.0  0.0   0:00.44 migration/1
+    13 root      20   0       0      0      0 S   0.0  0.0   0:02.04 ksoftirqd/1
+    16 root      rt   0       0      0      0 S   0.0  0.0   0:00.30 watchdog/2
+    17 root      rt   0       0      0      0 S   0.0  0.0   0:00.43 migration/2
+    18 root      20   0       0      0      0 S   0.0  0.0   0:01.82 ksoftirqd/2
+    21 root      rt   0       0      0      0 S   0.0  0.0   0:00.30 watchdog/3
+    22 root      rt   0       0      0      0 S   0.0  0.0   0:00.33 migration/3
+    23 root      20   0       0      0      0 S   0.0  0.0   0:01.85 ksoftirqd/3
+    27 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 khelper
+    28 root      20   0       0      0      0 S   0.0  0.0   0:00.00 kdevtmpfs
+    29 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 netns
+    30 root      20   0       0      0      0 S   0.0  0.0   0:00.14 khungtaskd
+    31 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 writeback
+    32 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 kintegrityd
+    33 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 bioset
+    34 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 kblockd
+    35 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 md
+    44 root      20   0       0      0      0 S   0.0  0.0   0:14.61 kswapd0
+    45 root      25   5       0      0      0 S   0.0  0.0   0:00.00 ksmd
+    46 root      39  19       0      0      0 S   0.0  0.0   0:01.34 khugepaged
+    47 root      20   0       0      0      0 S   0.0  0.0   0:00.00 fsnotify_mark
+    48 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 crypto
+    56 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 kthrotld
+    58 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 kmpath_rdacd
+    60 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 kpsmoused
+    62 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 ipv6_addrconf
+    82 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 deferwq
+   126 root      20   0       0      0      0 S   0.0  0.0   0:00.00 kauditd
+   296 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 ata_sff
+   301 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 mpt_poll_0
+   302 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 mpt/0
+   320 root      20   0       0      0      0 S   0.0  0.0   0:00.00 scsi_eh_0
+ #+END_EXAMPLE
+
+ #+BEGIN_EXAMPLE
+ [worker@butler-worker ~]$ ps -ef | grep docker
+ root      1512     1  0 08:11 ?        00:00:00 [docker-containe] <defunct>
+ root      1520     1  0 08:11 ?        00:00:00 [docker-runc] <defunct>
+ root      1526     1  0 08:11 ?        00:00:00 docker-runc init
+ root      1527     1  0 08:11 ?        00:00:00 docker-runc init
+ root      3403     1  0 08:35 ?        00:00:00 [docker-containe] <defunct>
+ root      3409     1  0 08:35 ?        00:00:00 [docker-runc] <defunct>
+ root      3416     1  0 08:35 ?        00:00:00 docker-runc init
+ root      3417     1  0 08:35 ?        00:00:00 docker-runc init
+ root      3841     1  0 08:38 ?        00:00:00 [docker-containe] <defunct>
+ root      3847     1  0 08:38 ?        00:00:00 [docker-runc] <defunct>
+ root      3855     1  0 08:38 ?        00:00:00 docker-runc init
+ root      3856     1  0 08:38 ?        00:00:00 docker-runc init
+ root      4710     1  0 08:48 ?        00:00:00 [docker-containe] <defunct>
+ root      4716     1  0 08:48 ?        00:00:00 [docker-runc] <defunct>
+ root      4724     1  0 08:48 ?        00:00:00 docker-runc init
+ root      4725     1  0 08:48 ?        00:00:00 docker-runc init
+ root      8776     1  0 09:44 ?        00:00:00 [docker-containe] <defunct>
+ root      8782     1  0 09:44 ?        00:00:00 [docker-runc] <defunct>
+ root      8790     1  0 09:44 ?        00:00:00 docker-runc init
+ root      8791     1  0 09:44 ?        00:00:00 docker-runc init
+ root      9062     1  0 09:47 ?        00:00:00 [docker-containe] <defunct>
+ root      9068     1  0 09:47 ?        00:00:00 [docker-runc] <defunct>
+ root      9076     1  0 09:47 ?        00:00:00 docker-runc init
+ root      9077     1  0 09:47 ?        00:00:00 docker-runc init
+ root      9225     1  0 09:49 ?        00:00:00 [docker-containe] <defunct>
+ root      9231     1  0 09:49 ?        00:00:00 [docker-runc] <defunct>
+ root      9239     1  0 09:49 ?        00:00:00 docker-runc init
+ root      9240     1  0 09:49 ?        00:00:00 docker-runc init
+ root      9780     1  0 09:54 ?        00:00:00 [docker-containe] <defunct>
+ root      9786     1  0 09:54 ?        00:00:00 [docker-runc] <defunct>
+ root      9794     1  0 09:54 ?        00:00:00 docker-runc init
+ root      9795     1  0 09:54 ?        00:00:00 docker-runc init
+ root     10200     1  0 09:58 ?        00:00:00 [dockerd] <defunct>
+ root     10207     1  0 09:58 ?        00:00:01 [docker-containe] <defunct>
+ worker   12169 12076  0 10:16 pts/3    00:00:00 grep --color=auto docker
+ root     15090     1  0 Aug29 ?        00:00:01 [docker-containe] <defunct>
+ root     15098     1  0 Aug29 ?        00:00:00 [docker-runc] <defunct>
+ root     15104     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     15105     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     16635     1  0 Aug29 ?        00:00:01 [docker-containe] <defunct>
+ root     16641     1  0 Aug29 ?        00:00:00 [docker-runc] <defunct>
+ root     16649     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     16650     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     20614     1  0 Aug29 ?        00:00:01 [docker-containe] <defunct>
+ root     20623     1  0 Aug29 ?        00:00:00 [docker-runc] <defunct>
+ root     20629     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     20630     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     22743     1  0 Aug29 ?        00:00:00 [docker-containe] <defunct>
+ root     22751     1  0 Aug29 ?        00:00:00 [docker-runc] <defunct>
+ root     22757     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     22758     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     27211     1  0 Aug29 ?        00:00:00 [docker-containe] <defunct>
+ root     27217     1  0 Aug29 ?        00:00:00 [docker-runc] <defunct>
+ root     27224     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     27225     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     27736     1  0 Aug29 ?        00:00:00 [docker-containe] <defunct>
+ root     27744     1  0 Aug29 ?        00:00:00 [docker-runc] <defunct>
+ root     27750     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     27751     1  0 Aug29 ?        00:00:00 docker-runc init
+ #+END_EXAMPLE
+*** #  --8<-------------------------- separator ------------------------>8-- :noexport:
+*** TODO Can't kill docker-runc process
+ #+BEGIN_EXAMPLE
+ [root@butler-worker ~]# ps -ef | grep 2775
+ root     13097 12996  0 10:28 pts/3    00:00:00 grep --color=auto 2775
+ root     27750     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     27751     1  0 Aug29 ?        00:00:00 docker-runc init
+ [root@butler-worker ~]# ps -ef | grep 27751
+ root     13099 12996  0 10:28 pts/3    00:00:00 grep --color=auto 27751
+ root     27751     1  0 Aug29 ?        00:00:00 docker-runc init
+ [root@butler-worker ~]# kill 27751
+ [root@butler-worker ~]# ps -ef | grep 27751
+ root     13104 12996  0 10:28 pts/3    00:00:00 grep --color=auto 27751
+ root     27751     1  0 Aug29 ?        00:00:00 docker-runc init
+ [root@butler-worker ~]# kill -9 27751
+ [root@butler-worker ~]# ps -ef | grep 27751
+ root     13111 12996  0 10:28 pts/3    00:00:00 grep --color=auto 27751
+ root     27751     1  0 Aug29 ?        00:00:00 docker-runc init
+ [root@butler-worker ~]# lsof -p 27751
+ COMMAND     PID USER   FD   TYPE             DEVICE SIZE/OFF    NODE NAME
+ runc:[1:C 27751 root  cwd    DIR               0,67       18 2742550 /var/lib/docker/overlay2/c3cd613d8f2d368487911036512802414185033b1005115489841b0f8989b764/merged
+ runc:[1:C 27751 root  rtd    DIR              253,0     4096      64 /
+ runc:[1:C 27751 root  txt    REG              253,2  7706688  235072 /usr/bin/docker-runc
+ runc:[1:C 27751 root  mem    REG              253,2  2173512 2137787 /usr/lib64/libc-2.17.so
+ runc:[1:C 27751 root  mem    REG              253,2    19776 2158145 /usr/lib64/libdl-2.17.so
+ runc:[1:C 27751 root  mem    REG              253,2   266680 2238258 /usr/lib64/libseccomp.so.2.3.1
+ runc:[1:C 27751 root  mem    REG              253,2   144792 2886551 /usr/lib64/libpthread-2.17.so
+ runc:[1:C 27751 root  mem    REG              253,2   164240 2137780 /usr/lib64/ld-2.17.so
+ runc:[1:C 27751 root    0r   CHR                1,3      0t0    1028 /dev/null
+ runc:[1:C 27751 root    1w   CHR                1,3      0t0    1028 /dev/null
+ runc:[1:C 27751 root    2w   CHR                1,3      0t0    1028 /dev/null
+ runc:[1:C 27751 root    3u  unix 0xffff880093b60800      0t0 2739894 socket
+ runc:[1:C 27751 root    4u  unix 0xffff880194b73800      0t0 2739896 socket
+ runc:[1:C 27751 root    5u  FIFO               0,19      0t0 2739895 /run/docker/runtime-runc/moby/221922c29e215155f002d9894e07ae5381a430c06b79e943d7a50c5f2ab77e2e/exec.fifo
+ runc:[1:C 27751 root    6u  unix 0xffff880194b70800      0t0 2740060 socket
+ runc:[1:C 27751 root    8u  unix 0xffff8801adeccc00      0t0 2740062 socket
+ runc:[1:C 27751 root    9u  unix 0xffff8801adecf000      0t0 2740063 socket
+
+ [root@butler-worker ~]# strace -p 27751
+ strace: Process 27751 attached
+ #+END_EXAMPLE
+*** TODO Lots of docker-runc process
+ #+BEGIN_EXAMPLE
+ [worker@butler-worker ~]$ ps -ef | grep docker
+ root      1512     1  0 08:11 ?        00:00:00 [docker-containe] <defunct>
+ root      1520     1  0 08:11 ?        00:00:00 [docker-runc] <defunct>
+ root      1526     1  0 08:11 ?        00:00:00 docker-runc init
+ root      1527     1  0 08:11 ?        00:00:00 docker-runc init
+ root      3403     1  0 08:35 ?        00:00:00 [docker-containe] <defunct>
+ root      3409     1  0 08:35 ?        00:00:00 [docker-runc] <defunct>
+ root      3416     1  0 08:35 ?        00:00:00 docker-runc init
+ root      3417     1  0 08:35 ?        00:00:00 docker-runc init
+ root      3841     1  0 08:38 ?        00:00:00 [docker-containe] <defunct>
+ root      3847     1  0 08:38 ?        00:00:00 [docker-runc] <defunct>
+ root      3855     1  0 08:38 ?        00:00:00 docker-runc init
+ root      3856     1  0 08:38 ?        00:00:00 docker-runc init
+ root      4710     1  0 08:48 ?        00:00:00 [docker-containe] <defunct>
+ root      4716     1  0 08:48 ?        00:00:00 [docker-runc] <defunct>
+ root      4724     1  0 08:48 ?        00:00:00 docker-runc init
+ root      4725     1  0 08:48 ?        00:00:00 docker-runc init
+ root      8776     1  0 09:44 ?        00:00:00 [docker-containe] <defunct>
+ root      8782     1  0 09:44 ?        00:00:00 [docker-runc] <defunct>
+ root      8790     1  0 09:44 ?        00:00:00 docker-runc init
+ root      8791     1  0 09:44 ?        00:00:00 docker-runc init
+ root      9062     1  0 09:47 ?        00:00:00 [docker-containe] <defunct>
+ root      9068     1  0 09:47 ?        00:00:00 [docker-runc] <defunct>
+ root      9076     1  0 09:47 ?        00:00:00 docker-runc init
+ root      9077     1  0 09:47 ?        00:00:00 docker-runc init
+ root      9225     1  0 09:49 ?        00:00:00 [docker-containe] <defunct>
+ root      9231     1  0 09:49 ?        00:00:00 [docker-runc] <defunct>
+ root      9239     1  0 09:49 ?        00:00:00 docker-runc init
+ root      9240     1  0 09:49 ?        00:00:00 docker-runc init
+ root      9780     1  0 09:54 ?        00:00:00 [docker-containe] <defunct>
+ root      9786     1  0 09:54 ?        00:00:00 [docker-runc] <defunct>
+ root      9794     1  0 09:54 ?        00:00:00 docker-runc init
+ root      9795     1  0 09:54 ?        00:00:00 docker-runc init
+ root     10200     1  0 09:58 ?        00:00:00 [dockerd] <defunct>
+ root     10207     1  0 09:58 ?        00:00:01 [docker-containe] <defunct>
+ worker   12872 12076  0 10:26 pts/3    00:00:00 grep --color=auto docker
+ root     15090     1  0 Aug29 ?        00:00:01 [docker-containe] <defunct>
+ root     15098     1  0 Aug29 ?        00:00:00 [docker-runc] <defunct>
+ root     15104     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     15105     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     16635     1  0 Aug29 ?        00:00:01 [docker-containe] <defunct>
+ root     16641     1  0 Aug29 ?        00:00:00 [docker-runc] <defunct>
+ root     16649     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     16650     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     20614     1  0 Aug29 ?        00:00:01 [docker-containe] <defunct>
+ root     20623     1  0 Aug29 ?        00:00:00 [docker-runc] <defunct>
+ root     20629     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     20630     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     22743     1  0 Aug29 ?        00:00:00 [docker-containe] <defunct>
+ root     22751     1  0 Aug29 ?        00:00:00 [docker-runc] <defunct>
+ root     22757     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     22758     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     27211     1  0 Aug29 ?        00:00:00 [docker-containe] <defunct>
+ root     27217     1  0 Aug29 ?        00:00:00 [docker-runc] <defunct>
+ root     27224     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     27225     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     27736     1  0 Aug29 ?        00:00:00 [docker-containe] <defunct>
+ root     27744     1  0 Aug29 ?        00:00:00 [docker-runc] <defunct>
+ root     27750     1  0 Aug29 ?        00:00:00 docker-runc init
+ root     27751     1  0 Aug29 ?        00:00:00 docker-runc init
+ [worker@butler-worker ~]$ ps -ef | grep docker | wc -l
+ 59
+ #+END_EXAMPLE
+*** #  --8<-------------------------- separator ------------------------>8-- :noexport:
+*** docker rm hang: found stale docker containers
+ 10.193.5.30
+ #+BEGIN_EXAMPLE
+ [worker@butler-worker ~]$ docker ps -a
+ CONTAINER ID        IMAGE                                      COMMAND                  CREATED             STATUS              PORTS               NAMES
+ e80bdaedf48e        33c7759a5d2428e87c6029e684214becb8893e54   "cat"                    About an hour ago   Created                                 wonderful_curie
+ 058a3d4d83f6        ca2927e8f0b5                               "/bin/sh -c 'go get …"   2 hours ago         Created                                 zen_colden
+ 57069fec299f        golang:1.11.5                              "cat"                    3 hours ago         Created                                 infallible_pare
+ 5a699e8c4cba        33c7759a5d2428e87c6029e684214becb8893e54   "cat"                    7 hours ago         Created                                 cocky_sinoussi
+ #+END_EXAMPLE
+*** TODO Why garbage docker images/containers are left?
+ #+BEGIN_EXAMPLE
+ [root@butler-worker ~]# docker images
+ REPOSITORY                                 TAG                 IMAGE ID            CREATED             SIZE
+ <none>                                     <none>              1df22ad944a1        8 hours ago         81.8MB
+ 44c13ed9b2cf3f6096642b424aa225e569d88329   latest              e61b76dfd407        20 hours ago        1.17GB
+ 33c7759a5d2428e87c6029e684214becb8893e54   latest              88fc669b72f8        22 hours ago        1.21GB
+ photon                                     3.0                 5ccb5186b75c        6 days ago          34.2MB
+ kindest/node                               v1.15.3             8ca0c8463ebe        10 days ago         1.45GB
+ golang                                     1.12                80bb9c6de3f2        2 weeks ago         814MB
+ ubuntu                                     latest              a2a15febcdf3        2 weeks ago         64.2MB
+ kindest/node                               v1.14.2             9fb4c7da1d9f        3 months ago        1.29GB
+ golang                                     1.11.5              1454e2b3d01f        5 months ago        816MB
+ #+END_EXAMPLE
+*** kernel log
+ https://www.blackmoreops.com/2014/09/22/linux-kernel-panic-issue-fix-hung_task_timeout_secs-blocked-120-seconds-problem/
+
+ By default Linux uses up to 40% of the available memory for file
+ system caching. After this mark has been reached the file system
+ flushes all outstanding data to disk causing all following IOs going
+ synchronous. For flushing out this data to disk this there is a time
+ limit of 120 seconds by default. In the case here the IO subsystem is
+ not fast enough to flush the data withing 120 seconds. As IO subsystem
+ responds slowly and more requests are served, System Memory gets
+ filled up resulting in the above error, thus serving HTTP requests.
+ #+BEGIN_EXAMPLE
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel: INFO: task kworker/u8:0:19212 blocked for more than 120 seconds.
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel: kworker/u8:0    D ffffffff81a3d028     0 19212      2 0x00000000
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel: Workqueue: netns cleanup_net
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  ffff88008b743c00 0000000000000046 ffff8801afb1af10 ffff88008b743fd8
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  ffff88008b743fd8 ffff88008b743fd8 ffff8801afb1af10 ffffffff81a3d020
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  ffffffff81a3d024 ffff8801afb1af10 00000000ffffffff ffffffff81a3d028
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel: Call Trace:
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff8168c769>] schedule_preempt_disabled+0x29/0x70
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff8168a3c5>] __mutex_lock_slowpath+0xc5/0x1c0
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff8168982f>] mutex_lock+0x1f/0x2f
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff811f3cfe>] kmem_cache_destroy_memcg_children+0x3e/0xb0
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff811a56d9>] kmem_cache_destroy+0x19/0xf0
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff811f3d49>] kmem_cache_destroy_memcg_children+0x89/0xb0
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff811a56d9>] kmem_cache_destroy+0x19/0xf0
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffffa04b45db>] nf_conntrack_cleanup_net_list+0x17b/0x1d0 [nf_conntrack]
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffffa04b545d>] nf_conntrack_pernet_exit+0x6d/0x80 [nf_conntrack]
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff815668f3>] ops_exit_list.isra.5+0x53/0x60
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff815679d0>] cleanup_net+0x1d0/0x350
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff810a7f3b>] process_one_work+0x17b/0x470
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff810a8d76>] worker_thread+0x126/0x410
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff810a8c50>] ? rescuer_thread+0x460/0x460
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff810b052f>] kthread+0xcf/0xe0
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff810b0460>] ? kthread_create_on_node+0x140/0x140
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff81696518>] ret_from_fork+0x58/0x90
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff810b0460>] ? kthread_create_on_node+0x140/0x140
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel: INFO: task runc:[1:CHILD]:25226 blocked for more than 120 seconds.
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel: runc:[1:CHILD]  D ffffffff81a9e128     0 25226  25223 0x00000000
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  ffff88019cfb7e10 0000000000000086 ffff8801b853af10 ffff88019cfb7fd8
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  ffff88019cfb7fd8 ffff88019cfb7fd8 ffff8801b853af10 ffffffff81a9e120
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  ffffffff81a9e124 ffff8801b853af10 00000000ffffffff ffffffff81a9e128
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel: Call Trace:
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff8168c769>] schedule_preempt_disabled+0x29/0x70
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff8168a3c5>] __mutex_lock_slowpath+0xc5/0x1c0
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff8168982f>] mutex_lock+0x1f/0x2f
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff81567bc1>] copy_net_ns+0x71/0x130
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff810b56a9>] create_new_namespaces+0xf9/0x180
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff810b58ea>] unshare_nsproxy_namespaces+0x5a/0xc0
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff81084e33>] SyS_unshare+0x193/0x300
+ Aug 30 05:13:50 butler-worker.eng.vmware.com kernel:  [<ffffffff816965c9>] system_call_fastpath+0x16/0x1b
+ ...
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff811f3cfe>] kmem_cache_destroy_memcg_children+0x3e/0xb0
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff811a56d9>] kmem_cache_destroy+0x19/0xf0
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff811f3d49>] kmem_cache_destroy_memcg_children+0x89/0xb0
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff811a56d9>] kmem_cache_destroy+0x19/0xf0
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffffa04b45db>] nf_conntrack_cleanup_net_list+0x17b/0x1d0 [nf_conntrack]
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffffa04b545d>] nf_conntrack_pernet_exit+0x6d/0x80 [nf_conntrack]
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff815668f3>] ops_exit_list.isra.5+0x53/0x60
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff815679d0>] cleanup_net+0x1d0/0x350
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff810a7f3b>] process_one_work+0x17b/0x470
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff810a8d76>] worker_thread+0x126/0x410
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff810a8c50>] ? rescuer_thread+0x460/0x460
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff810b052f>] kthread+0xcf/0xe0
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff810b0460>] ? kthread_create_on_node+0x140/0x140
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff81696518>] ret_from_fork+0x58/0x90
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff810b0460>] ? kthread_create_on_node+0x140/0x140
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel: INFO: task runc:[1:CHILD]:25226 blocked for more than 120 seconds.
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel: runc:[1:CHILD]  D ffffffff81a9e128     0 25226  25223 0x00000000
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  ffff88019cfb7e10 0000000000000086 ffff8801b853af10 ffff88019cfb7fd8
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  ffff88019cfb7fd8 ffff88019cfb7fd8 ffff8801b853af10 ffffffff81a9e120
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  ffffffff81a9e124 ffff8801b853af10 00000000ffffffff ffffffff81a9e128
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel: Call Trace:
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff8168c769>] schedule_preempt_disabled+0x29/0x70
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff8168a3c5>] __mutex_lock_slowpath+0xc5/0x1c0
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff8168982f>] mutex_lock+0x1f/0x2f
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff81567bc1>] copy_net_ns+0x71/0x130
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff810b56a9>] create_new_namespaces+0xf9/0x180
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff810b58ea>] unshare_nsproxy_namespaces+0x5a/0xc0
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff81084e33>] SyS_unshare+0x193/0x300
+ Aug 30 05:15:50 butler-worker.eng.vmware.com kernel:  [<ffffffff816965c9>] system_call_fastpath+0x16/0x1b
+ Aug 30 09:36:51 butler-worker.eng.vmware.com kernel: device veth2ff9c20 entered promiscuous mode
+ Aug 30 09:36:51 butler-worker.eng.vmware.com kernel: IPv6: ADDRCONF(NETDEV_UP): veth2ff9c20: link is not ready
+ Aug 30 09:36:51 butler-worker.eng.vmware.com kernel: docker0: port 2(veth2ff9c20) entered forwarding state
+ Aug 30 09:36:51 butler-worker.eng.vmware.com kernel: docker0: port 2(veth2ff9c20) entered forwarding state
+ Aug 30 09:36:51 butler-worker.eng.vmware.com kernel: docker0: port 2(veth2ff9c20) entered disabled state
+ Aug 30 10:41:58 butler-worker.eng.vmware.com kernel: device vethe8c2f93 entered promiscuous mode
+ Aug 30 10:41:58 butler-worker.eng.vmware.com kernel: IPv6: ADDRCONF(NETDEV_UP): vethe8c2f93: link is not ready
+ Aug 30 10:41:58 butler-worker.eng.vmware.com kernel: docker0: port 3(vethe8c2f93) entered forwarding state
+ Aug 30 10:41:58 butler-worker.eng.vmware.com kernel: docker0: port 3(vethe8c2f93) entered forwarding state
+ Aug 30 10:41:58 butler-worker.eng.vmware.com kernel: docker0: port 3(vethe8c2f93) entered disabled state
+ Aug 30 11:12:12 butler-worker.eng.vmware.com kernel: device vethbe7734a entered promiscuous mode
+ Aug 30 11:12:12 butler-worker.eng.vmware.com kernel: IPv6: ADDRCONF(NETDEV_UP): vethbe7734a: link is not ready
+ Aug 30 11:12:12 butler-worker.eng.vmware.com kernel: docker0: port 4(vethbe7734a) entered forwarding state
+ Aug 30 11:12:12 butler-worker.eng.vmware.com kernel: docker0: port 4(vethbe7734a) entered forwarding state
+ Aug 30 11:12:12 butler-worker.eng.vmware.com kernel: docker0: port 4(vethbe7734a) entered disabled state
+ #+END_EXAMPLE
+* TODO docker mount                                                :noexport:
+--network=host
+                    args '--network=host -u 0:0 -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro -v $SSH_KEY_FILE:/root/.ssh/id_rsa:ro ' +
+                            ' -v /var/run/docker.sock:/var/run/docker.sock' +
+
