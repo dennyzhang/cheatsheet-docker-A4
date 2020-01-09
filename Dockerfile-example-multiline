@@ -4,3 +4,6 @@ FROM alpine:latest
 RUN echo $'This is one multiple lines\n\
 and should stay that way\n'\
 > /etc/example.conf
+
+COPY hosts /tmp/hosts
+RUN rm /tmp/hosts

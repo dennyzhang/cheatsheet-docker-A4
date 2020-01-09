@@ -21,6 +21,37 @@
 - Related posts: [[https://cheatsheet.dennyzhang.com/kubernetes-yaml-templates][Kubernetes Yaml]], [[https://github.com/topics/denny-cheatsheets][#denny-cheatsheets]]
 
 File me [[https://github.com/dennyzhang/cheatsheet.dennyzhang.com/issues][Issues]] or star [[https://github.com/dennyzhang/cheatsheet.dennyzhang.com][this repo]].
+** Docker Trouble Shooting
+| Name                                                   | Summary                                                                                |
+|--------------------------------------------------------+----------------------------------------------------------------------------------------|
+| [[https://www.jfrog.com/jira/browse/RTFACT-9957][Docker push: manifest invalid]]                          | Re-push a new version of the same docker tag may fail, due to permission               |
+| Docker pull: missing signature key                     | Docker push again to resolve the issue                                                 |
+| [[https://stackoverflow.com/questions/45089842/docker-cp-error-response-from-daemon-not-a-directory][Docker cp: Error response from daemon: not a directory]] | container folder is in a symbol link                                                   |
+| Find process id by container name                      | =docker top $container_id=, or =docker top $container_name=                            |
+| List resource usage by containers                      | =docker stats=                                                                         |
+| Get dockerd storage driver                             | =docker info=, then check =Storage Driver=                                             |
+| [[https://medium.com/techlogs/docker-how-to-check-your-containers-cpu-usage-8121515a3b8][docker-containerd-shim]]                                 | The Docker four components: =Docker engine=, =containerd=, =containerd-shm= and =runC= |
+** Docker Basic
+| Name                        | Summary                                                                 |
+|-----------------------------+-------------------------------------------------------------------------|
+| Install docker on Ubuntu    | =apt-get install docker.io=                                             |
+| [[https://docs.docker.com/install/linux/docker-ce/centos/][Install docker on CentOS]]    | Use docker repo https://download.docker.com/linux/centos/docker-ce.repo |
+| Install docker in Debian 10 | [[https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-debian-10][Link: How To Install and Use Docker on Debian 10]]                        |
+| Install old docker version  | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/install-old-docker.md.sh][GitHub: install-old-docker.md]]                                           |
+** Docker start service
+| Name                           | Summary                                                                                                    |
+|--------------------------------+------------------------------------------------------------------------------------------------------------|
+| Start a ubuntu test env        | =docker run ubuntu:16.04 /bin/echo hello world=                                                            |
+| Start a ubuntu 18.04 test env  | =docker run ubuntu:18.04 /bin/echo hello world=                                                            |
+| Start a container run and stop | =docker run --rm ubuntu:18.04 /bin/echo hello world=                                                       |
+| [[https://hub.docker.com/_/debian][Start a debian9 test env]]       | =docker run debian:9 /bin/echo hello world=                                                                |
+| Start a centos test env        | =docker run centos:centos6 /bin/echo hello world=                                                          |
+| [[https://github.com/jenkinsci/docker/blob/master/README.md][Start a jenkins server]]         | =docker run -p 8080:8080 -p 50000:50000 jenkins/jenkins:lts=                                               |
+| Start a nginx server           | =docker run -t -d -p 8080:80 --name nginx-test nginx=                                                      |
+| Start a mysql server           | =docker run -e MYSQL_ROOT_PASSWORD=password123 -e MYSQL_DATABASE=wordpress -d mysql:5.7=                   |
+| Start a nexus server           | =docker run -d -p 8082:8081 --name nexus -v /data/nexus-data:/nexus-data sonatype/docker-nexus3=           |
+| Start a sshd server            | =docker run -t -d --privileged -p 5022:22 denny/sshd:latest /usr/sbin/sshd -D=                             |
+| Start a ftp server             | =docker run -t -d -p 21:21 -p 20:20 -e USERNAME=${username} -e PASSWORD=${password} denny/proftproftpd:v1= |
 ** Container Runtime
 | Name                | Summary                                                                        |
 |---------------------+--------------------------------------------------------------------------------|
@@ -32,34 +63,6 @@ File me [[https://github.com/dennyzhang/cheatsheet.dennyzhang.com/issues][Issues
 | CoreOS Fleet        |                                                                                |
 | Cloud Foundry Diego | Not actively maintained any more                                               |
 | Reference           | [[https://cheatsheet.dennyzhang.com/cheatsheet-docker-A4][CheatSheet: Docker]], [[https://cheatsheet.dennyzhang.com/cheatsheet-crio-A4][CheatSheet: CRI-O]], [[https://cheatsheet.dennyzhang.com/cheatsheet-rkt-A4][CheatSheet: rkt]], [[https://cheatsheet.dennyzhang.com/cheatsheet-containerd-A4][CheatSheet: containerd]] |
-** Docker Trouble Shooting
-| Name                                                   | Summary                                                                                |
-|--------------------------------------------------------+----------------------------------------------------------------------------------------|
-| [[https://www.jfrog.com/jira/browse/RTFACT-9957][Docker push: manifest invalid]]                          | Re-push a new version of the same docker tag may fail, due to permission               |
-| Docker pull: missing signature key                     | Docker push again to resolve the issue                                                 |
-| [[https://stackoverflow.com/questions/45089842/docker-cp-error-response-from-daemon-not-a-directory][Docker cp: Error response from daemon: not a directory]] | container folder is in a symbol link                                                   |
-| Find process id by container name                      | =docker top $container_id=, or =docker top $container_name=                            |
-| Get dockerd storage driver                             | =docker info=, then check =Storage Driver=                                             |
-| [[https://medium.com/techlogs/docker-how-to-check-your-containers-cpu-usage-8121515a3b8][docker-containerd-shim]]                                 | The Docker four components: =Docker engine=, =containerd=, =containerd-shm= and =runC= |
-** Docker Basic
-| Name                        | Summary                                                                 |
-|-----------------------------+-------------------------------------------------------------------------|
-| Install docker on Ubuntu    | =apt-get install docker.io=                                             |
-| [[https://docs.docker.com/install/linux/docker-ce/centos/][Install docker on CentOS]]    | Use docker repo https://download.docker.com/linux/centos/docker-ce.repo |
-| Install docker in Debian 10 | [[https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-debian-10][Link: How To Install and Use Docker on Debian 10]]                        |
-| Install old docker version  | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/install-old-docker.md.sh][GitHub: install-old-docker.md]]                                           |
-** Docker start service
-| Name                          | Summary                                                                                                    |
-|-------------------------------+------------------------------------------------------------------------------------------------------------|
-| Start a ubuntu test env       | =docker run ubuntu:16.04 /bin/echo hello world=                                                            |
-| Start a ubuntu 18.04 test env | =docker run ubuntu:18.04 /bin/echo hello world=                                                            |
-| [[https://hub.docker.com/_/debian][Start a debian9 test env]]      | =docker run debian:9 /bin/echo hello world=                                                                |
-| Start a centos test env       | =docker run centos:centos6 /bin/echo hello world=                                                          |
-| [[https://github.com/jenkinsci/docker/blob/master/README.md][Start a jenkins server]]        | =docker run -p 8080:8080 -p 50000:50000 jenkins/jenkins:lts=                                               |
-| Start a nginx server          | =docker run -t -d -p 8080:80 --name nginx-test nginx=                                                      |
-| Start a nexus server          | =docker run -d -p 8082:8081 --name nexus -v /data/nexus-data:/nexus-data sonatype/docker-nexus3=           |
-| Start a sshd server           | =docker run -t -d --privileged -p 5022:22 denny/sshd:latest /usr/sbin/sshd -D=                             |
-| Start a ftp server            | =docker run -t -d -p 21:21 -p 20:20 -e USERNAME=${username} -e PASSWORD=${password} denny/proftproftpd:v1= |
 ** Container Basic
 | Name                                      | Summary                                                 |
 |-------------------------------------------+---------------------------------------------------------|
@@ -199,7 +202,7 @@ License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_lice
 #+LATEX_HEADER: \rhead{Updated: \today}
 #+LATEX_HEADER: \rfoot{\thepage\ of \pageref{LastPage}}
 #+LATEX_HEADER: \lfoot{\href{https://github.com/dennyzhang/cheatsheet-docker-A4}{GitHub: https://github.com/dennyzhang/cheatsheet-docker-A4}}
-#+LATEX_HEADER: \lhead{\href{https://cheatsheet.dennyzhang.com/cheatsheet-slack-A4}{Blog URL: https://cheatsheet.dennyzhang.com/cheatsheet-docker-A4}}
+#+LATEX_HEADER: \lhead{\href{https://cheatsheet.dennyzhang.com/cheatsheet-docker-A4}{Blog URL: https://cheatsheet.dennyzhang.com/cheatsheet-docker-A4}}
 #+AUTHOR: Denny Zhang
 #+EMAIL:  denny@dennyzhang.com
 #+TAGS: noexport(n)
@@ -1348,7 +1351,7 @@ specialized in commando deployments of large-scale computer systems in bandwidth
 environments such as conference centers, and various other feats of technical wizardry. He cares
 for the servers powering dotCloud, helps our users feel at home on the platform, and documents the
 many ways to use dotCloud in articles, tutorials and sample applications. He's also an avid
-dotCloud power user who has deployed just about anything on dotCloud – look for one of his many
+dotCloud power user who has deployed just about anything on dotCloud - look for one of his many
 custom services on our Github repository.
 
 Connect with Jerôme on Twitter! @jpetazzo
@@ -3493,7 +3496,7 @@ Docker supports two different types of methods for saving container images to a 
 docker export - saves a container's running or paused instance to a file
 docker save - saves a non-running container image to a file
 #+END_EXAMPLE
-** web page: Difference between save and export in Docker – Thomas Uhrig
+** web page: Difference between save and export in Docker - Thomas Uhrig
 http://tuhrig.de/difference-between-save-and-export-in-docker/
 *** webcontent                                                     :noexport:
 #+begin_example
@@ -3617,7 +3620,7 @@ export).
 
 The difference
 
-Now after we created our TAR-files, let's see what we have. First of all we clean up a little bit –
+Now after we created our TAR-files, let's see what we have. First of all we clean up a little bit -
 we remove all containers and images we have right now:
 
 [# first we see which]
@@ -3727,7 +3730,7 @@ Write a Comment
 
   * Alex Glover
 
-    Thanks for posting this Thomas – this isn't a topic that is well covered in the documentation.
+    Thanks for posting this Thomas - this isn't a topic that is well covered in the documentation.
     I appreciate how you walked through the 'experiment' end to end, clearing the original images
     before loading them and showing the image tree.
 
@@ -3991,8 +3994,8 @@ executable and shared library memory, so is a useful choice when
 running thousands of containers with the same program or libraries.
 
 The devicemapper driver uses thin provisioning and Copy on Write (CoW)
-snapshots. For each devicemapper graph location – typically
-/var/lib/docker/devicemapper – a thin pool is created based on two
+snapshots. For each devicemapper graph location - typically
+/var/lib/docker/devicemapper - a thin pool is created based on two
 block devices, one for data and one for metadata. By default, these
 block devices are created automatically by using loopback mounts of
 automatically created sparse files. Refer to Storage driver options
@@ -4134,12 +4137,12 @@ http://blog.opskumu.com/docker.html#docker--12
 
 四种网络模式摘自 Docker 网络详解及 pipework 源码解读与实践
 
-docker run 创建 Docker 容器时,可以用 –net 选项指定容器的网络模式,Docker 有以下 4 种网络模式:
+docker run 创建 Docker 容器时,可以用 -net 选项指定容器的网络模式,Docker 有以下 4 种网络模式:
 
-host 模式,使用 –net=host 指定.
-container 模式,使用 –net=container:NAME_or_ID 指定.
-none 模式,使用 –net=none 指定.
-bridge 模式,使用 –net=bridge 指定,默认设置.
+host 模式,使用 -net=host 指定.
+container 模式,使用 -net=container:NAME_or_ID 指定.
+none 模式,使用 -net=none 指定.
+bridge 模式,使用 -net=bridge 指定,默认设置.
 host 模式
 
 如果启动容器的时候使用 host 模式,那么这个容器将不会获得一个独立的 Network Namespace,而是和宿主机共用一个 Network Namespace.容器将不会虚拟出自己的网卡,配置自己的 IP 等,而是使用宿主机的 IP 和端口.
@@ -4768,7 +4771,7 @@ Sign Up Log In
 [                    ] submit
 View All Results
 We hope you find this tutorial helpful. In addition to guides like this one, we provide simple
-cloud infrastructure for developers. Learn more →
+cloud infrastructure for developers. Learn more ->p
 
 How To Set Up a Private Docker Registry on Ubuntu 14.04
 
@@ -7949,7 +7952,7 @@ https://vsupalov.com/cache-docker-build-dependencies-without-volume-mounting/
  [worker@butler-worker ~]$ docker ps -a
  CONTAINER ID        IMAGE                                      COMMAND                  CREATED             STATUS              PORTS               NAMES
  e80bdaedf48e        33c7759a5d2428e87c6029e684214becb8893e54   "cat"                    About an hour ago   Created                                 wonderful_curie
- 058a3d4d83f6        ca2927e8f0b5                               "/bin/sh -c 'go get …"   2 hours ago         Created                                 zen_colden
+ 058a3d4d83f6        ca2927e8f0b5                               "/bin/sh -c 'go get ..."   2 hours ago         Created                                 zen_colden
  57069fec299f        golang:1.11.5                              "cat"                    3 hours ago         Created                                 infallible_pare
  5a699e8c4cba        33c7759a5d2428e87c6029e684214becb8893e54   "cat"                    7 hours ago         Created                                 cocky_sinoussi
  #+END_EXAMPLE
@@ -8072,3 +8075,17 @@ https://vsupalov.com/cache-docker-build-dependencies-without-volume-mounting/
                     args '--network=host -u 0:0 -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro -v $SSH_KEY_FILE:/root/.ssh/id_rsa:ro ' +
                             ' -v /var/run/docker.sock:/var/run/docker.sock' +
 
+* why in mac, process of docker container can't be found           :noexport:
+#+BEGIN_EXAMPLE
+   /Users/zdenny  docker top nginx-test                                                                                                                                                                                          ✔ 0
+PID                 USER                TIME                COMMAND
+13360               root                0:00                nginx: master process nginx -g daemon off;
+13411               101                 0:00                nginx: worker process
+
+   /Users/zdenny  docker ps                                                                                                                                                                                                      ✔ 0
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+b29b043197d5        nginx               "nginx -g 'daemon of…"   About an hour ago   Up About an hour    0.0.0.0:8080->80/tcp   nginx-test
+
+   /Users/zdenny  ps -ef | grep 13360                                                                                                                                                                                            ✔ 0
+  503 51973 53247   0 12:13PM ttys000    0:00.00 grep --color=auto --exclude-dir=.bzr --exclude-dir=CVS --exclude-dir=.git --exclude-dir=.hg --exclude-dir=.svn 13360
+#+END_EXAMPLE
