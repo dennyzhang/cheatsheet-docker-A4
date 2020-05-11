@@ -1,0 +1,32 @@
+########## How To Use Docker Image ###############
+##
+##  Image Name: denny/rubocopcheck:1.0
+##  Git link: https://github.com/DennyZhang/devops_docker_image/blob/tag_v5/codecheck/Dockerfile_rubocopcheck_1_0
+##  Docker hub link:
+##  Build docker image: docker build --no-cache -f Dockerfile_rubocopcheck_1_0 -t denny/rubocopcheck:1.0 --rm=true .
+##  How to use
+##      docker run -t -d --privileged -v ${code_dir}:/code --name rubocopcheck --entrypoint=/bin/sh denny/rubocopcheck:1.0
+##      docker exec -it rubocopcheck python /enforce_rubocopcheck.py --code_dir /code --check_ignore_folder /.rubocopcheck_ignore
+##  Description: Enforce rubocop check for ruby scripts
+##
+##  Read more: https://www.dennyzhang.com/docker_code_check
+##################################################
+# Base Docker image: https://github.com/docker-library/ruby/blob/21bc2bf9f98aa749f1bd85d190cf0991dac87fc9/2.4/alpine/Dockerfile
+
+FROM ruby:2.4-alpine
+
+LABEL maintainer "Denny<https://www.dennyzhang.com/contact>"
+
+user root
+
+WORKDIR /
+
+ADD https://raw.githubusercontent.com/DennyZhang/devops_public/tag_v7/python/enforce_rubocopcheck/enforce_rubocopcheck.py /enforce_rubocopcheck.py
+
+RUN chmod o+x /*.py && apk add --update python && \
+    gem install rubocop -v "0.46.0" && \
+
+# Verify status
+    rubocop --version | grep "0.46.0"
+
+ENTRYPOINT ["/bin/sh"]

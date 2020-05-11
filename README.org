@@ -87,15 +87,15 @@ File me [[https://github.com/dennyzhang/cheatsheet.dennyzhang.com/issues][Issues
 ** Docker Cleanup
 | Name                           | Summary                                                  |
 |--------------------------------+----------------------------------------------------------|
-| Delete all containers          | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-all-containers.sh#L13][delete-all-containers.sh]]                                 |
 | Remove unused docker images    | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-unused-images.sh#L13][delete-unused-images.sh]]                                  |
+| Delete all containers          | [[https://github.com/dennyzhang/cheatsheet-docker-A4/blob/master/delete-all-containers.sh#L13][delete-all-containers.sh]]                                 |
+| Remove exited containers       | =docker rm $(docker ps --filter status=exited -qa)=      |
 | Docker prune images            | =docker image prune -f=                                  |
 | Docker prune volumes           | =docker volume prune -f=                                 |
 | Remove the specified image     | =docker rmi <imagename>=                                 |
 | Remove all docker images       | =docker rmi $(docker images -q)=                         |
 | Remove orphaned docker volumes | =docker volume rm $(docker volume ls -qf dangling=true)= |
 | Remove dead containers         | =docker rm $(docker ps --filter status=dead -qa)=        |
-| Remove exited containers       | =docker rm $(docker ps --filter status=exited -qa)=      |
 ** Dockerfile
 | Name                             | Summary                                                                          |
 |----------------------------------+----------------------------------------------------------------------------------|
@@ -6973,6 +6973,13 @@ This can simplify the process of creating minimal container images, but may resu
 
 Please note this feature squashes all the newly built layers into a single layer, it is not squashing to scratch.
 #+END_EXAMPLE
+* DONE docker exec into one container                              :noexport:
+  CLOSED: [2020-06-08 Mon 10:04]
+
+https://docs.docker.com/engine/reference/commandline/ps/
+docker ps --filter name=nginx  --format "table {{.ID}}"
+
+docker exec -it $(docker ps --filter name=nginx --format "table {{.ID}}" | tail -1) sh
 * docker                                                           :noexport:
 # Start docker daemon
 docker -d
@@ -8075,7 +8082,7 @@ https://vsupalov.com/cache-docker-build-dependencies-without-volume-mounting/
                     args '--network=host -u 0:0 -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro -v $SSH_KEY_FILE:/root/.ssh/id_rsa:ro ' +
                             ' -v /var/run/docker.sock:/var/run/docker.sock' +
 
-* why in mac, process of docker container can't be found           :noexport:
+* TODO why in mac, process of docker container can't be found      :noexport:
 #+BEGIN_EXAMPLE
    /Users/zdenny  docker top nginx-test                                                                                                                                                                                          ✔ 0
 PID                 USER                TIME                COMMAND

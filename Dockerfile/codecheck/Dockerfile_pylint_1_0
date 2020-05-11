@@ -1,0 +1,48 @@
+########## How To Use Docker Image ###############
+##
+##  Image Name: denny/pylintcheck:1.0
+##  Git link: https://github.com/DennyZhang/devops_docker_image/blob/tag_v7/codecheck/Dockerfile_pylint_1_0
+##  Docker hub link:
+##  Build docker image: docker build --no-cache -f Dockerfile_pylint_1_0 -t denny/pylintcheck:1.0 --rm=true .
+##  How to use:
+##      docker run -t -d --privileged -v ${code_dir}:/code --name pylint --entrypoint=/bin/bash denny/pylintcheck:1.0
+##      docker exec -it pylint python /enforce_pylint.py --code_dir /code --check_ignore_file /.pylint_ignore
+##
+##  Description: Enforce pylint check for python scripts
+##
+##  Read more: https://www.dennyzhang.com/docker_code_check
+##################################################
+# Base Docker image: https://hub.docker.com/r/muccg/pylint/
+
+FROM codacy/codacy-pylint:1.0.121
+
+LABEL maintainer "Denny<https://www.dennyzhang.com/contact>"
+
+user root
+WORKDIR /
+
+ADD https://raw.githubusercontent.com/DennyZhang/devops_public/tag_v7/python/enforce_pylint_check/enforce_pylint.py \
+    /enforce_pylint.py
+
+
+RUN chmod o+x /*.py && \
+    # enable python3
+    rm -rf /usr/bin/python && ln -s /usr/bin/python3 /usr/bin/python && \
+    rm -rf /usr/bin/pip && ln -s /usr/bin/pip3 /usr/bin/pip && \
+    # Install packages required cryptography pip package
+    apk add --update alpine-sdk && \
+    apk add --update python-dev python3-dev py-pip gcc && \
+    apk add --update libffi-dev && \
+    apk add --update linux-headers && \
+    apk add --update openssl-dev && \
+    easy_install pip && \
+
+# Cleanup
+    rm -rf /var/cache/apk/* && \
+
+# verify
+   python --version && pip --version && \
+   python --version | grep "3.5.1" && \
+   pip --version | grep "9.0.1"
+
+ENTRYPOINT ["/bin/sh"]
